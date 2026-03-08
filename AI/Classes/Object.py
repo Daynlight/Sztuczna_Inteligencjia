@@ -1,11 +1,7 @@
 import pygame
 import numpy as np
 from conf import *
-
-
-
-
-
+from .Grid import Grid, Tile
 
 objectMap = {}
 
@@ -34,10 +30,11 @@ class Object:
     self.texture = pygame.image.load(self.texture_path)
     self.setSize(size)
 
-  def goTo(self, position: np.array): #position array[x, y]
-    self.path = []
-    if position[0] // gridSize < GRIDS_X and position[1] // gridSize < GRIDS_Y:
-      self.generatePath(self.position, position // gridSize)
+  def goTo(self, hovered_tile : Tile): #position array[x, y]
+    self.position = (hovered_tile.isometric_x, hovered_tile.isometric_y)
+
+    #if position[0] // gridSize < GRID_X and position[1] // gridSize < GRID_Y:
+      #self.generatePath(self.position, position // gridSize)
 
   def generatePath(self, current_position: np.array, position: np.array, depth = 20):
     self.path.append(position)
@@ -47,5 +44,9 @@ class Object:
     self.position = self.path[0]
     self.path.pop(0)
 
-  def render(self, window: pygame.Surface):
-    window.blit(self.texture, self.position * gridSize)
+  def render(self, window: pygame.Surface, grid : Grid):
+    tile = grid.tiles[self.position[0]][self.position[1]]
+    x = tile.left_corner[0] + tile.a/2
+    y = tile.left_corner[1] - tile.a
+
+    window.blit(self.texture, (x, y))

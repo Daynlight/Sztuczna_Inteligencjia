@@ -2,10 +2,12 @@ import numpy as np
 import pygame
 
 class Grid:
-    def __init__(self, size_x, size_y, tile_size):
+    def __init__(self, size_x, size_y, tile_size, margin_top, margin_left):
         self.size_x = size_x
         self.size_y = size_y
         self.tile_size = tile_size
+        self.margin_top = margin_top
+        self.margin_left = margin_left
 
         self.tiles = []
 
@@ -13,10 +15,17 @@ class Grid:
             row = []
 
             for x in range(0, self.size_x):
-                tile = Tile((size_x + y - x)  * tile_size, tile_size / 2 + (y + x)* tile_size/2, tile_size) #+100 offest from window
+                tile = Tile(margin_left + ((size_x + y - x)  * tile_size), margin_top + (tile_size / 2 + (y + x)* tile_size/2), tile_size, y, x) #+100 offest from window
                 row.append(tile)
 
             self.tiles.append(row)
+
+    def get_hovered_tile(self, mouse_pos):
+        for row in self.tiles:
+            for tile in row:
+                if tile.isHovered(mouse_pos):
+                    return tile
+        return None
 
     def draw(self, surface):
         for row in self.tiles:
@@ -25,7 +34,7 @@ class Grid:
         
 
 class Tile:
-    def __init__(self, center_x, center_y, a):
+    def __init__(self, center_x, center_y, a, isometric_x, isometric_y):
         self.center_x = center_x
         self.center_y = center_y
         self.a = a
@@ -34,7 +43,19 @@ class Tile:
         self.down_corner = np.array([center_x, center_y + a/2])
         self.left_corner = np.array([center_x - a, center_y])
         self.surface = pygame.Surface((2*a, a))
-        self.surface.fill((255, 0, 0)) # red for debug purposes
+        self.isometric_x = isometric_x
+        self.isometric_y = isometric_y
+
+
+    def isHovered(self, mouse_pos):
+        x, y = mouse_pos
+
+        dx = abs(x - self.center_x)
+        dy = abs(y - self.center_y)
+
+        if dx / self.a + dy / (self.a / 2) <= 1:
+            return True
+        return False
 
     def draw(self, target_surface):
         pygame.draw.polygon(target_surface, (0, 255, 0), (self.top_corner, self.right_corner, self.down_corner, self.left_corner))

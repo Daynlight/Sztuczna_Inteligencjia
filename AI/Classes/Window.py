@@ -36,10 +36,3 @@ class Window:
   def SwapBuffer(self):
     pygame.display.flip()
 
-  def DrawGridLines(self):
-    for c in range(0, conf.GRIDS_X + 1):
-      pygame.draw.line(self.window, (255, 255, 255), (c * conf.gridSize, 0), (c * conf.gridSize, conf.gridSize * conf.GRIDS_Y))
-    
-    for r in range(0, conf.GRIDS_Y + 1):
-      pygame.draw.line(self.window, (255, 255, 255), (0, r * conf.gridSize), (conf.gridSize * conf.GRIDS_X, r * conf.gridSize))
-  
