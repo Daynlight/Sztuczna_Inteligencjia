@@ -14,6 +14,7 @@ class Window:
     self.mousePosition = None
     self.mouseButtonDown = False
     self.deltaTime = 0
+
     pygame.init()
     self.CreateWindow(title, width, height)
 
@@ -39,12 +40,3 @@ class Window:
   def SwapBuffer(self):
     pygame.display.flip()
 
-  def loop(self, render: Callable[[pygame.Surface], None]):
-    clock = pygame.time.Clock()
-    while(self.running):
-      self.deltaTime = clock.tick(60) / 1000.0 
-      render(self.window)
-      self.SwapBuffer()
-      self.PoolEvents()
-
-    pygame.quit()
