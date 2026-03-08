@@ -8,7 +8,7 @@ import sys
 
 
 class Window:
-  def __init__(self, title: str, width: int = 800, height: int = 600):
+  def __init__(self, title: str, width, height):
     self.running = True
     self.window = None
     self.mousePosition = None
@@ -20,12 +20,14 @@ class Window:
   def __del__(self):
     pygame.quit()
 
-  def CreateWindow(self, title: str, width: int = 800, height: int = 600):
+  def CreateWindow(self, title: str, width, height):
     self.window = pygame.display.set_mode((width, height))
     pygame.display.set_caption(title)
 
   def PoolEvents(self):
+
     self.mouseButtonDown = False
+
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         self.running = False
