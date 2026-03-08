@@ -2,10 +2,6 @@ from Classes.Object import Object
 from conf import movementSpeed
 
 
-
-
-
-
 kelner = Object("kelner", "Assets/jenkins.png", [1, 1], movementSpeed, [1, 1])
 kucharz = Object("kucharz", "Assets/kucharz.png", [0, 0], 0, [1, 1])
 stolik = Object("stolik", "Assets/obstacle.png", [2, 2], 0, [1, 1])

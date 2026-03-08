@@ -1,6 +1,6 @@
 import pygame
 import numpy as np
-from conf import gridSize
+from conf import *
 
 
 
@@ -34,9 +34,10 @@ class Object:
     self.texture = pygame.image.load(self.texture_path)
     self.setSize(size)
 
-  def goTo(self, position: np.array):
+  def goTo(self, position: np.array): #position array[x, y]
     self.path = []
-    self.generatePath(self.position, position // gridSize)
+    if position[0] // gridSize < GRIDS_X and position[1] // gridSize < GRIDS_Y:
+      self.generatePath(self.position, position // gridSize)
 
   def generatePath(self, current_position: np.array, position: np.array, depth = 20):
     self.path.append(position)
