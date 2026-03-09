@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+from Classes.World import Camera
 
 class Grid:
     def __init__(self, size_x, size_y, tile_size, margin_top, margin_left):
@@ -20,10 +21,10 @@ class Grid:
 
             self.tiles.append(row)
 
-    def get_hovered_tile(self, mouse_pos):
+    def get_hovered_tile(self, mouse_pos, camera : Camera):
         for row in self.tiles:
             for tile in row:
-                if tile.isHovered(mouse_pos):
+                if tile.isHovered(mouse_pos, camera):
                     return tile
         return None
 
@@ -47,11 +48,14 @@ class Tile:
         self.isometric_y = isometric_y
 
 
-    def isHovered(self, mouse_pos):
+    def isHovered(self, mouse_pos, camera : Camera):
         x, y = mouse_pos
 
-        dx = abs(x - self.center_x)
-        dy = abs(y - self.center_y)
+        world_x = x + camera.camera.x
+        world_y = y + camera.camera.y
+
+        dx = abs(world_x - self.center_x)
+        dy = abs(world_y - self.center_y)
 
         if dx / self.a + dy / (self.a / 2) <= 1:
             return True

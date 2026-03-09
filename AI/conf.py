@@ -1,8 +1,14 @@
 gridSize: int = 40
-movementSpeed: int = 1
+movementSpeed: int = 6
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
-GRID_X = 10    #grids
-GRID_Y = 10   #grids
+MARGIN_HORIZONTAL = 50
+MARGIN_VERTICAL = 50
+
+GRID_X = 15    #grids
+GRID_Y = 15   #grids
+
+WORLD_WIDTH = GRID_X * gridSize * 2 + 2 * MARGIN_HORIZONTAL
+WORLD_HEIGHT = GRID_Y * gridSize + 2 * MARGIN_VERTICAL

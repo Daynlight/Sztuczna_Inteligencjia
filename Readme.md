@@ -110,8 +110,19 @@ initialization of objects on scene
 
 
 ## TODO:
-- [x] [env](docs/lab2%20environment-task.pdf) 11.03.2026
-- [ ] Add path finding sth simple for now BFS or DFS.
-- [ ] Add own custom assets.
-- [ ] Move to isometric space.
-- [ ] Add simple back propagation with neural network.
+
+<details open>
+<summary>Task 1</summary>
+
+[env](docs/lab2%20environment-task.pdf) 11.03.2026
+- [x] Init pygame and Create Window (Daniel)
+- [x] Basic Object class and render (Daniel)
+- [x] Move to isometric space. (Martyna)
+- [x] Grid base world. (Martyna)
+- [x] Camera Movement. (Martyna)
+- [ ] Inherit Classes from Object, separation and storage in variable base on type.
+- [ ] Add path finding sth simple for now BFS or A* with delta time.
+- [ ] Add own custom assets and level design.
+- [ ] Animations.
+
+</details>

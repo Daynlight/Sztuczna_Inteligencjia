@@ -1,11 +1,20 @@
+from Classes.Table import Table
 from Classes.Object import Object
 from conf import movementSpeed
 
 
-kelner = Object("kelner", "Assets/jenkins.png", [1, 1], movementSpeed, [1, 1])
-kucharz = Object("kucharz", "Assets/kucharz.png", [0, 0], 0, [1, 1])
-stolik = Object("stolik", "Assets/obstacle.png", [2, 2], 0, [1, 1])
-stolik1 = Object("stolik1", "Assets/obstacle.png", [4, 3], 0, [1, 1])
-stolik2 = Object("stolik2", "Assets/obstacle.png", [2, 3], 0, [1, 1])
-stolik2 = Object("stolik3", "Assets/obstacle.png", [7, 5], 0, [1, 1])
-klient = Object("klient", "Assets/client.png", stolik1.position, 0, [1, 1])
+
+kelner = Object("kelner", 3, "Assets/jenkins.png", [1, 1], movementSpeed, [1, 1])
+kucharz = Object("kucharz", 2, "Assets/kucharz.png", [0, 0], 0, [1, 1])
+
+stoliki = [
+    Table("stolik0", [8,1], False),
+    Table("stolik1", [8,2], True),
+    Table("stolik2", [8,3], False),
+    Table("stolik3", [8,4], True),
+    Table("stolik4", [10,1], False),
+    Table("stolik5", [10,2], True),
+    Table("stolik6", [10,3], False),
+    Table("stolik7", [10,4], True)
+]
+klient = Object("klient", 1, "Assets/client.png", stoliki[1].position, 0, [1, 1])
