@@ -38,6 +38,7 @@ class Window:
 
     keys = pygame.key.get_pressed()
 
+    #Moving camera on arrows 
     if keys[pygame.K_UP]:
       if(self.camera.center_y_pos > conf.WINDOW_HEIGHT // 2):
         self.camera.center_y_pos -= 10

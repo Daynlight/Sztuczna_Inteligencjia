@@ -97,18 +97,18 @@ Used for object on scene
 * Additional ```objectMap = {}``` used for iteration and fast update of object.
 
 ### Grid
-Creates a 2D isometric grid of objects from Tile Class
-  * **def __init__(self, size_x: int, size_y: int, tile_size, margin_top, margin_left)**: default class constructor.
-  * **def __del__(self)**: default class destructor.
-  * **def get_hovered_tile(self, mouse_pos, camera : Camera)**: Returns the tile that is currently hovered by mouse
-  * **def draw(self, surface):**: draws grid on given surface
+Creates isometric grid made from objects of class Tile
+  * **def __init__(self, size_x: int, size_y: int, tile_size : int, margin_top : int, margin_left: int)** : default class constructor
+  * **def __del__(self)**: default class destructor
+  * **def get_hovered_tile(self, mouse_pos, camera : Camera)** get hovered tile based on mouse and camera position
+  * **def draw(self, surface)** draw grid of tiles
 
 ### Tile
-Creates a diamond rhombus with diagonals a x 2a
-  * **def __init__(self, center_x, center_y, a, isometric_x, isometric_y)**: default class constructor.
-  * **def __del__(self)**: default class destructor.
-  * **def isHovered(self, mouse_pos, camera : Camera):**: Returns True if given tile is hovered by a mouse; otherwise returns False
-  * **def draw(self, target_surface):**: draws tile on given surface
+Creats one diamond / rhombus for grid
+  * **def __init__(self, center_x, center_y, a, isometric_x, isometric_y)**: default class constructor
+  * **def __del__(self)**: default class destructor
+  * **def isHovered(self, mouse_pos, camera : Camera)**: returns True/False based on whether given tile is hovered by mouse or not
+  * **def draw(self, target_surface)**: draws given tile
 
 ### World
 Creates game's world based pn pygame.Surface

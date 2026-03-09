@@ -3,7 +3,7 @@ import pygame
 from Classes.World import Camera
 
 class Grid:
-    def __init__(self, size_x: int, size_y: int, tile_size, margin_top, margin_left):
+    def __init__(self, size_x: int, size_y: int, tile_size : int, margin_top : int, margin_left: int):
         self.size_x = size_x
         self.size_y = size_y
         self.tile_size = tile_size
@@ -26,7 +26,6 @@ class Grid:
             for tile in row:
                 del tile
         self.tiles.clear()
-    
 
     def get_hovered_tile(self, mouse_pos, camera : Camera):
         for row in self.tiles:
