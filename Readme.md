@@ -7,19 +7,26 @@ którego należy go dostarczyć.
 
 
 ## TOC
-- [Automatyczny kelner](#automatyczny-kelner)
-- [TOC](#toc)
-- [Installation](#installation)
-- [Architecture](#architecture)
-- [Classes](#classes)
-  - [Window](#window)
-  - [Object](#object)
-- [Files and Function](#files-and-function)
-  - [main](#main)
-  - [learn](#learn)
-  - [init scene](#init-scene)
-- [Prerequisites](#prerequisites)
-- [TODO:](#todo)
+- [Projekt Sztuczna Inteligencjia](#projekt-sztuczna-inteligencjia)
+  - [Automatyczny kelner](#automatyczny-kelner)
+  - [TOC](#toc)
+  - [Installation](#installation)
+  - [Architecture](#architecture)
+  - [Classes](#classes)
+    - [Window](#window)
+    - [Object](#object)
+    - [Grid](#grid)
+    - [Tile](#tile)
+    - [World](#world)
+    - [Camera](#camera)
+    - [Table](#table)
+  - [Files and Function](#files-and-function)
+    - [main](#main)
+    - [learn](#learn)
+    - [init scene](#init-scene)
+    - [conf](#conf)
+  - [Prerequisites](#prerequisites)
+  - [TODO:](#todo)
 
 
 
@@ -89,7 +96,32 @@ Used for object on scene
   * **def render(self, window: pygame.Surface)**: render object.
 * Additional ```objectMap = {}``` used for iteration and fast update of object.
 
+### Grid
+Creates a 2D isometric grid of objects from Tile Class
+  * **def __init__(self, size_x: int, size_y: int, tile_size, margin_top, margin_left)**: default class constructor.
+  * **def __del__(self)**: default class destructor.
+  * **def get_hovered_tile(self, mouse_pos, camera : Camera)**: Returns the tile that is currently hovered by mouse
+  * **def draw(self, surface):**: draws grid on given surface
 
+### Tile
+Creates a diamond rhombus with diagonals a x 2a
+  * **def __init__(self, center_x, center_y, a, isometric_x, isometric_y)**: default class constructor.
+  * **def __del__(self)**: default class destructor.
+  * **def isHovered(self, mouse_pos, camera : Camera):**: Returns True if given tile is hovered by a mouse; otherwise returns False
+  * **def draw(self, target_surface):**: draws tile on given surface
+
+### World
+Creates game's world based pn pygame.Surface
+  * **def __init__(self, width : int, height : int)**: default class constructor
+  * **def draw(self)**: draws world surface
+
+### Camera
+Creates camera for viewing only a part of the world's surface
+  * **def __init__(self, width: int, height: int, center_x_pos, center_y_pos)**: default class constructor
+  * **def update(self)**: updates camera's position
+### Table
+Inherits from Object
+  * **def __init__(self, name, position, active=False)**: default class constructor
 
 ## Files and Function
 ### main
@@ -101,6 +133,8 @@ non visual learning process
 ### init scene
 initialization of objects on scene
 
+### conf
+configuration stuff like widnow size, world_size etc.
 
 
 ## Prerequisites
