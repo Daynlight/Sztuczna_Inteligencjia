@@ -4,7 +4,6 @@ from Classes.Beings.Client import Client
 from Classes.Beings.Waiter import Waiter
 from Classes.Beings.Cook import Cook
 from Classes.Object import Object
-from Classes.Grid import Wall, Node
 from conf import movementSpeed
 
 
@@ -18,7 +17,6 @@ stoliki = [
     Table("stolik2", [2,3], False),
     Table("stolik3", [7,5], True)
 ]
-klient = Object("klient", 1, "Assets/client.png", stoliki[1].position, [1, 1])
 
 krzesla = [
     Chair("krzeslo0", [2,4]),

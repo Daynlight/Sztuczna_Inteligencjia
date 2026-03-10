@@ -8,18 +8,18 @@ class Table(Object):
         self.active = active
         self.chairs = []
 
-    def seat_client(self, client):
+    def seatClient(self, client):
         self.client = client
         self.occupied = True
 
-    def free_table(self):
+    def freeTable(self):
         self.client = None
         self.occupied = False
 
-    def add_chair(self,chair):
+    def addChair(self,chair):
         self.chairs.append(chair)
     
-    def remove_chair(self,chair):
+    def removeChair(self,chair):
         if chair in self.chairs:
             self.chairs.remove(chair)
         else:

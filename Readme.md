@@ -159,13 +159,15 @@ configuration stuff like widnow size, world_size etc.
 - [x] Init pygame and Create Window (Daniel)
 - [x] Basic Object class and render (Daniel)
 - [x] Add path finding A* with delta time movement. (Daniel)
+- [ ] Path Finding Bug Fix. (Daniel)
 - [x] Move to isometric space. (Martyna)
 - [x] Grid base world. (Martyna)
 - [x] Camera Movement. (Martyna)
 - [x] Inherit Classes from Object, separation and storage in variable base on type. (Adam)
-- [ ] Add own custom assets and level design.
+- [x] Add own custom assets and level design. (Dawid)
+- [x] Order system + types of food. (Dawid)
 - [ ] Animations.
-- [ ] Order system + types of food.
 - [ ] Architecture + Diagram.
+
 
 </details>

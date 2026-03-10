@@ -38,22 +38,21 @@ class Window:
 
     keys = pygame.key.get_pressed()
 
-    #Moving camera on arrows 
     if keys[pygame.K_UP]:
       if(self.camera.center_y_pos > conf.WINDOW_HEIGHT // 2):
-        self.camera.center_y_pos -= 30
+        self.camera.center_y_pos -= 10
 
     if keys[pygame.K_DOWN]:
       if(self.camera.center_y_pos < conf.WORLD_HEIGHT - conf.WINDOW_HEIGHT // 2):
-        self.camera.center_y_pos += 30
+        self.camera.center_y_pos += 10
 
     if keys[pygame.K_LEFT]:
       if (self.camera.center_x_pos > conf.WINDOW_WIDTH // 2):
-        self.camera.center_x_pos -= 30
+        self.camera.center_x_pos -= 10
 
     if keys[pygame.K_RIGHT]:
       if(self.camera.center_x_pos < conf.WORLD_WIDTH - conf.WINDOW_WIDTH // 2):
-        self.camera.center_x_pos += 30
+        self.camera.center_x_pos += 10
 
 
   def SwapBuffer(self):
@@ -61,3 +60,4 @@ class Window:
 
     clock = pygame.time.Clock()
     self.deltaTime = clock.tick(60) / 1000.0 
+
