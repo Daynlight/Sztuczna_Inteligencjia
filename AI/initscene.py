@@ -1,12 +1,15 @@
 from Classes.Table import Table
 from Classes.Chair import Chair
+from Classes.Beings.Client import Client
+from Classes.Beings.Waiter import Waiter
+from Classes.Beings.Cook import Cook
 from Classes.Object import Object
 from conf import movementSpeed
 
 
 
-kelner = Object("kelner", 3, "Assets/jenkins.png", [1, 1], movementSpeed, [1, 1])
-kucharz = Object("kucharz", 2, "Assets/kucharz.png", [0, 0], 0, [1, 1])
+kelner = Waiter("kelner", [1, 1])
+kucharz = Cook("kucharz", [0, 0])
 
 stoliki = [
     Table("stolik0", [8,1], False),
@@ -36,5 +39,7 @@ stoliki[1].add_chair(krzesla[4])
 stoliki[1].remove_chair(krzesla[2])
 stoliki[2].add_chair(krzesla[2])
 
-klient = Object("klient", 1, "Assets/client.png", krzesla[0].position, 0, [1, 1])
-krzesla[0].occupy(klient)
+klient = Client("klient", [1, 1])
+klient.assign_table(stoliki[1])
+klient2 = Client("klient2", [1, 1])
+klient2.assign_table(stoliki[1])
