@@ -11,8 +11,6 @@ import pygame
 env = Window("Kelner Window", WINDOW_WIDTH, WINDOW_HEIGHT)
 world = World(WORLD_WIDTH, WORLD_HEIGHT)
 grid = Grid(GRID_X, GRID_Y , gridSize, MARGIN_HORIZONTAL, MARGIN_VERTICAL)
-grid.walles = [Wall(grid.nodes[0][0], grid.nodes[GRID_Y][0], 50),
-         Wall(grid.nodes[0][0], grid.nodes[0][GRID_X], 50)]
 
 def render(window, grid):
 

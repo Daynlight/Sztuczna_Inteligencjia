@@ -13,18 +13,27 @@ kelner = Waiter("kelner", [1, 1], [gridSize/2, gridSize/2])
 kucharz = Cook("kucharz", [0, 5], [gridSize/2, gridSize/2])
 
 stoliki = [
-    Table("stolik0", [2,2], False),
-    Table("stolik1", [4,3], True),
-    Table("stolik2", [2,3], False),
-    Table("stolik3", [7,5], True)
+    Table("stolik0", [3,10], render_order=2, active=True),
+    Table("stolik1", [3,9], active=True),
+    Table("stolik2", [8,3], active=True),
+    Table("stolik3", [7,6], active=False),
+    Table("stolik4", [10,12], active=False),
+    Table("stolik5", [11,12], active=False)
 ]
 
 krzesla = [
-    Chair("krzeslo0", [2,4]),
-    Chair("krzeslo1", [4,4]),
-    Chair("krzeslo2", [3,3]),
-    Chair("krzeslo3", [4,2]),
-    Chair("krzeslo4", [5,3])
+    Chair("krzeslo0", [3,11], "southwest"),
+    Chair("krzeslo1", [3,8], "northeast"),
+    Chair("krzeslo2", [4,10], "southeast"),
+    Chair("krzeslo3", [8,4], "southwest"),
+    Chair("krzeslo4", [9,3], "southeast"),
+    Chair("krzeslo5", [7,5], "northeast"),
+    Chair("krzeslo6", [10,13], "southwest"),
+    Chair("krzeslo7", [11,13], "southwest"),
+    Chair("krzeslo8", [12,12], "southeast"),
+    Chair("krzeslo9", [10,11], "northeast"),
+    Chair("krzeslo10", [11,11], "northeast"),
+    Chair("krzeslo11", [9,12], "northwest")
 ]
 
 stoliki[2].add_chair(krzesla[0])

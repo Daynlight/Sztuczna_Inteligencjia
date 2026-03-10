@@ -12,7 +12,6 @@ class Grid:
 
         self.tiles = []
         self.nodes = []
-        self.walles = []
         
         for y in range(self.size_y + 1):
             row = []
@@ -43,6 +42,9 @@ class Grid:
                 row.append(tile)
 
             self.tiles.append(row)
+            
+        self.walles = [Wall(self.nodes[0][0], self.nodes[size_y][0], 100),
+        Wall(self.nodes[0][0], self.nodes[0][size_x], 100),]
 
         
 
@@ -60,8 +62,6 @@ class Grid:
         return None
 
     def draw(self, surface):
-        for wall in self.walles:
-            wall.draw(surface)
             
         for row in self.tiles:
             for tile in row:
@@ -73,10 +73,12 @@ class Grid:
 
                 if x + 1 < len(self.nodes[y]):
                     right_node = self.nodes[y][x + 1]
-                    pygame.draw.line(surface, (0, 0, 0), node.get(), right_node.get())
+                    pygame.draw.line(surface, (156, 128, 112), node.get(), right_node.get())
                 if y + 1 < len(self.nodes):
                     bottom_node = self.nodes[y + 1][x]
-                    pygame.draw.line(surface, (0, 0, 0), node.get(), bottom_node.get())
+                    pygame.draw.line(surface, (156, 128, 112), node.get(), bottom_node.get())
+        for wall in self.walles:
+            wall.draw(surface)
         
 
 class Tile:
@@ -113,7 +115,7 @@ class Tile:
         return False
 
     def draw(self, target_surface):
-        pygame.draw.polygon(target_surface, (0, 255, 0), (self.top_corner.get(), self.right_corner.get(), self.bottom_corner.get(), self.left_corner.get()))
+        pygame.draw.polygon(target_surface, (204, 169, 149), (self.top_corner.get(), self.right_corner.get(), self.bottom_corner.get(), self.left_corner.get()))
 
 class Node:
     def __init__(self, pos_x, pos_y):
@@ -130,7 +132,14 @@ class Wall:
     def draw(self, surface):
         x_1, y_1 = self.node_1.get()
         x_2, y_2 = self.node_2.get()
-        pygame.draw.polygon(surface, (0, 0, 255), ((x_1, y_1), 
-                                                   (x_2, y_2), 
-                                                   (x_2, y_2 - self.height), 
-                                                   (x_1, y_1 - self.height)))
+
+        points = (
+            (x_1, y_1),
+            (x_2, y_2),
+            (x_2, y_2 - self.height),
+            (x_1, y_1 - self.height)
+        )
+
+        pygame.draw.polygon(surface, (245, 160, 95), points)
+
+        pygame.draw.polygon(surface, (0, 0, 0), points, 1) 

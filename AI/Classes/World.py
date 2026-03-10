@@ -6,7 +6,7 @@ class World:
         self.height = height
         self.surface = pygame.Surface((self.width, self.height))
     def draw(self):
-        self.surface.fill((255, 0, 0))
+        self.surface.fill((41, 40, 40))
 
 
 class Camera:
