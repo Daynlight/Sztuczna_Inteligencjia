@@ -154,7 +154,7 @@ configuration stuff like widnow size, world_size etc.
 - [x] Move to isometric space. (Martyna)
 - [x] Grid base world. (Martyna)
 - [x] Camera Movement. (Martyna)
-- [ ] Inherit Classes from Object, separation and storage in variable base on type.
+- [x] Inherit Classes from Object, separation and storage in variable base on type. (Adam)
 - [ ] Add path finding sth simple for now BFS or A* with delta time.
 - [ ] Add own custom assets and level design.
 - [ ] Animations.

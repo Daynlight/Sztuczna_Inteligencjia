@@ -3,7 +3,7 @@ from Classes.Object import Object
 class Table(Object):
 
     def __init__(self, name, position, active=False):
-        super().__init__(name, 0, "Assets/obstacle.png", position, 0, [1, 1])
+        super().__init__(name, 0, "Assets/obstacle.png", position, [1, 1])
 
         self.active = active
         self.chairs = []

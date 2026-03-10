@@ -12,14 +12,10 @@ kelner = Waiter("kelner", [1, 1])
 kucharz = Cook("kucharz", [0, 0])
 
 stoliki = [
-    Table("stolik0", [8,1], False),
-    Table("stolik1", [8,2], True),
-    Table("stolik2", [8,3], False),
-    Table("stolik3", [8,4], True),
-    Table("stolik4", [10,1], False),
-    Table("stolik5", [10,2], True),
-    Table("stolik6", [10,3], False),
-    Table("stolik7", [10,4], True)
+    Table("stolik0", [2,2], False),
+    Table("stolik1", [4,3], True),
+    Table("stolik2", [2,3], False),
+    Table("stolik3", [7,5], True)
 ]
 
 krzesla = [

@@ -1,5 +1,5 @@
 gridSize: int = 40
-movementSpeed: int = 6
+movementSpeed: int = 10
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600

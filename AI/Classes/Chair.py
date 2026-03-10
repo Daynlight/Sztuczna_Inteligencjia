@@ -3,7 +3,7 @@ from Classes.Object import Object
 class Chair(Object):
 
     def __init__(self, name, position):
-        super().__init__(name, 0, "Assets/chair.png", position, 0, [1, 1])
+        super().__init__(name, 0, "Assets/chair.png", position, [1, 1])
 
         self.occupied = False
         self.sitter = None
