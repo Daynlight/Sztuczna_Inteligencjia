@@ -1,0 +1,45 @@
+import os
+import numpy as np
+
+from Classes.Objects.Beings.Being import Being
+from Classes.Objects.Beings.Client import Client
+from Classes.Objects.Beings.Cook import Cook
+from Classes.Objects.Static.Food import Food
+
+from conf import WAITER_VELOCITY, PATH_TO_ASSETS
+
+
+
+
+
+
+
+
+
+class Waiter(Being):
+	def __init__(self, position: np.ndarray[int], offset: np.array = [0, 0]):
+		super().__init__(3, os.path.join(PATH_TO_ASSETS, "Other", "jenkins.png"), position, offset, WAITER_VELOCITY)
+		self._carrying_name: list[Food] = None
+		self._order_list: list[Client, Food] = []
+    
+
+	def receiveOrder(self, client: Client) -> None:
+		self._order_list.append(client)
+
+
+	def takeFood(self, cook: Cook) -> None:
+		food_name: str = self._order_list[0].getFoodName()
+		self._carrying_name: str = food_name
+		cook.getAvailableFood()
+		# cook.available_counters.insert(0, ) # TODO: make counters available after taking food
+
+
+	def completeOrder(self) -> None:
+		# orders will be completed in a queue approach for now
+		self._order_list[0].receiveFood()
+		self._order_list.pop(0)
+
+
+	def getOrderList(self) -> list[Client, Food]:
+		return self._order_list
+	
