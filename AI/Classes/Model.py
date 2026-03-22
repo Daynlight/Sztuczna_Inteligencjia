@@ -5,8 +5,9 @@ from Classes.Grid.Grid import Grid
 
 from Classes.Objects.Object import Object
 from Classes.Objects.Static.Table import Table
+from Classes.Objects.Static.GroupTable import GroupTable
 from Classes.Objects.Static.Counter import Counter
-from Classes.Objects.Static.Chair import Chair, Orientation
+from Classes.Objects.Static.Chair import Chair
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Waiter import Waiter
 from Classes.Objects.Beings.Cook import Cook
@@ -50,18 +51,19 @@ class Model:
     ], dtype=Table)
 
     self._chairs: np.ndarray[Chair] = np.array([
-        Chair([3,11], Orientation.SOUTHWEST),
-        Chair([3,8], Orientation.NORTHEAST),
-        Chair([4,10], Orientation.SOUTHEAST),
-        Chair([8,4], Orientation.SOUTHWEST),
-        Chair([9,3], Orientation.SOUTHEAST),
-        Chair([7,5], Orientation.NORTHEAST),
-        Chair([10,13], Orientation.SOUTHWEST),
-        Chair([11,13], Orientation.SOUTHWEST),
-        Chair([12,12], Orientation.SOUTHEAST),
-        Chair([10,11], Orientation.NORTHEAST),
-        Chair([11,11], Orientation.NORTHEAST),
-        Chair([9,12], Orientation.NORTHWEST)
+        Chair([3,11]),
+        Chair([3,8]),
+        Chair([4,10]),
+        Chair([8,4]),
+        Chair([9,3]),
+        Chair([7,5]),
+        Chair([10,13]),
+        Chair([11,13]),
+        Chair([12,12]),
+        Chair([10,11]),
+        Chair([11,11]),
+        Chair([9,12]),
+        Chair([7,3])
     ], dtype=Chair)
 
     self._counters: np.ndarray[Counter] = np.array([
@@ -72,6 +74,11 @@ class Model:
       Counter([1,7]),
       Counter([0,7], render_order=0),
     ], dtype=Counter)
+
+    self._groupTable: np.ndarray[GroupTable] = np.array([
+      GroupTable("Stolik nr 1", self._tables[0])
+    ], dtype=GroupTable)
+
 
     self._clients: np.ndarray[Client] = np.array([
       Client([1, 1], [TILE_SIZE/2, TILE_SIZE/2]),
@@ -84,10 +91,21 @@ class Model:
     self._tables[1].addChair(self._chairs[1])
     self._tables[0].addChair(self._chairs[2])
     self._tables[0].addChair(self._chairs[0])
-    self._tables[2].addChair(self._chairs[3])
+    self._tables[2].addChair(self._chairs[3])	
+    self._tables[2].addChair(self._chairs[12])
+    self._tables[3].addChair(self._chairs[5])
+    self._tables[4].addChair(self._chairs[6])
+    self._tables[4].addChair(self._chairs[9])
+    self._tables[4].addChair(self._chairs[11])
+    self._tables[5].addChair(self._chairs[7])
+    self._tables[5].addChair(self._chairs[8])
+    
 
     self._tables[1].removeChair(self._chairs[2])
     self._tables[2].addChair(self._chairs[2])
+
+    ## Grouping tables
+    self._groupTable[0].addTable(self._tables[1])
 
     ## Assign clients to tables
     self._clients[0].assignTable(self._tables[0])

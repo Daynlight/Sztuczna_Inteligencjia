@@ -9,11 +9,15 @@ from conf import PATH_TO_ASSETS
 
 class Table(Object):
 	def __init__(self, position: np.ndarray[int], render_order: int = 1):
+
+		from Classes.Objects.Static.GroupTable import GroupTable
+
 		super().__init__(render_order, os.path.join(PATH_TO_ASSETS, "Obstacles", "table05a.png"), position, size = [2,2])
 		self._occupied: bool = False
 		
 		self._chairs: list[Chair] = list([])
 		self._clients: list[Client] = list([])
+		self._group: list[GroupTable] = None
 
 
 	def seatClient(self, client: np.ndarray[Client]) -> None:
@@ -27,12 +31,26 @@ class Table(Object):
 
 
 	def addChair(self, chair: Chair) -> None:
-		self._chairs.append(chair)
+		if chair._table is None:
+			self._chairs.append(chair)
+			chair._table=self
+			if chair.getPosition()[0] == self._position[0]+1 and chair.getPosition()[1] == self._position[1]:
+				chair.rotate("southeast")
+			
+			elif chair.getPosition()[0] == self._position[0]-1 and chair.getPosition()[1] == self._position[1]:
+				chair.rotate("northwest")
+					
+			elif chair.getPosition()[0] == self._position[0] and chair.getPosition()[1] == self._position[1]+1:
+				chair.rotate("southwest")
+					
+			elif chair.getPosition()[0] == self._position[0] and chair.getPosition()[1] == self._position[1]-1:
+				chair.rotate("northeast")
 
 
 	def removeChair(self, chair: Chair) -> None:
 		if chair in self._chairs:
 			self._chairs.remove(chair)
+			chair._table=None
 
 	
 	def getChairs(self) -> list[Chair]:

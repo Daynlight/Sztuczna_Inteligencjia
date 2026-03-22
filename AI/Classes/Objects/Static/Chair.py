@@ -14,25 +14,30 @@ class Orientation(Enum):
 	SOUTHWEST = 3
 
 class Chair(Object):
-	def __init__(self, position: np.ndarray[int], orientation: Orientation, render_order: int = 0):
+	def __init__(self, position: np.ndarray[int], render_order: int = 0):
 		img: str = "chair01a.png"
-		match orientation:
-			case Orientation.NORTHEAST:
-				img: str = "chair01a.png"
-			case Orientation.NORTHWEST:
-				img: str = "chair01b.png"
-			case Orientation.SOUTHEAST:
-				img: str = "chair01c.png"
-				render_order: int = 2
-			case Orientation.SOUTHWEST:
-				img: str = "chair01d.png"
-				render_order: int = 2
 
 		super().__init__(render_order, os.path.join(PATH_TO_ASSETS, "Obstacles", img), position, size=[2, 2])
 
 		self._occupied: bool = False
-		self._client: list[Client] = None
+		self._client: Client | None = None
+		self._table = None
     
+	def rotate(self,orientation):
+		img = "chair01a.png"
+		match orientation:
+			case "northeast":
+				img = "chair01a.png"
+			case "northwest":
+				img = "chair01b.png"
+			case "southeast":
+				img = "chair01c.png"
+				self.render_order = 2
+			case "southwest":
+				img = "chair01d.png"
+				self.render_order = 2
+		self.setTexture(f"Assets/Obstacles/{img}")
+		self.setSize([2,2])
 
 	def sitClient(self, client: Client) -> None:
 		if not self.getClient():
