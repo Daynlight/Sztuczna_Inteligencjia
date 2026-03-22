@@ -13,14 +13,6 @@ from Classes.Objects.Beings.Cook import Cook
 
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
-
-
-
-
-
-
-
-
 class Model:
   def __init__(self):
     self._running: bool = True

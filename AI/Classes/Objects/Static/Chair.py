@@ -7,13 +7,6 @@ from Classes.Objects.Beings.Client import Client
 
 from conf import PATH_TO_ASSETS
 
-
-
-
-
-
-
-
 class Orientation(Enum):
 	NORTHEAST = 0
 	NORTHWEST = 1
