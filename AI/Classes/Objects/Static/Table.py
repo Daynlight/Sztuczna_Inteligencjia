@@ -31,9 +31,9 @@ class Table(Object):
 
 
 	def addChair(self, chair: Chair) -> None:
-		if chair._table is None:
+		if chair.getTable is None:
 			self._chairs.append(chair)
-			chair._table=self
+			chair.setTable(self)
 			if chair.getPosition()[0] == self._position[0]+1 and chair.getPosition()[1] == self._position[1]:
 				chair.rotate("southeast")
 			
@@ -50,12 +50,19 @@ class Table(Object):
 	def removeChair(self, chair: Chair) -> None:
 		if chair in self._chairs:
 			self._chairs.remove(chair)
-			chair._table=None
+			chair.setTable(None)
 
 	
 	def getChairs(self) -> list[Chair]:
 		return self._chairs
-	
+
 
 	def getClients(self) -> list[Client]:
 		return self._clients
+	
+ 
+	def getGroup(self):
+		return self._group
+
+	def setGroup(self,group):
+		self._group=group

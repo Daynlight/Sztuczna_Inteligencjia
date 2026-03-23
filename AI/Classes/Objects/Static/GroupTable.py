@@ -8,16 +8,16 @@ class GroupTable(Table):
         self.tables=[table]
         
     def addTable(self, table):
-        if table._group == None:
+        if table.getGroup() == None:
             self.tables.append(table)
-            table._group=self
+            table.setGroup(self)
         else:
             print("Table is alredy in another group remove it first")
         
     def removeTable(self, table):
         if table in self.tables:
             self.tables.pop(table)
-            table._group=None
+            table.setGroup(None)
             if len(self.tables) == 0:
                 self.__del__()
         else:

@@ -53,3 +53,10 @@ class Chair(Object):
 	
 	def getClient(self) -> Client:
 		return self._client
+
+
+	def getTable(self):
+		return self._table
+
+	def setTable(self,table):
+		self._table=table
