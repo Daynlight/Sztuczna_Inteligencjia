@@ -31,7 +31,7 @@ class Table(Object):
 
 
 	def addChair(self, chair: Chair) -> None:
-		if chair.getTable is None:
+		if chair.getTable() is None:
 			self._chairs.append(chair)
 			chair.setTable(self)
 			if chair.getPosition()[0] == self._position[0]+1 and chair.getPosition()[1] == self._position[1]:
@@ -45,6 +45,8 @@ class Table(Object):
 					
 			elif chair.getPosition()[0] == self._position[0] and chair.getPosition()[1] == self._position[1]-1:
 				chair.rotate("northeast")
+		else:
+			print("chair is assigned to other table")
 
 
 	def removeChair(self, chair: Chair) -> None:

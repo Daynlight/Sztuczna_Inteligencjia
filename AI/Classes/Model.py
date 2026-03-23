@@ -101,8 +101,8 @@ class Model:
     self._tables[5].addChair(self._chairs[8])
     
 
-    self._tables[1].removeChair(self._chairs[2])
-    self._tables[2].addChair(self._chairs[2])
+    #self._tables[1].removeChair(self._chairs[2])
+    #self._tables[2].addChair(self._chairs[2])
 
     ## Grouping tables
     self._groupTable[0].addTable(self._tables[1])
