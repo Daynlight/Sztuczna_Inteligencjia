@@ -7,10 +7,6 @@ from conf import TAIL_COLOR, TAIL_EDGE_COLOR, WALL_COLOR, WALL_EDGE_COLOR, WALL_
 
 
 
-
-
-
-
 class Grid_Tile:
   #The most important part of object of class Grid_Tile is center_x and center_y, based on them is calulated rhombus (diament) with dimensions a x 2a 
   def __init__(self, center_x, center_y, a, isometric_x, isometric_y):
@@ -106,6 +102,8 @@ class Grid:
 
 
   def _generateGridNodes(self) -> None:
+    # nodes that are used as the corners of the tiles
+     
     if(self._grid_nodes != None): return
     
     self._grid_nodes = []
@@ -123,6 +121,8 @@ class Grid:
 
 
   def _generateGridTails(self) -> None:
+    # generating the grid of tiles
+
     if(self._grid_tiles != None): return
 
     self._grid_tiles = []
@@ -139,6 +139,8 @@ class Grid:
           x
         )
 
+        # setting the position of all corneres of the tile (diamond)
+
         grid_tile.top_corner = self._grid_nodes[x][y]
         grid_tile.right_corner = self._grid_nodes[x][y + 1]
         grid_tile.bottom_corner = self._grid_nodes[x + 1][y + 1]
@@ -149,6 +151,8 @@ class Grid:
         
 
   def get_hovered_tile(self, mouse_pos: np.ndarray[int], camera : Camera) -> Grid_Tile:
+    # method to get the tile hovered by mouse, currently used to make the waiter go to selected tile
+
     for row in self._grid_tiles:
       for grid_tile in row:
         if grid_tile.isHovered(mouse_pos, camera):
@@ -156,23 +160,38 @@ class Grid:
     return None
 
 
+  # drawing enviroment - walls + grid made of tiles
+  #  
   def draw(self, renderer: Renderer) -> None:
-    surface = renderer.getSurface()         
+
+    surface = renderer.getSurface()
+
     for row in self._grid_tiles:
+
       for grid_tile in row:
+
         if(grid_tile.isVisible(renderer)):
-          grid_tile.draw(surface)
+          grid_tile.draw(surface)             # drawing tile itself
+
+    # only bottom and right edges are drawn to save resources, thus n + 1 lines must be drawn
 
     for y in range(len(self._grid_nodes)):
+
       for x in range(len(self._grid_nodes[y])):
+
         grid_node = self._grid_nodes[y][x]
 
         if x + 1 < len(self._grid_nodes[y]):
-          right_grid_node = self._grid_nodes[y][x + 1]
+
+          right_grid_node = self._grid_nodes[y][x + 1]                                  # position to draw line
           pygame.draw.line(surface, TAIL_EDGE_COLOR, grid_node, right_grid_node)
+
         if y + 1 < len(self._grid_nodes):
-          bottom_grid_node = self._grid_nodes[y + 1][x]
+
+          bottom_grid_node = self._grid_nodes[y + 1][x]                                # position to draw line
           pygame.draw.line(surface, TAIL_EDGE_COLOR, grid_node, bottom_grid_node)
+
+    # Drawing outside walls
     for wall in self._walls:
       wall.draw(surface)
 

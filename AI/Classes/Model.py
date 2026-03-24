@@ -15,6 +15,7 @@ from Knowlege.Frame import Frame
 
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
+# AI stuff
 class Model:
   def __init__(self):
     self._running: bool = True

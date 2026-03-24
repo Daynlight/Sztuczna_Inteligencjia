@@ -6,13 +6,7 @@ from Classes.Renderer.Renderer import Renderer, Camera
 
 from conf import TILE_SIZE, ERROR_TEXTURE, WINDOW_WIDTH, WINDOW_HEIGHT
 
-
-
-
-
-
-
-
+# Main superior class for all objects in the world
 
 class Object:
   def __init__(self, render_order: int, texture_path: str, position: np.ndarray[int], 
@@ -45,11 +39,11 @@ class Object:
       self.setTexture(self._texture_path)
       self.setSize(self._size)
 
-    grid_tile: Grid_Tile = grid._grid_tiles[self._position[0]][self._position[1]]
-    render_pos: np.ndarray[int] = grid_tile.getRenderPos()
+    grid_tile: Grid_Tile = grid._grid_tiles[self._position[0]][self._position[1]]   # each object is drawn on top of some tile
+    render_pos: np.ndarray[int] = grid_tile.getRenderPos()                          # changing tile coordinates for example [2,2] -> to world coordinates 
 
     if(self._isVisible(grid_tile, renderer)):
-      surface.blit(self._texture, render_pos + self._offset)
+      surface.blit(self._texture, render_pos + self._offset)                        # drawing object + offset
   
 
   def setPosition(self, position: np.ndarray[int]) -> None:
@@ -57,6 +51,8 @@ class Object:
 
 
   def setSize(self, size: np.ndarray[int]) -> None:
+    # setting size of the texture in the world
+    
     self._size: np.ndarray[int] = size
     transform_size: tuple = (self._size[0] * TILE_SIZE, self._size[1] * TILE_SIZE)
     self._texture: pygame.Surface = pygame.transform.scale(self._texture, transform_size)
