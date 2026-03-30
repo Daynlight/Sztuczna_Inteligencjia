@@ -21,8 +21,8 @@ from conf import WAITER_VELOCITY, PATH_TO_ASSETS
 class Waiter(Being):
 	def __init__(self, position: np.ndarray[int], offset: np.array = [0, 0]):
 		super().__init__(render_order=3, 
-									 	 texture=Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Cook.png"), 
-														         normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Cook_Normals.png"),
+									 	 texture=Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus.png"), 
+														         normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus_Normals.png"),
 																		 size=[1, 2]), 
 										 position=position, offset=offset, velocity=WAITER_VELOCITY, size=[1, 2])
 		self._carrying_name: list[Food] = None
