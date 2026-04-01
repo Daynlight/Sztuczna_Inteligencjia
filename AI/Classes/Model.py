@@ -11,7 +11,6 @@ from Classes.Objects.Static.Chair import Chair
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Waiter import Waiter
 from Classes.Objects.Beings.Cook import Cook
-from Knowlege.Frame import Frame
 
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
@@ -138,10 +137,6 @@ class Model:
     self._collisions_objects: np.ndarray[Object] = np.array([ *self._tables, *self._chairs, *self._counters ], dtype=Object)
     
     self._initialized: bool = True
-
-    environment = Frame("Environment")
-    environment.set("time of day", "morning")
-    environment.set("rush hour",True)
 
   def _initRenderer(self) -> None:
     if(self._renderer == None): self._renderer: Renderer = Renderer(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
