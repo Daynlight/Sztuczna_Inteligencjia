@@ -110,3 +110,8 @@ FRIDGE_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "
 									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Fridge", "Fridge_Normals.png"),
 																		 size=[2, 4])
  
+# Stove
+STOVE_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Stove", "Stove.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Stove", "Stove_Normals.png"),
+																		 size=[2, 2])
+ 

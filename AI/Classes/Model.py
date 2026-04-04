@@ -17,6 +17,7 @@ from Classes.Objects.Beings.Cook import Cook
 from Classes.Core.Object.Wall import Wall
 from Classes.Objects.Static.Sink import Sink
 from Classes.Objects.Static.Fridge import Fridge
+from Classes.Objects.Static.Stove import Stove
 from Classes.Objects.Static.OrderList import OrderList
 from Classes.Objects.Static.Flower import Flower
 
@@ -109,16 +110,10 @@ class Model:
         Table([7,6]),
         Table([10,12]),
         Table([11,12]),
-
         Table([0, 8]),
         Table([0, 9]),
         Table([1, 8]),
         Table([1, 9]),
-
-        Table([0, 15]),
-        Table([0, 16]),
-        Table([1, 15]),
-        Table([1, 16])
     ], dtype=Table)
 
     self._chairs: np.ndarray[Chair] = np.array([
@@ -141,11 +136,6 @@ class Model:
         Chair([2, 9], "souteast"),
         Chair([0, 10], "southwest"),
         Chair([1, 10], "southwest"),
-
-        Chair([0, 14]),
-        Chair([1, 14]),
-        Chair([0, 17], "southwest"),
-        Chair([1, 17], "southwest")
     ], dtype=Chair)
 
     self._counters: np.ndarray[Counter] = np.array([
@@ -162,9 +152,13 @@ class Model:
       Sink([0,1]),
     ], dtype=Sink)
 
-    self._fridges: np.ndarray[Sink] = np.array([
+    self._fridges: np.ndarray[Fridge] = np.array([
       Fridge([0,0]),
-    ], dtype=Sink)
+    ], dtype=Fridge)
+
+    self._stoves: np.ndarray[Stove] = np.array([
+      Stove([0,2]),
+    ], dtype=Stove)
 
 
     self._flowers: np.ndarray[Flower] = np.array([
@@ -228,7 +222,7 @@ class Model:
 
     # Create List of Objects to Render
     self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list, *self._tables, *self._chairs, 
-                                                          *self._counters, *self._sinks, *self._fridges, *self._flowers ]
+                                            *self._counters, *self._sinks, *self._fridges, *self._flowers, *self._stoves ]
     for el in self._walls:
       objects = el.getObjects()
       for ela in objects:
