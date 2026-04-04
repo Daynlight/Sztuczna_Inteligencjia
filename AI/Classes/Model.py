@@ -109,10 +109,16 @@ class Model:
         Table([7,6]),
         Table([10,12]),
         Table([11,12]),
+
         Table([0, 8]),
         Table([0, 9]),
         Table([1, 8]),
         Table([1, 9]),
+
+        Table([0, 15]),
+        Table([0, 16]),
+        Table([1, 15]),
+        Table([1, 16])
     ], dtype=Table)
 
     self._chairs: np.ndarray[Chair] = np.array([
@@ -135,6 +141,11 @@ class Model:
         Chair([2, 9], "souteast"),
         Chair([0, 10], "southwest"),
         Chair([1, 10], "southwest"),
+
+        Chair([0, 14]),
+        Chair([1, 14]),
+        Chair([0, 17], "southwest"),
+        Chair([1, 17], "southwest")
     ], dtype=Chair)
 
     self._counters: np.ndarray[Counter] = np.array([
