@@ -70,6 +70,25 @@ CHAIR4_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "
 																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", "Chair4_Normals.png"),
 																		 size=[2, 2])
 
+# Couch
+
+COUCH1_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch1.png"),
+																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch1_Normals.png"),
+																		 size=[2, 4])
+
+COUCH2_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch2.png"),
+																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch2_Normals.png"),
+																		 size=[2, 4])
+
+COUCH3_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch3.png"),
+																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch3_Normals.png"),
+																		 size=[2, 4])
+
+COUCH4_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch4.png"),
+																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch4_Normals.png"),
+																		 size=[2, 4])
+
+
 # Table
 TABLE_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Table", "Table.png"), 
 									 	 								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Table", "Table_Normals.png"),

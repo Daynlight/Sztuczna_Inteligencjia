@@ -11,6 +11,7 @@ from Classes.Objects.Static.Table import Table
 from Classes.Objects.Static.GroupTable import GroupTable
 from Classes.Objects.Static.Counter import Counter
 from Classes.Objects.Static.Chair import Chair
+from Classes.Objects.Static.Couch import Couch
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Waiter import Waiter
 from Classes.Objects.Beings.Cook import Cook
@@ -77,7 +78,10 @@ class Model:
       Light([self._grid._grid_tiles[5][5].getRenderPos()[0],   self._grid._grid_tiles[5][5].getRenderPos()[1],   90], [255/255, 200/255, 160/255], 0.4),
       Light([self._grid._grid_tiles[15][15].getRenderPos()[0], self._grid._grid_tiles[15][15].getRenderPos()[1], 90], [255/255, 200/255, 160/255], 0.4),
       Light([self._grid._grid_tiles[5][15].getRenderPos()[0],  self._grid._grid_tiles[5][15].getRenderPos()[1],  90], [255/255, 200/255, 160/255], 0.4),
-      Light([self._grid._grid_tiles[15][5].getRenderPos()[0],  self._grid._grid_tiles[15][5].getRenderPos()[1],  90], [255/255, 200/255, 160/255], 0.4)
+      Light([self._grid._grid_tiles[15][5].getRenderPos()[0],  self._grid._grid_tiles[15][5].getRenderPos()[1],  90], [255/255, 200/255, 160/255], 0.4),
+
+      Light([self._grid._grid_tiles[17][2].getRenderPos()[0],  self._grid._grid_tiles[19][0].getRenderPos()[1],  90], [255/255, 200/255, 160/255], 0.4),
+      Light([self._grid._grid_tiles[17][3].getRenderPos()[0],  self._grid._grid_tiles[19][1].getRenderPos()[1],  90], [255/255, 200/255, 160/255], 0.4)
     ], dtype=Light)
 
     ## Init Walls
@@ -93,9 +97,9 @@ class Model:
       Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[5, 0], direction=[1, 0], numbers=GRID_X - 5),
       
       # Entrance
-      Wall(texture=TextureManager.WALL1_TEXTURE, position=[15, 0], direction=[0, 1], numbers=2),
-      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[15, 2], direction=[1, 0], numbers=1),
-      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[17, 2], direction=[1, 0], numbers=3),
+      Wall(texture=TextureManager.WALL1_TEXTURE, position=[15, 0], direction=[0, 1], numbers=4),
+
+      Wall(texture=TextureManager.WALL1_TEXTURE, position=[10, 0], direction=[0, 1], numbers=4)
     ], dtype=Wall)
 
     self.order_list: Object = OrderList(position=[5, 0])
@@ -106,11 +110,16 @@ class Model:
 
     self._tables: np.ndarray[Table] = np.array([
         Table([3,10], render_order=2),
-        Table([3,9]),
-        Table([8,3]),
-        Table([7,6]),
-        Table([10,12]),
-        Table([11,12]),
+
+        Table([12,6]),
+        Table([12,7]),
+        Table([13,6]),
+        Table([13,7]),
+
+        Table([12,11]),
+        Table([13,11]),
+
+
         Table([0, 8]),
         Table([0, 9]),
         Table([1, 8]),
@@ -119,7 +128,22 @@ class Model:
         Table([0, 15]),
         Table([0, 16]),
         Table([1, 15]),
-        Table([1, 16])
+        Table([1, 16]),
+
+        Table([17, 1]),
+        Table([17, 2]),
+        Table([17, 3]),
+        Table([18, 1]),
+        Table([18, 2]),
+        Table([18, 3]),
+
+        
+        Table([12, 1]),
+        Table([12, 2]),
+        Table([12, 3]),
+        Table([13, 1]),
+        Table([13, 2]),
+        Table([13, 3]),
 
     ], dtype=Table)
 
@@ -127,16 +151,21 @@ class Model:
         Chair([3,11]),
         Chair([3,8]),
         Chair([4,10]),
-        Chair([8,4]),
-        Chair([9,3]),
-        Chair([7,5]),
-        Chair([10,13]),
-        Chair([11,13]),
-        Chair([12,12]),
-        Chair([10,11]),
-        Chair([11,11]),
-        Chair([9,12]),
-        Chair([7,3]),
+
+        Chair([11,6], "northwest"),
+        Chair([11,7], "northwest"),
+        Chair([14,6], "southwest"),
+        Chair([14,7], "southwest"),
+
+
+        Chair([12,12], "southeast"),
+        Chair([13,12], "southeast"),
+        Chair([14,11], "southeast"),
+        Chair([12,10], "northeast"),
+        Chair([13,10], "northeast"),
+        Chair([11,11], "northwest"),
+
+        
         Chair([0, 7]),
         Chair([1, 7]),
         Chair([2, 8], "souteast"),
@@ -149,6 +178,18 @@ class Model:
         Chair([0, 17], "southwest"),
         Chair([1, 17], "southwest")
     ], dtype=Chair)
+
+    self._couches: np.ndarray[Couch] = np.array([
+        Couch([16,0], "northwest"),
+        Couch([16,1], "northwest"),
+        Couch([16,2], "northwest"),
+        Couch([16,3], "northwest"),
+
+        Couch([11,0], "northwest"),
+        Couch([11,1], "northwest"),
+        Couch([11,2], "northwest"),
+        Couch([11,3], "northwest"),
+    ], dtype=Couch)
 
     self._counters: np.ndarray[Counter] = np.array([
       Counter([4,0]),
@@ -180,7 +221,7 @@ class Model:
 
     self._flowers: np.ndarray[Flower] = np.array([
       Flower([0,12]),
-      Flower([7,0]),
+      Flower([6,0]),
     ], dtype=Flower)
 
     self._groupTable: np.ndarray[GroupTable] = np.array([
@@ -238,7 +279,7 @@ class Model:
     self._waiter.completeOrder()
 
     # Create List of Objects to Render
-    self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list, *self._tables, *self._chairs, 
+    self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, *self._couches , self.order_list, *self._tables, *self._chairs, 
                                             *self._counters, *self._sinks, *self._fridges,*self._dishwashers ,*self._flowers, *self._stoves ]
     for el in self._walls:
       objects = el.getObjects()
