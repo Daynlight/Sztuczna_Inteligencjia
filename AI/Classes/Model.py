@@ -18,6 +18,7 @@ from Classes.Core.Object.Wall import Wall
 from Classes.Objects.Static.Sink import Sink
 from Classes.Objects.Static.Fridge import Fridge
 from Classes.Objects.Static.Stove import Stove
+from Classes.Objects.Static.Dishwasher import Dishwasher
 from Classes.Objects.Static.OrderList import OrderList
 from Classes.Objects.Static.Flower import Flower
 
@@ -83,13 +84,13 @@ class Model:
     self._walls = np.array([
       # Kitchen
       Wall(texture=TextureManager.WALL2_TEXTURE, position=[0, 0], direction=[0, 1], numbers=4),
-      Wall(texture=TextureManager.WALL2_ROTATED_TEXTURE, position=[0, 0], direction=[1, 0], numbers=3),
+      Wall(texture=TextureManager.WALL2_ROTATED_TEXTURE, position=[0, 0], direction=[1, 0], numbers=4),
       Wall(texture=TextureManager.WALL1_2_TEXTURE, position=[0, 4], direction=[0, 1], numbers=1),
-      Wall(texture=TextureManager.WALL1_2_ROTATED_TEXTURE, position=[3, 0], direction=[1, 0], numbers=1),
+      Wall(texture=TextureManager.WALL1_2_ROTATED_TEXTURE, position=[4, 0], direction=[1, 0], numbers=1),
       
       # Main Room
       Wall(texture=TextureManager.WALL1_TEXTURE, position=[0, 5], direction=[0, 1], numbers=GRID_Y - 5),
-      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[4, 0], direction=[1, 0], numbers=GRID_X - 4),
+      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[5, 0], direction=[1, 0], numbers=GRID_X - 5),
       
       # Entrance
       Wall(texture=TextureManager.WALL1_TEXTURE, position=[15, 0], direction=[0, 1], numbers=2),
@@ -97,7 +98,7 @@ class Model:
       Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[17, 2], direction=[1, 0], numbers=3),
     ], dtype=Wall)
 
-    self.order_list: Object = OrderList(position=[4, 0])
+    self.order_list: Object = OrderList(position=[5, 0])
 
     ## Init Objects
     self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
@@ -114,6 +115,12 @@ class Model:
         Table([0, 9]),
         Table([1, 8]),
         Table([1, 9]),
+
+        Table([0, 15]),
+        Table([0, 16]),
+        Table([1, 15]),
+        Table([1, 16])
+
     ], dtype=Table)
 
     self._chairs: np.ndarray[Chair] = np.array([
@@ -136,13 +143,19 @@ class Model:
         Chair([2, 9], "souteast"),
         Chair([0, 10], "southwest"),
         Chair([1, 10], "southwest"),
+
+        Chair([0, 14]),
+        Chair([1, 14]),
+        Chair([0, 17], "southwest"),
+        Chair([1, 17], "southwest")
     ], dtype=Chair)
 
     self._counters: np.ndarray[Counter] = np.array([
-      Counter([3,0]),
-      Counter([3,1]),
-      Counter([3,2]),
-      Counter([3,3]),
+      Counter([4,0]),
+      Counter([4,1]),
+      Counter([4,2]),
+      Counter([4,3]),
+      Counter([4,4]),
       Counter([3,4]),
       Counter([2,4], render_order=0),
       Counter([1,4]),
@@ -160,10 +173,14 @@ class Model:
       Stove([0,2]),
     ], dtype=Stove)
 
+    self._dishwashers: np.ndarray[Dishwasher] = np.array([
+      Dishwasher([3,0]),
+    ], dtype=Dishwasher)
+
 
     self._flowers: np.ndarray[Flower] = np.array([
       Flower([0,12]),
-      Flower([6,0]),
+      Flower([7,0]),
     ], dtype=Flower)
 
     self._groupTable: np.ndarray[GroupTable] = np.array([
@@ -222,7 +239,7 @@ class Model:
 
     # Create List of Objects to Render
     self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list, *self._tables, *self._chairs, 
-                                            *self._counters, *self._sinks, *self._fridges, *self._flowers, *self._stoves ]
+                                            *self._counters, *self._sinks, *self._fridges,*self._dishwashers ,*self._flowers, *self._stoves ]
     for el in self._walls:
       objects = el.getObjects()
       for ela in objects:

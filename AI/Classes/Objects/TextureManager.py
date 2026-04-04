@@ -114,4 +114,10 @@ FRIDGE_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "
 STOVE_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Stove", "Stove.png"), 
 									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Stove", "Stove_Normals.png"),
 																		 size=[2, 2])
+
+# Dishwasher
+
+DISHWASHER_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Dishwasher", "Dishwasher.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Dishwasher", "Dishwasher_Normals.png"),
+																		 size=[2, 2])
  
