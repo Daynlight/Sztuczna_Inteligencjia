@@ -177,21 +177,21 @@ class Model:
 
     self._couches: np.ndarray[Couch] = np.array([
 
-        Couch([16,1], "northwest"),
-        Couch([16,2], "northwest"),
-        Couch([16,3], "northwest"),
-        Couch([16,0], "middle"),
+        Couch([15,1], "northwest"),
+        Couch([15,2], "northwest"),
+        Couch([15,3], "northwest"),
+        Couch([15,0], "middle"),
+        Couch([16,0], "northeast"),
         Couch([17,0], "northeast"),
         Couch([18,0], "northeast"),
-        Couch([19,0], "northeast"),
 
-        Couch([11,1], "northwest"),
-        Couch([11,2], "northwest"),
-        Couch([11,3], "northwest"),
-        Couch([11,0], "middle"),
+        Couch([10,1], "northwest"),
+        Couch([10,2], "northwest"),
+        Couch([10,3], "northwest"),
+        Couch([10,0], "middle"),
+        Couch([11,0], "northeast"),
         Couch([12,0], "northeast"),
         Couch([13,0], "northeast"),
-        Couch([14,0], "northeast"),
 
     ], dtype=Couch)
 
@@ -226,6 +226,7 @@ class Model:
     self._flowers: np.ndarray[Flower] = np.array([
       Flower([0,12]),
       Flower([6,0]),
+      Flower([19,0])
     ], dtype=Flower)
 
     self._groupTable: np.ndarray[GroupTable] = np.array([

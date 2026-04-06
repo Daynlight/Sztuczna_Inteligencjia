@@ -24,7 +24,7 @@ class Couch(Object):
 	def __init__(self, position: np.ndarray[int], orientation: str = "northeast", render_order: int = 0):
 		super().__init__(render_order=render_order, 
 									   texture=TextureManager.COUCH1_TEXTURE,
-										 position=position, size=[2, 4], offset=[-TILE_SIZE, -2.5*TILE_SIZE])
+										 position=position, size=[2, 4], offset=[0, -2 * TILE_SIZE])
 
 		self._occupied: bool = False
 		self._client: Client | None = None
