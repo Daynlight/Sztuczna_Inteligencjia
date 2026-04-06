@@ -130,18 +130,14 @@ class Model:
         Table([1, 15]),
         Table([1, 16]),
 
-        Table([17, 1]),
         Table([17, 2]),
         Table([17, 3]),
-        Table([18, 1]),
         Table([18, 2]),
         Table([18, 3]),
 
         
-        Table([12, 1]),
         Table([12, 2]),
         Table([12, 3]),
-        Table([13, 1]),
         Table([13, 2]),
         Table([13, 3]),
 
@@ -180,15 +176,23 @@ class Model:
     ], dtype=Chair)
 
     self._couches: np.ndarray[Couch] = np.array([
-        Couch([16,0], "northwest"),
+
         Couch([16,1], "northwest"),
         Couch([16,2], "northwest"),
         Couch([16,3], "northwest"),
+        Couch([16,0], "middle"),
+        Couch([17,0], "northeast"),
+        Couch([18,0], "northeast"),
+        Couch([19,0], "northeast"),
 
-        Couch([11,0], "northwest"),
         Couch([11,1], "northwest"),
         Couch([11,2], "northwest"),
         Couch([11,3], "northwest"),
+        Couch([11,0], "middle"),
+        Couch([12,0], "northeast"),
+        Couch([13,0], "northeast"),
+        Couch([14,0], "northeast"),
+
     ], dtype=Couch)
 
     self._counters: np.ndarray[Counter] = np.array([

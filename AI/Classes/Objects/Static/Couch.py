@@ -40,13 +40,9 @@ class Couch(Object):
 				texture: Texture = TextureManager.COUCH2_TEXTURE
 			case "northwest":
 				texture: Texture = TextureManager.COUCH3_TEXTURE
-			case "southeast":
-				texture: Texture = TextureManager.COUCH1_TEXTURE
+			case "middle":
+				texture: Texture = TextureManager.COUCH_MIDDLE_TEXTURE
 				self.render_order = 2
-			case "southwest":
-				texture: Texture = TextureManager.COUCH4_TEXTURE
-				self.render_order = 2
-
 		self._texture = texture
 
 

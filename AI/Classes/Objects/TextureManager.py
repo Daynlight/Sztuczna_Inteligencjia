@@ -84,8 +84,8 @@ COUCH3_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "
 																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch3_Normals.png"),
 																		 size=[2, 4])
 
-COUCH4_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch4.png"),
-																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch4_Normals.png"),
+COUCH_MIDDLE_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch_Middle.png"),
+																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch_Middle_Normals.png"),
 																		 size=[2, 4])
 
 
