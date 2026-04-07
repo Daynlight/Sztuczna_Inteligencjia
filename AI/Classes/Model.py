@@ -8,7 +8,6 @@ from Classes.Core.Object.Object import Object
 
 import Classes.Objects.TextureManager as TextureManager
 from Classes.Objects.Static.Table import Table
-from Classes.Objects.Static.GroupTable import GroupTable
 from Classes.Objects.Static.Counter import Counter
 from Classes.Objects.Static.Chair import Chair
 from Classes.Objects.Static.Couch import Couch
@@ -24,6 +23,8 @@ from Classes.Objects.Static.OrderList import OrderList
 from Classes.Objects.Static.Flower import Flower
 from Classes.Objects.Static.Chair import ChairOrientation
 from Classes.Objects.Static.Couch import CouchOrientation
+
+from Classes.Core.Object.TableGroup import TableGroup
 
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
@@ -110,91 +111,109 @@ class Model:
     self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
     self._cook: Cook = Cook([2, 1], offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
 
-    self._tables: np.ndarray[Table] = np.array([
-        Table([3,10], render_order=2),
+    self._tableGroup: np.ndarray[TableGroup] = np.array([
 
-        Table([12,6]),
-        Table([12,7]),
-        Table([13,6]),
-        Table([13,7]),
+      TableGroup(
+        tables=[Table([17,7], render_order=2)],
+        chairinterfaces=[
+            Chair([17,6], ChairOrientation.NORTHEAST),
+            Chair([16,7], ChairOrientation.NORTHWEST),
+            Chair([17,8], ChairOrientation.SOUTHWEST)
+        ]),
 
-        Table([12,11]),
-        Table([13,11]),
+      TableGroup(
+        tables=[
+          Table([12,6]),
+          Table([12,7]),
+          Table([13,6]),
+          Table([13,7])
+          ],
+        chairinterfaces=[
+          Chair([11,6], ChairOrientation.NORTHWEST),
+          Chair([11,7], ChairOrientation.NORTHWEST),
+          Chair([14,6], ChairOrientation.SOUTHEAST),
+          Chair([14,7], ChairOrientation.SOUTHEAST)]
+          ),
 
+      TableGroup(
+        tables=[
+          Table([12,11]),
+          Table([13,11])
+          ],
+        chairinterfaces=[
+          Chair([12,12], ChairOrientation.SOUTHWEST),
+          Chair([13,12], ChairOrientation.SOUTHWEST),
+          Chair([14,11], ChairOrientation.SOUTHEAST),
+          Chair([12,10], ChairOrientation.NORTHEAST),
+          Chair([13,10], ChairOrientation.NORTHEAST),
+          Chair([11,11], ChairOrientation.NORTHWEST)]
+          ),
 
-        Table([0, 8]),
-        Table([0, 9]),
-        Table([1, 8]),
-        Table([1, 9]),
+      TableGroup(
+        tables=[
+          Table([0, 8]),
+          Table([0, 9]),
+          Table([1, 8]),
+          Table([1, 9])
+          ],
+        chairinterfaces=[
+          Chair([0,7], ChairOrientation.NORTHEAST),
+          Chair([1,7], ChairOrientation.NORTHEAST),
+          Chair([2,8], ChairOrientation.SOUTHEAST),
+          Chair([2,9], ChairOrientation.SOUTHEAST),
+          Chair([0,10], ChairOrientation.SOUTHWEST),
+          Chair([1,10], ChairOrientation.SOUTHWEST)]
+          ),
 
-        Table([0, 15]),
-        Table([0, 16]),
-        Table([1, 15]),
-        Table([1, 16]),
+      TableGroup(
+        tables=[
+          Table([0, 15]),
+          Table([0, 16]),
+          Table([1, 15]),
+          Table([1, 16])
+          ],
+        chairinterfaces=[
+          Chair([0,14], ChairOrientation.NORTHEAST),
+          Chair([1,14], ChairOrientation.NORTHEAST),
+          Chair([0,17], ChairOrientation.SOUTHWEST),
+          Chair([1,17], ChairOrientation.SOUTHWEST)]
+          ),
 
-        Table([17, 2]),
-        Table([17, 3]),
-        Table([18, 2]),
-        Table([18, 3]),
+      TableGroup(
+        tables=[
+          Table([17, 2]),
+          Table([17, 3]),
+          Table([18, 2]),
+          Table([18, 3]),
+          ],
+        chairinterfaces=[
+          Couch([15,1], CouchOrientation.NORTHWEST),
+          Couch([15,2], CouchOrientation.NORTHWEST),
+          Couch([15,3], CouchOrientation.NORTHWEST),
+          Couch([15,0], CouchOrientation.MIDDLE),
+          Couch([16,0], CouchOrientation.NORTHEAST),
+          Couch([17,0], CouchOrientation.NORTHEAST),
+          Couch([18,0], CouchOrientation.NORTHEAST),]
+          ),
 
-        
-        Table([12, 2]),
-        Table([12, 3]),
-        Table([13, 2]),
-        Table([13, 3]),
+      TableGroup(
+        tables=[
+          Table([12, 2]),
+          Table([12, 3]),
+          Table([13, 2]),
+          Table([13, 3])
+          ],
+        chairinterfaces=[
+          Couch([10,1], CouchOrientation.NORTHWEST),
+          Couch([10,2], CouchOrientation.NORTHWEST),
+          Couch([10,3], CouchOrientation.NORTHWEST),
+          Couch([10,0], CouchOrientation.MIDDLE),
+          Couch([11,0], CouchOrientation.NORTHEAST),
+          Couch([12,0], CouchOrientation.NORTHEAST),
+          Couch([13,0], CouchOrientation.NORTHEAST)]
+          ),
+    ], dtype=TableGroup)
 
-    ], dtype=Table)
-
-    self._chairs: np.ndarray[Chair] = np.array([
-        Chair([3,11], ChairOrientation.NORTHEAST),
-        Chair([3,8], ChairOrientation.NORTHEAST),
-        Chair([4,10], ChairOrientation.NORTHEAST),
-
-        Chair([11,6], ChairOrientation.NORTHWEST),
-        Chair([11,7], ChairOrientation.NORTHWEST),
-        Chair([14,6], ChairOrientation.SOUTHWEST),
-        Chair([14,7], ChairOrientation.SOUTHWEST),
-
-        Chair([12,12], ChairOrientation.SOUTHEAST),
-        Chair([13,12], ChairOrientation.SOUTHEAST),
-        Chair([14,11], ChairOrientation.SOUTHEAST),
-        Chair([12,10], ChairOrientation.NORTHEAST),
-        Chair([13,10], ChairOrientation.NORTHEAST),
-        Chair([11,11], ChairOrientation.NORTHWEST),
-
-        Chair([0,7], ChairOrientation.NORTHEAST),
-        Chair([1,7], ChairOrientation.NORTHEAST),
-        Chair([2,8], ChairOrientation.SOUTHEAST),
-        Chair([2,9], ChairOrientation.SOUTHEAST),
-        Chair([0,10], ChairOrientation.SOUTHWEST),
-        Chair([1,10], ChairOrientation.SOUTHWEST),
-
-        Chair([0,14], ChairOrientation.NORTHEAST),
-        Chair([1,14], ChairOrientation.NORTHEAST),
-        Chair([0,17], ChairOrientation.SOUTHWEST),
-        Chair([1,17], ChairOrientation.SOUTHWEST)
-    ], dtype=Chair)
-    
-
-    self._couches: np.ndarray[Couch] = np.array([
-
-        Couch([15,1], CouchOrientation.NORTHWEST),
-        Couch([15,2], CouchOrientation.NORTHWEST),
-        Couch([15,3], CouchOrientation.NORTHWEST),
-        Couch([15,0], CouchOrientation.MIDDLE),
-        Couch([16,0], CouchOrientation.NORTHEAST),
-        Couch([17,0], CouchOrientation.NORTHEAST),
-        Couch([18,0], CouchOrientation.NORTHEAST),
-
-        Couch([10,1], CouchOrientation.NORTHWEST),
-        Couch([10,2], CouchOrientation.NORTHWEST),
-        Couch([10,3], CouchOrientation.NORTHWEST),
-        Couch([10,0], CouchOrientation.MIDDLE),
-        Couch([11,0], CouchOrientation.NORTHEAST),
-        Couch([12,0], CouchOrientation.NORTHEAST),
-        Couch([13,0], CouchOrientation.NORTHEAST)
-
-    ], dtype=Couch)
 
     self._counters: np.ndarray[Counter] = np.array([
       Counter([4,0]),
@@ -230,9 +249,9 @@ class Model:
       Flower([19,0])
     ], dtype=Flower)
 
-    self._groupTable: np.ndarray[GroupTable] = np.array([
+    '''self._groupTable: np.ndarray[GroupTable] = np.array([
       GroupTable("Stolik nr 1", self._tables[0])
-    ], dtype=GroupTable)
+    ], dtype=GroupTable)'''
 
 
     self._clients: np.ndarray[Client] = np.array([
@@ -242,7 +261,7 @@ class Model:
     ], dtype=Client)
 
     ## Add chairs
-    self._tables[2].addChair(self._chairs[4])
+    '''self._tables[2].addChair(self._chairs[4])
     self._tables[1].addChair(self._chairs[1])
     self._tables[0].addChair(self._chairs[2])
     self._tables[0].addChair(self._chairs[0])
@@ -265,7 +284,7 @@ class Model:
     ## Assign clients to tables
     self._clients[0].assignTable(self._tables[0])
     self._clients[1].assignTable(self._tables[1])
-    self._clients[2].assignTable(self._tables[2])
+    self._clients[2].assignTable(self._tables[2])'''
 
     ## Client Orders
     self._clients[0].makeOrder("taco")
@@ -285,8 +304,10 @@ class Model:
     self._waiter.completeOrder()
 
     # Create List of Objects to Render
-    self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, *self._couches , self.order_list, *self._tables, *self._chairs, 
-                                            *self._counters, *self._sinks, *self._fridges,*self._dishwashers ,*self._flowers, *self._stoves ]
+    self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list,
+                                          *(table for tg in self._tableGroup for table in tg.getTables()),
+                                          *(ci for tg in self._tableGroup for ci in tg.getChairInterface()), 
+                                          *self._counters, *self._sinks, *self._fridges,*self._dishwashers ,*self._flowers, *self._stoves ]
     for el in self._walls:
       objects = el.getObjects()
       for ela in objects:
@@ -295,7 +316,9 @@ class Model:
     
     
     # Create List of Collisions for path finding
-    self._collisions_objects: np.ndarray[Object] = np.array([ *self._tables, *self._chairs, *self._counters, *self._sinks, *self._flowers ], dtype=Object)
+    self._collisions_objects: np.ndarray[Object] = np.array([ *(table for tg in self._tableGroup for table in tg.getTables()),
+                                                              *(ci for tg in self._tableGroup for ci in tg.getChairInterface()),
+                                                              *self._counters, *self._sinks, *self._flowers ], dtype=Object)
 
     self.precomputeLight()
       

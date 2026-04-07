@@ -72,10 +72,6 @@ CHAIR4_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "
 
 # Couch
 
-COUCH1_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch1.png"),
-																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch1_Normals.png"),
-																		 size=[2, 4])
-
 COUCH2_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch2.png"),
 																		 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Couch", "Couch2_Normals.png"),
 																		 size=[2, 4])
