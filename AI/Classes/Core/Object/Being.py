@@ -46,6 +46,7 @@ class Being(Object):
     start = np.array(current_position)
     target = np.array([position.isometric_x, position.isometric_y])
 
+    # possible movements from current position
     directions = [
       np.array([1, 0]),
       np.array([-1, 0]),
@@ -62,38 +63,47 @@ class Being(Object):
 
     open_set = []
     heapq.heappush(open_set, (0, start_key))
-    
     came_from = {}
     g_score = {start_key: 0}
-
     visited = set()
 
     while open_set:
+      # getting tile to check
       _, current = heapq.heappop(open_set)
 
+      # checking tile
       if current == target_key:
         break
 
       if current in visited:
         continue
+      
+      # adding current to visited list
       visited.add(current)
 
+      # checking neighbors
       for d in directions:
+        # getting neighbor
         neighbor = tuple(np.array(current) + d)
 
+        # checking collisions with objects
         collision = any(
           np.array_equal(el.getPosition(), np.array(neighbor))
           for el in collisions
         )
 
+        # checking map edges
         if neighbor[0] < 0 or neighbor[1] < 0 or neighbor[0] >= GRID_X or neighbor[1] >= GRID_Y:
           collision = True
         
+        # checking walls
         if(collision == False):
           for el in walls:
+            # getting two lists of restricted movement (going through wall)
             restricted_movement = el.getMovementRestriction()
             if(restricted_movement == None): continue
             
+            # first check
             in_restricted_area = False
             for el in restricted_movement[0]:
               if(np.array_equal(el, current)):
@@ -105,7 +115,8 @@ class Being(Object):
                 if(np.array_equal(el, neighbor)):
                   collision = True
                   break
-
+            
+            # second check (opposite direction)
             in_restricted_area = False
             for el in restricted_movement[1]:
               if(np.array_equal(el, current)):
@@ -117,12 +128,15 @@ class Being(Object):
                 if(np.array_equal(el, neighbor)):
                   collision = True
                   break
-
+        
+        # if collision than we skip this node
         if collision:
           continue
 
+        # calculate score distance from start
         tentative_g = g_score[current] + 1
 
+        # adding neighbor for future check
         if neighbor not in g_score or tentative_g < g_score[neighbor]:
           g_score[neighbor] = tentative_g
           f_score = tentative_g + self.calculateDistance(neighbor, target_key)
@@ -131,15 +145,18 @@ class Being(Object):
 
     final_path = []
     temp = target_key
+    # check if we found path
     if temp not in came_from:
       print("No path found!")
       self._path = []
       return
 
+    # move through came_from to start
     while temp != start_key:
       final_path.append(np.array(temp))
       temp = came_from[temp]
 
+    # reverse path
     self._path = final_path[::-1]
 
 

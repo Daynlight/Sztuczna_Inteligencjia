@@ -255,9 +255,9 @@ class Model:
 
 
     self._clients: np.ndarray[Client] = np.array([
-      Client([1, 1], [TILE_SIZE/2, TILE_SIZE/2]),
-      Client([1, 1], [TILE_SIZE/2, TILE_SIZE/2]),
-      Client([1, 1], [TILE_SIZE/2, TILE_SIZE/2]),
+      Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
+      Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
+      Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
     ], dtype=Client)
 
     ## Add chairs

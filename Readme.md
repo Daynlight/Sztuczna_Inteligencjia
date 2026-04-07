@@ -8,11 +8,12 @@ rozpoznaje przygotowany w kuchni posiłek, a następnie na postawie historii zam
 którego należy go dostarczyć.
 
 
+
 <div align=center>
-
-![Image](docs/ss/cook.png)
-
+  <!-- <img src="docs/ss/cook.png"/> -->
+  <img src="docs/gifs/movement.gif" />
 </div>
+
 
 
 ## TOC
