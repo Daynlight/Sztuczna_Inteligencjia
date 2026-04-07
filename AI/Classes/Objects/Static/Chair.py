@@ -2,26 +2,46 @@ import os
 import numpy as np
 from enum import Enum
 
-from Classes.Core.Object.Object import Object
+from Classes.Core.Object.ChairInterface import ChairInterface
 from Classes.Core.Renderer.Texture import Texture
 
 from Classes.Objects.Beings.Client import Client
 import Classes.Objects.TextureManager as TextureManager
 
 
-
-
-
-
-
-
-
-class Orientation(Enum):
+class ChairOrientation(Enum):
 	NORTHEAST = 0
 	NORTHWEST = 1
 	SOUTHEAST = 2
 	SOUTHWEST = 3
 
+class Chair(ChairInterface):
+	def __init__(self, position: np.ndarray[int], orientation: ChairOrientation = ChairOrientation.NORTHEAST ,render_order = 0):
+		texture = TextureManager.CHAIR1_TEXTURE
+		super().__init__(position=position, texture=texture, render_order=render_order, size=[2, 2], offset=[0, 0])
+		
+		self.rotate(orientation)
+
+	
+	def rotate(self, orientation):
+		texture: Texture = TextureManager.CHAIR1_TEXTURE
+
+		match orientation:
+			case ChairOrientation.NORTHEAST:
+				texture = TextureManager.CHAIR2_TEXTURE
+		
+			case ChairOrientation.NORTHWEST:
+				texture = TextureManager.CHAIR3_TEXTURE
+
+			case ChairOrientation.SOUTHEAST:
+				texture = TextureManager.CHAIR1_TEXTURE
+				self._render_order = 2
+				
+			case ChairOrientation.SOUTHWEST:
+				texture = TextureManager.CHAIR4_TEXTURE
+				self._render_order = 2
+				
+		self._texture = texture
 
 
 
@@ -30,7 +50,8 @@ class Orientation(Enum):
 
 
 
-class Chair(Object):
+
+'''class Chair(Object):
 	def __init__(self, position: np.ndarray[int], orientation: str = "northeast", render_order: int = 0):
 		super().__init__(render_order=render_order, 
 									   texture=TextureManager.CHAIR1_TEXTURE,
@@ -81,4 +102,4 @@ class Chair(Object):
 
 
 	def setTable(self,table):
-		self._table=table
+		self._table=table'''

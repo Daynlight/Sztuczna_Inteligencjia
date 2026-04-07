@@ -22,6 +22,8 @@ from Classes.Objects.Static.Stove import Stove
 from Classes.Objects.Static.Dishwasher import Dishwasher
 from Classes.Objects.Static.OrderList import OrderList
 from Classes.Objects.Static.Flower import Flower
+from Classes.Objects.Static.Chair import ChairOrientation
+from Classes.Objects.Static.Couch import CouchOrientation
 
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
@@ -144,54 +146,53 @@ class Model:
     ], dtype=Table)
 
     self._chairs: np.ndarray[Chair] = np.array([
-        Chair([3,11]),
-        Chair([3,8]),
-        Chair([4,10]),
+        Chair([3,11], ChairOrientation.NORTHEAST),
+        Chair([3,8], ChairOrientation.NORTHEAST),
+        Chair([4,10], ChairOrientation.NORTHEAST),
 
-        Chair([11,6], "northwest"),
-        Chair([11,7], "northwest"),
-        Chair([14,6], "southwest"),
-        Chair([14,7], "southwest"),
+        Chair([11,6], ChairOrientation.NORTHWEST),
+        Chair([11,7], ChairOrientation.NORTHWEST),
+        Chair([14,6], ChairOrientation.SOUTHWEST),
+        Chair([14,7], ChairOrientation.SOUTHWEST),
 
+        Chair([12,12], ChairOrientation.SOUTHEAST),
+        Chair([13,12], ChairOrientation.SOUTHEAST),
+        Chair([14,11], ChairOrientation.SOUTHEAST),
+        Chair([12,10], ChairOrientation.NORTHEAST),
+        Chair([13,10], ChairOrientation.NORTHEAST),
+        Chair([11,11], ChairOrientation.NORTHWEST),
 
-        Chair([12,12], "southeast"),
-        Chair([13,12], "southeast"),
-        Chair([14,11], "southeast"),
-        Chair([12,10], "northeast"),
-        Chair([13,10], "northeast"),
-        Chair([11,11], "northwest"),
+        Chair([0,7], ChairOrientation.NORTHEAST),
+        Chair([1,7], ChairOrientation.NORTHEAST),
+        Chair([2,8], ChairOrientation.SOUTHEAST),
+        Chair([2,9], ChairOrientation.SOUTHEAST),
+        Chair([0,10], ChairOrientation.SOUTHWEST),
+        Chair([1,10], ChairOrientation.SOUTHWEST),
 
-        
-        Chair([0, 7]),
-        Chair([1, 7]),
-        Chair([2, 8], "souteast"),
-        Chair([2, 9], "souteast"),
-        Chair([0, 10], "southwest"),
-        Chair([1, 10], "southwest"),
-
-        Chair([0, 14]),
-        Chair([1, 14]),
-        Chair([0, 17], "southwest"),
-        Chair([1, 17], "southwest")
+        Chair([0,14], ChairOrientation.NORTHEAST),
+        Chair([1,14], ChairOrientation.NORTHEAST),
+        Chair([0,17], ChairOrientation.SOUTHWEST),
+        Chair([1,17], ChairOrientation.SOUTHWEST)
     ], dtype=Chair)
+    
 
     self._couches: np.ndarray[Couch] = np.array([
 
-        Couch([15,1], "northwest"),
-        Couch([15,2], "northwest"),
-        Couch([15,3], "northwest"),
-        Couch([15,0], "middle"),
-        Couch([16,0], "northeast"),
-        Couch([17,0], "northeast"),
-        Couch([18,0], "northeast"),
+        Couch([15,1], CouchOrientation.NORTHWEST),
+        Couch([15,2], CouchOrientation.NORTHWEST),
+        Couch([15,3], CouchOrientation.NORTHWEST),
+        Couch([15,0], CouchOrientation.MIDDLE),
+        Couch([16,0], CouchOrientation.NORTHEAST),
+        Couch([17,0], CouchOrientation.NORTHEAST),
+        Couch([18,0], CouchOrientation.NORTHEAST),
 
-        Couch([10,1], "northwest"),
-        Couch([10,2], "northwest"),
-        Couch([10,3], "northwest"),
-        Couch([10,0], "middle"),
-        Couch([11,0], "northeast"),
-        Couch([12,0], "northeast"),
-        Couch([13,0], "northeast"),
+        Couch([10,1], CouchOrientation.NORTHWEST),
+        Couch([10,2], CouchOrientation.NORTHWEST),
+        Couch([10,3], CouchOrientation.NORTHWEST),
+        Couch([10,0], CouchOrientation.MIDDLE),
+        Couch([11,0], CouchOrientation.NORTHEAST),
+        Couch([12,0], CouchOrientation.NORTHEAST),
+        Couch([13,0], CouchOrientation.NORTHEAST)
 
     ], dtype=Couch)
 

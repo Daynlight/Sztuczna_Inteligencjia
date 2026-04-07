@@ -2,6 +2,8 @@ import pygame
 import os
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+
 
 from Classes.Core.Renderer.Renderer import Camera, Renderer
 
@@ -10,7 +12,7 @@ import Classes.Objects.TextureManager as TextureManager
 from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 
 
-
+texture_lock = threading.Lock()
 
 class Grid_Tile:
   #The most important part of object of class Grid_Tile is center_x and center_y, based on them is calulated rhombus (diament) with dimensions a x 2a 
@@ -55,9 +57,11 @@ class Grid_Tile:
     return np.array([x, y], dtype=int)
   
 
+  
   def precomputeLight(self, lights: list):
-    render_pos = self.getRenderPos()
-    self._lit_texture = self._texture.getLitTexture(render_pos, lights)
+      render_pos = self.getRenderPos()
+      with texture_lock:  
+          self._lit_texture = self._texture.getLitTexture(render_pos, lights)
 
 
   def draw(self, surface: pygame.Surface, lights: list) -> None:
