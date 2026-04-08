@@ -29,6 +29,10 @@ class Cook(Being):
 	
 	def hasAvailableFood(self) -> bool:
 		return len(self._available_food) > 0
+
+	def decide(self) -> None:
+		if self._food_to_make:
+			self.makeFood()
 		
 	def takeOrderFromWaiter(self, waiter) -> None:
 		for i in waiter.getOrderList():

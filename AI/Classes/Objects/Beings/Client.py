@@ -1,9 +1,11 @@
 import os
+import random
 import numpy as np
 
 from Classes.Core.Object.Being import Being
 
 from Classes.Core.Renderer.Texture import Texture
+from Classes.Menu import Menu
 from Classes.Objects.Static.Food import Food
 import Classes.Objects.TextureManager as TextureManager
 
@@ -57,3 +59,8 @@ class Client(Being):
 	
 	def getFoodName(self) -> str:
 		return self._food_name
+
+	def decide_order(self, food_list: list[str]) -> None:
+		if not self._wants_to_order and not self._waiting_for_food and not self._eating:
+			if random.random() < 0.01:
+				self.makeOrder(random.choice(food_list))

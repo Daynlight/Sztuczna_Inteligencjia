@@ -118,11 +118,13 @@ class Being(Object):
       target = np.array(position)
 
     # possible movements from current position
+
+    # possible movements from current position
     directions = [
-      np.array([0, -1]),  # 0 north
-      np.array([1, 0]),   # 1 east
-      np.array([0, 1]),   # 2 south
-      np.array([-1, 0])   # 3 west
+      np.array([0, -1]),  # north
+      np.array([1, 0]),   # east
+      np.array([0, 1]),   # south
+      np.array([-1, 0])   # west
     ]
 
     start_key = (tuple(start), start_r)
