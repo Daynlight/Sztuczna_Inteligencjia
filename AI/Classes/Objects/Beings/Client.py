@@ -40,7 +40,6 @@ class Client(Being):
 	def makeOrder(self, food_name: str) -> None:
 		self._wants_to_order = True
 		self._food_name = food_name
-		Food(food_name, self.getPosition())
 		print(f"Client at {self.getPosition()} wants to order {food_name}")
 
 	def waitForFood(self) -> None:

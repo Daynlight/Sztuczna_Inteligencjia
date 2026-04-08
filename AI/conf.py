@@ -47,20 +47,3 @@ for y in range(8):
     rect = pygame.Rect(8 * x, 8 * y, 8, 8)
     color = TEXTURE_ERROR_COLORS[(x + y) % 2]
     ERROR_TEXTURE.fill(color, rect)
-
-FOOD_ENUM = [
-  "apple_pie",
-  "burger",
-  "burrito",
-  "cheesecake",
-  "chocolate_cake",
-  "dumplings",
-  "fried_egg",
-  "hotdog",
-  "pancakes",
-  "pizza",
-  "roasted_chicken",
-  "sandwich",
-  "strawberry_cake",
-  "taco",
-  "waffle"]

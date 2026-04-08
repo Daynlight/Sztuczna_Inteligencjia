@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import time
 
 from Classes.Core.Object.Being import Being
 
@@ -40,7 +39,6 @@ class Cook(Being):
 	def makeFood(self) -> None:
 		for i in self._food_to_make:
 			print(f"Cook is making {i}")
-			time.sleep(1)
 			food = Food(i, self._available_counters[0])
 			self._available_counters.pop(0)
 			self._available_food.append(food)
@@ -49,7 +47,7 @@ class Cook(Being):
         
 	def getAvailableFood(self) -> Food:
 		if self._available_food:
-			self._available_counters.append(0)
+			self._available_counters.append(self._available_food[0].getPosition())
 			return self._available_food.pop(0)
 		return None
 			

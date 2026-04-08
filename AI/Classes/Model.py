@@ -1,6 +1,5 @@
 import numpy as np
 import random
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from Classes.Core.Renderer.Renderer import Renderer
@@ -28,7 +27,8 @@ from Classes.Objects.Static.Couch import CouchOrientation
 
 from Classes.Core.Object.TableGroup import TableGroup
 
-from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FOOD_ENUM
+from Classes.Menu import Menu
+from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
 
 
@@ -320,6 +320,7 @@ class Model:
                                                               *(ci for tg in self._tableGroup for ci in tg.getChairInterface()),
                                                               *self._counters, *self._sinks, *self._flowers ], dtype=Object)
 
+    self._menu = Menu()
     self.precomputeLight()
       
     self._initialized: bool = True
@@ -340,7 +341,7 @@ class Model:
     rnd_client = random.choice(self._clients)
     if(not rnd_client._wants_to_order and not rnd_client._waiting_for_food and not rnd_client._eating):
       if(random.random() < 0.01):
-        rnd_client.makeOrder(random.choice(FOOD_ENUM))
+        rnd_client.makeOrder(random.choice(self._menu.getFoodList()))
 
     # mouse_pos: np.ndarray[int] = self._renderer.getMouse()
     # if(mouse_pos != None): 
@@ -352,8 +353,8 @@ class Model:
     all_waiting = len(self._clients) > 0 and all(i._waiting_for_food for i in self._clients)
     
     if all_waiting and len(self._waiter.getOrderList()) > 0 and not self._waiter._order_list_sent:
-      self._waiter.goTo(self._cook, self._collisions_objects, self._walls)
-      self._waiter.giveOrderListToCook(self._cook)
+      self._waiter.goTo(self.order_list, self._collisions_objects, self._walls)
+      self._waiter.giveOrderList(self._cook, self.order_list)
       self._cook.makeFood()
     elif self._cook.hasAvailableFood():
       self._waiter.goTo(self._cook, self._collisions_objects, self._walls)
