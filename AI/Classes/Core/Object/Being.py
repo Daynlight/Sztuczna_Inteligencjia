@@ -3,6 +3,7 @@ import heapq
 
 from Classes.Core.Object.Object import Object
 from Classes.Core.Grid.Grid import Grid_Tile
+from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
 
@@ -26,7 +27,7 @@ class Being(Object):
     self._accTime: float = 0.0
 
 
-  def goTo(self, hovered_tile : Grid_Tile, collisions: np.ndarray[Object]) -> None:
+  def goTo(self, hovered_tile : Grid_Tile, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
     target = np.array([hovered_tile.isometric_x, hovered_tile.isometric_y])
     okay: bool = True
     for object in collisions:
@@ -34,14 +35,14 @@ class Being(Object):
         okay = False
         break
     if(okay):
-      self.generatePath(self.getPosition(), hovered_tile, collisions)
+      self.generatePath(self.getPosition(), hovered_tile, collisions, walls)
 
 
   def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
     return np.linalg.norm(np.array(current_position) - np.array(position))
   
 
-  def generatePath(self, current_position: np.ndarray[int], position: np.ndarray[int], collisions: np.ndarray[Object]) -> None:
+  def generatePath(self, current_position: np.ndarray[int], position: np.ndarray[int], collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
     start = np.array(current_position)
     target = np.array([position.isometric_x, position.isometric_y])
 
@@ -85,8 +86,37 @@ class Being(Object):
           for el in collisions
         )
 
-        if neighbor[0] < 0 or neighbor[1] < 0 or neighbor[0] > GRID_X or neighbor[1] > GRID_Y:
+        if neighbor[0] < 0 or neighbor[1] < 0 or neighbor[0] >= GRID_X or neighbor[1] >= GRID_Y:
           collision = True
+        
+        if(collision == False):
+          for el in walls:
+            restricted_movement = el.getMovementRestriction()
+            if(restricted_movement == None): continue
+            
+            in_restricted_area = False
+            for el in restricted_movement[0]:
+              if(np.array_equal(el, current)):
+                in_restricted_area = True
+                break
+              
+            if(in_restricted_area == True):
+              for el in restricted_movement[1]:
+                if(np.array_equal(el, neighbor)):
+                  collision = True
+                  break
+
+            in_restricted_area = False
+            for el in restricted_movement[1]:
+              if(np.array_equal(el, current)):
+                in_restricted_area = True
+                break
+              
+            if(in_restricted_area == True):
+              for el in restricted_movement[0]:
+                if(np.array_equal(el, neighbor)):
+                  collision = True
+                  break
 
         if collision:
           continue

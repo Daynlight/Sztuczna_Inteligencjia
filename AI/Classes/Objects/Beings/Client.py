@@ -5,7 +5,7 @@ from Classes.Core.Object.Being import Being
 
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import PATH_TO_ASSETS
+import Classes.Objects.TextureManager as TextureManager
 
 
 
@@ -17,7 +17,7 @@ from conf import PATH_TO_ASSETS
 
 class Client(Being):
 	def __init__(self, position: np.ndarray[int], offset: np.ndarray[int] = [0, 0]):
-		super().__init__(render_order=3, texture=Texture(os.path.join(PATH_TO_ASSETS, "Other", "client.png")), 
+		super().__init__(render_order=3, texture=TextureManager.CLIENT_TEXTURE, 
 									   position=position, offset=offset, velocity=2)
 		self._table = None
 		self._chair = None

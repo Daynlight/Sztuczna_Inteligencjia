@@ -20,11 +20,16 @@ class Object:
     self._render_order: int = render_order
     
     self._texture: Texture = texture
+    
+    self.lit_surface: pygame.Surface = None
+    self._last_pos = None
+
 
   def precomputeLight(self, grid: Grid, lights: np.ndarray[Light]):
     grid_tile: Grid_Tile = grid._grid_tiles[self._position[0]][self._position[1]]
     render_pos: np.ndarray[int] = grid_tile.getRenderPos()
-    self._texture.precomputeLight(render_pos, lights)
+    self.lit_surface = self._texture.precomputeLight(render_pos, lights)
+    self._last_pos = render_pos
 
   
   def _isVisible(self, grid_tile: Grid_Tile, renderer: Renderer) -> bool:
@@ -45,7 +50,11 @@ class Object:
     render_pos: np.ndarray[int] = grid_tile.getRenderPos()
 
     if(self._isVisible(grid_tile, renderer)):
-      surface.blit(self._texture.getTexture(render_pos, lights), render_pos + self._offset)
+      if(self.lit_surface == None or not np.array_equal(self._last_pos, render_pos)):
+        self.lit_surface: pygame.Surface = self._texture.getLitTexture(render_pos, lights)
+        self._last_pos = render_pos
+        
+      surface.blit(self.lit_surface, render_pos + self._offset) # drawing object + offset# changing tile coordinates for example [2,2] -> to world coordinates
 
 
   def setPosition(self, position: np.ndarray[int]) -> None:

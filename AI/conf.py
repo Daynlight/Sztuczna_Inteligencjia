@@ -2,6 +2,16 @@ import os
 import pygame
 
 
+
+
+
+
+
+
+
+DEBUG = False
+DYNAMIC_LIGHTS = True
+
 TILE_SIZE: int = 40
 WAITER_VELOCITY: int = 10
 
@@ -27,8 +37,6 @@ BACKGROUND_COLOR = [41, 40, 40]
 WALL_HEIGHT = 100
 
 TITLE = "Waiter AI"                     # Title of the window 
-
-PATH_TO_ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Assets")
 
 # Background color when texture cannot be loaded
 TEXTURE_ERROR_COLORS = [(255, 0, 220), (1, 0, 1)]

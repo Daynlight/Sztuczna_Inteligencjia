@@ -6,9 +6,9 @@ from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Cook import Cook
 from Classes.Objects.Static.Food import Food
 
-from Classes.Core.Renderer.Texture import Texture
+import Classes.Objects.TextureManager as TextureManager
 
-from conf import WAITER_VELOCITY, PATH_TO_ASSETS
+from conf import WAITER_VELOCITY
 
 
 
@@ -21,9 +21,7 @@ from conf import WAITER_VELOCITY, PATH_TO_ASSETS
 class Waiter(Being):
 	def __init__(self, position: np.ndarray[int], offset: np.array = [0, 0]):
 		super().__init__(render_order=3, 
-									 	 texture=Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus.png"), 
-														         normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus_Normals.png"),
-																		 size=[1, 2]), 
+									 	 texture=TextureManager.WAITER_TEXTURE,
 										 position=position, offset=offset, velocity=WAITER_VELOCITY, size=[1, 2])
 		self._carrying_name: list[Food] = None
 		self._order_list: list[Client, Food] = []

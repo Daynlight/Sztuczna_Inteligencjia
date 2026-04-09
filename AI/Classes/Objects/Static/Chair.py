@@ -3,11 +3,10 @@ import numpy as np
 from enum import Enum
 
 from Classes.Core.Object.Object import Object
-from Classes.Objects.Beings.Client import Client
-
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import PATH_TO_ASSETS
+from Classes.Objects.Beings.Client import Client
+import Classes.Objects.TextureManager as TextureManager
 
 
 
@@ -33,10 +32,8 @@ class Orientation(Enum):
 
 class Chair(Object):
 	def __init__(self, position: np.ndarray[int], orientation: str = "northeast", render_order: int = 0):
-		img: str = "Chair1.png"
 		super().__init__(render_order=render_order, 
-									   texture=Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", img),
-																		 size=[2, 2]), 
+									   texture=TextureManager.CHAIR1_TEXTURE,
 										 position=position, size=[2, 2])
 
 		self._occupied: bool = False
@@ -47,27 +44,20 @@ class Chair(Object):
     
 
 	def rotate(self,orientation):
-		img = "Chair1.png"
-		img_norm = ""
+		texture: Texture = TextureManager.CHAIR1_TEXTURE
 		match orientation:
 			case "northeast":
-				img = "Chair2.png"
-				img_norm = "Chair2_Normals.png"
+				texture: Texture = TextureManager.CHAIR2_TEXTURE
 			case "northwest":
-				img = "Chair3.png"
-				img_norm = "Chair3_Normals.png"
+				texture: Texture = TextureManager.CHAIR3_TEXTURE
 			case "southeast":
-				img = "Chair1.png"
-				img_norm = "Chair1_Normals.png"
+				texture: Texture = TextureManager.CHAIR1_TEXTURE
 				self.render_order = 2
 			case "southwest":
-				img = "Chair4.png"
-				img_norm = "Chair4_Normals.png"
+				texture: Texture = TextureManager.CHAIR4_TEXTURE
 				self.render_order = 2
 
-		self._texture.setTexture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", img), 
-													   normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", img_norm))
-		self._texture.setSize([2,2])
+		self._texture = texture
 
 
 	def sitClient(self, client: Client) -> None:

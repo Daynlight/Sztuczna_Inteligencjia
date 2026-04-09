@@ -1,11 +1,13 @@
 import pygame
 import os
 import numpy as np
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from Classes.Core.Renderer.Renderer import Camera, Renderer
 
-from Classes.Core.Renderer.Texture import Texture
+import Classes.Objects.TextureManager as TextureManager
 
-from conf import WALL_COLOR, WALL_EDGE_COLOR, WALL_HEIGHT, TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, PATH_TO_ASSETS
+from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 
 
 
@@ -22,7 +24,8 @@ class Grid_Tile:
     self.left_corner = None
     self.isometric_x = isometric_x
     self.isometric_y = isometric_y
-    self._texture = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Grid", "Tile", "Tile.png"), size=[2,2])
+    self._texture = TextureManager.TILE_TEXTURE
+    self._lit_texture: pygame.Surface = None
 
 
   def __del__(self):
@@ -54,13 +57,15 @@ class Grid_Tile:
 
   def precomputeLight(self, lights: list):
     render_pos = self.getRenderPos()
-    self._texture.precomputeLight(render_pos, lights)
-
+    self._lit_texture = self._texture.getLitTexture(render_pos, lights)
 
 
   def draw(self, surface: pygame.Surface, lights: list) -> None:
     render_pos = self.getRenderPos()
-    surface.blit(self._texture.getTexture(render_pos, lights), render_pos)
+    if(self._lit_texture == None):
+      self._lit_texture = self._texture.getLitTexture(render_pos, lights)
+      
+    surface.blit(self._lit_texture, render_pos)
 
 
   def isVisible(self, renderer: Renderer) -> bool:
@@ -157,10 +162,15 @@ class Grid:
 
 
   def precomputeLight(self, lights: list):
-    for y in range(0, self._size[1]):
-      for x in range(0, self._size[0]):
-        self._grid_tiles[x][y].precomputeLight(lights)
-  
+    tasks = []
+    all_tiles = [self._grid_tiles[x][y] for y in range(self._size[1]) for x in range(self._size[0])]
+
+    with ThreadPoolExecutor() as executor:
+      for tile in all_tiles:
+        tasks.append(executor.submit(tile.precomputeLight, lights))
+      for future in as_completed(tasks):
+        future.result()
+
 
   def get_hovered_tile(self, mouse_pos: np.ndarray[int], camera : Camera) -> Grid_Tile:
     # method to get the tile hovered by mouse, currently used to make the waiter go to selected tile

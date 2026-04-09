@@ -1,11 +1,12 @@
 import numpy as np
-import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from Classes.Core.Renderer.Renderer import Renderer
 from Classes.Core.Grid.Grid import Grid
 from Classes.Core.Renderer.Light import Light
-
 from Classes.Core.Object.Object import Object
+
+import Classes.Objects.TextureManager as TextureManager
 from Classes.Objects.Static.Table import Table
 from Classes.Objects.Static.GroupTable import GroupTable
 from Classes.Objects.Static.Counter import Counter
@@ -13,11 +14,22 @@ from Classes.Objects.Static.Chair import Chair
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Waiter import Waiter
 from Classes.Objects.Beings.Cook import Cook
-from Classes.Core.Object.Wall import WallObject
+from Classes.Core.Object.Wall import Wall
+from Classes.Objects.Static.Sink import Sink
+from Classes.Objects.Static.Fridge import Fridge
+from Classes.Objects.Static.OrderList import OrderList
+from Classes.Objects.Static.Flower import Flower
 
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
 
-# AI stuff
+
+
+
+
+
+
+
+
 class Model:
   def __init__(self):
     self._running: bool = True
@@ -33,6 +45,19 @@ class Model:
       del self._renderer
     if(self._grid):
       del self._grid
+
+
+  def precomputeLight(self):
+    tasks = []
+
+    with ThreadPoolExecutor() as executor:
+      tasks.append(executor.submit(self._grid.precomputeLight, self._light))
+      for el in self._render_objects:
+        tasks.append(executor.submit(el.precomputeLight, self._grid, self._light))
+      for el in self._walls:
+        tasks.append(executor.submit(el.precomputeLight, self._grid, self._light))
+      for future in as_completed(tasks):
+        future.result()
 
 
   def _initModel(self) -> None:
@@ -55,15 +80,27 @@ class Model:
 
     ## Init Walls
     self._walls = np.array([
-      WallObject(texture_path="Handmade/Static/Wall/Wall2.png", normals_texture_path="Handmade/Static/Wall/Wall2_Normals.png", position=[0, 0], direction=[0, 1], numbers=2),
-      WallObject(texture_path="Handmade/Static/Wall/Wall1.png", position=[0, 2], direction=[0, 1], numbers=GRID_Y - 2),
-      WallObject(texture_path="Handmade/Static/Wall/Wall2_rotated.png", normals_texture_path="Handmade/Static/Wall/Wall2_Normals_rotated.png", position=[0, 0], direction=[1, 0], numbers=4),
-      WallObject(texture_path="Handmade/Static/Wall/Wall1_rotated.png", position=[4, 0], direction=[1, 0], numbers=GRID_X - 4),
-    ], dtype=WallObject)
+      # Kitchen
+      Wall(texture=TextureManager.WALL2_TEXTURE, position=[0, 0], direction=[0, 1], numbers=4),
+      Wall(texture=TextureManager.WALL2_ROTATED_TEXTURE, position=[0, 0], direction=[1, 0], numbers=3),
+      Wall(texture=TextureManager.WALL1_2_TEXTURE, position=[0, 4], direction=[0, 1], numbers=1),
+      Wall(texture=TextureManager.WALL1_2_ROTATED_TEXTURE, position=[3, 0], direction=[1, 0], numbers=1),
+      
+      # Main Room
+      Wall(texture=TextureManager.WALL1_TEXTURE, position=[0, 5], direction=[0, 1], numbers=GRID_Y - 5),
+      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[4, 0], direction=[1, 0], numbers=GRID_X - 4),
+      
+      # Entrance
+      Wall(texture=TextureManager.WALL1_TEXTURE, position=[15, 0], direction=[0, 1], numbers=2),
+      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[15, 2], direction=[1, 0], numbers=1),
+      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[17, 2], direction=[1, 0], numbers=3),
+    ], dtype=Wall)
+
+    self.order_list: Object = OrderList(position=[4, 0])
 
     ## Init Objects
     self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
-    self._cook: Cook = Cook([0, 0], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
+    self._cook: Cook = Cook([2, 1], offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
 
     self._tables: np.ndarray[Table] = np.array([
         Table([3,10], render_order=2),
@@ -72,10 +109,10 @@ class Model:
         Table([7,6]),
         Table([10,12]),
         Table([11,12]),
-        Table([0, 6]),
-        Table([0, 7]),
-        Table([1, 6]),
-        Table([1, 7]),
+        Table([0, 8]),
+        Table([0, 9]),
+        Table([1, 8]),
+        Table([1, 9]),
     ], dtype=Table)
 
     self._chairs: np.ndarray[Chair] = np.array([
@@ -92,23 +129,37 @@ class Model:
         Chair([11,11]),
         Chair([9,12]),
         Chair([7,3]),
-        Chair([0, 5]),
-        Chair([1, 5]),
-        Chair([2, 6], "souteast"),
-        Chair([2, 7], "souteast"),
-        Chair([0, 8], "southwest"),
-        Chair([1, 8], "southwest"),
+        Chair([0, 7]),
+        Chair([1, 7]),
+        Chair([2, 8], "souteast"),
+        Chair([2, 9], "souteast"),
+        Chair([0, 10], "southwest"),
+        Chair([1, 10], "southwest"),
     ], dtype=Chair)
 
     self._counters: np.ndarray[Counter] = np.array([
-      Counter([0,2]),
-      Counter([1,2]),
-      Counter([2,2]),
+      Counter([3,0]),
+      Counter([3,1]),
       Counter([3,2]),
-      Counter([4,2]),
-      Counter([4,1], render_order=0),
-      Counter([4,0]),
+      Counter([3,3]),
+      Counter([3,4]),
+      Counter([2,4], render_order=0),
+      Counter([1,4]),
     ], dtype=Counter)
+
+    self._sinks: np.ndarray[Sink] = np.array([
+      Sink([0,1]),
+    ], dtype=Sink)
+
+    self._fridges: np.ndarray[Sink] = np.array([
+      Fridge([0,0]),
+    ], dtype=Sink)
+
+
+    self._flowers: np.ndarray[Flower] = np.array([
+      Flower([0,12]),
+      Flower([6,0]),
+    ], dtype=Flower)
 
     self._groupTable: np.ndarray[GroupTable] = np.array([
       GroupTable("Stolik nr 1", self._tables[0])
@@ -165,17 +216,19 @@ class Model:
     self._waiter.completeOrder()
 
     # Create List of Objects to Render
-    self._render_objects: np.ndarray[Object] = np.array([ self._waiter, self._cook, *self._clients, *self._tables, *self._chairs, *self._counters ], dtype=Object)
+    self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list, *self._tables, *self._chairs, 
+                                                          *self._counters, *self._sinks, *self._fridges, *self._flowers ]
+    for el in self._walls:
+      objects = el.getObjects()
+      for ela in objects:
+        self._render_objects.append(ela)
+    self._render_objects = np.array(self._render_objects, dtype=Object)
+    
     
     # Create List of Collisions for path finding
-    self._collisions_objects: np.ndarray[Object] = np.array([ *self._tables, *self._chairs, *self._counters ], dtype=Object)
+    self._collisions_objects: np.ndarray[Object] = np.array([ *self._tables, *self._chairs, *self._counters, *self._sinks, *self._flowers ], dtype=Object)
 
-    # Precompute Lights
-    self._grid.precomputeLight(self._light)
-    for el in self._render_objects:
-      el.precomputeLight(self._grid, self._light)
-    for el in self._walls:
-      el.precomputeLight(self._grid, self._light)
+    self.precomputeLight()
       
     self._initialized: bool = True
 
@@ -197,7 +250,7 @@ class Model:
       hovered_tile: np.ndarray[int] = self._grid.get_hovered_tile(mouse_pos, self._renderer.getCamera())
 
       if hovered_tile:
-        self._waiter.goTo(hovered_tile, self._collisions_objects)
+        self._waiter.goTo(hovered_tile, self._collisions_objects, self._walls)
     
     self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
 
@@ -219,8 +272,8 @@ class Model:
     self._renderer.backgroundColor(BACKGROUND_COLOR)
     self._grid.draw(self._renderer, self._light)
 
-    for el in self._walls:
-      el.render(self._renderer.getSurface(), self._grid, self._renderer, self._light)
+    # for el in self._walls:
+    #   el.render(self._renderer.getSurface(), self._grid, self._renderer, self._light)
 
     for el in self._render_objects:
       el.render(self._renderer.getSurface(), self._grid, self._renderer, self._light)
