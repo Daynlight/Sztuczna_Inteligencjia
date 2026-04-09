@@ -8,6 +8,12 @@ rozpoznaje przygotowany w kuchni posiłek, a następnie na postawie historii zam
 którego należy go dostarczyć.
 
 
+<div align=center>
+
+![Image](docs/ss/cook.png)
+
+</div>
+
 
 ## TOC
 - [Automatyczny kelner](#automatyczny-kelner)

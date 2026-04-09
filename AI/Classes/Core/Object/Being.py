@@ -1,8 +1,10 @@
 import numpy as np
 import heapq
 
-from Classes.Objects.Object import Object
-from Classes.Grid.Grid import Grid_Tile
+from Classes.Core.Object.Object import Object
+from Classes.Core.Grid.Grid import Grid_Tile
+
+from Classes.Core.Renderer.Texture import Texture
 
 from conf import GRID_X, GRID_Y
 
@@ -15,8 +17,9 @@ from conf import GRID_X, GRID_Y
 
 
 class Being(Object):
-  def __init__(self, render_order: int, texture_path: str, position: np.ndarray[int], offset: np.ndarray[int], velocity: float = 0, size: np.ndarray[float] = [1, 1]):
-    super().__init__(render_order, texture_path, position, offset, size)
+  def __init__(self, render_order: int, texture: Texture, position: np.ndarray[int] = [0, 0], 
+               offset: np.ndarray[int] = [0, 0], velocity: float = 0, size: np.ndarray[float] = [1, 1]):
+    super().__init__(render_order=render_order, texture=texture, position=position, offset=offset, size=size)
 
     self._velocity: float = velocity
     self._path: np.ndarray[np.ndarray[int]] = []
@@ -120,3 +123,4 @@ class Being(Object):
       self.setPosition(self._path[0])
       self._path.pop(0)
       self._accTime -= self._accTime
+      self.lit_surface = None

@@ -2,10 +2,20 @@ import os
 import numpy as np
 from enum import Enum
 
-from Classes.Objects.Object import Object
+from Classes.Core.Object.Object import Object
 from Classes.Objects.Beings.Client import Client
 
+from Classes.Core.Renderer.Texture import Texture
+
 from conf import PATH_TO_ASSETS
+
+
+
+
+
+
+
+
 
 class Orientation(Enum):
 	NORTHEAST = 0
@@ -13,31 +23,52 @@ class Orientation(Enum):
 	SOUTHEAST = 2
 	SOUTHWEST = 3
 
-class Chair(Object):
-	def __init__(self, position: np.ndarray[int], render_order: int = 0):
-		img: str = "chair01a.png"
 
-		super().__init__(render_order, os.path.join(PATH_TO_ASSETS, "Obstacles", img), position, size=[2, 2])
+
+
+
+
+
+
+
+class Chair(Object):
+	def __init__(self, position: np.ndarray[int], orientation: str = "northeast", render_order: int = 0):
+		img: str = "Chair1.png"
+		super().__init__(render_order=render_order, 
+									   texture=Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", img),
+																		 size=[2, 2]), 
+										 position=position, size=[2, 2])
 
 		self._occupied: bool = False
 		self._client: Client | None = None
 		self._table = None
+
+		self.rotate(orientation)
     
+
 	def rotate(self,orientation):
-		img = "chair01a.png"
+		img = "Chair1.png"
+		img_norm = ""
 		match orientation:
 			case "northeast":
-				img = "chair01a.png"
+				img = "Chair2.png"
+				img_norm = "Chair2_Normals.png"
 			case "northwest":
-				img = "chair01b.png"
+				img = "Chair3.png"
+				img_norm = "Chair3_Normals.png"
 			case "southeast":
-				img = "chair01c.png"
+				img = "Chair1.png"
+				img_norm = "Chair1_Normals.png"
 				self.render_order = 2
 			case "southwest":
-				img = "chair01d.png"
+				img = "Chair4.png"
+				img_norm = "Chair4_Normals.png"
 				self.render_order = 2
-		self.setTexture(f"Assets/Obstacles/{img}")
-		self.setSize([2,2])
+
+		self._texture.setTexture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", img), 
+													   normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", img_norm))
+		self._texture.setSize([2,2])
+
 
 	def sitClient(self, client: Client) -> None:
 		if not self.getClient():
@@ -57,6 +88,7 @@ class Chair(Object):
 
 	def getTable(self):
 		return self._table
+
 
 	def setTable(self,table):
 		self._table=table

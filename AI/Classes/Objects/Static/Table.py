@@ -1,19 +1,32 @@
 import os
 import numpy as np
 
-from Classes.Objects.Object import Object
+from Classes.Core.Object.Object import Object
 from Classes.Objects.Static.Chair import Chair
 from Classes.Objects.Beings.Client import Client
 
+from Classes.Core.Renderer.Texture import Texture
+
 from conf import PATH_TO_ASSETS
+
+
+
+
+
+
+
+
 
 class Table(Object):
 	def __init__(self, position: np.ndarray[int], render_order: int = 1):
+		super().__init__(render_order=render_order, 
+									 	 texture=Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Table", "Table.png"), 
+									 	 								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Table", "Table_Normals.png"),
+																		 size=[2, 2]), 
+										 position=position, size=[2, 2])
+		self._occupied: bool = False
 
 		from Classes.Objects.Static.GroupTable import GroupTable
-
-		super().__init__(render_order, os.path.join(PATH_TO_ASSETS, "Obstacles", "table05a.png"), position, size = [2,2])
-		self._occupied: bool = False
 		
 		self._chairs: list[Chair] = list([])
 		self._clients: list[Client] = list([])

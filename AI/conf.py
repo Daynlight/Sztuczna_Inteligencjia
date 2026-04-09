@@ -11,17 +11,14 @@ WINDOW_HEIGHT = 600
 MARGIN_HORIZONTAL = 130 # Marhing left
 MARGIN_VERTICAL = 130 # Margin top
 
-GRID_X = 15    # Grid X size
-GRID_Y = 15   # Grid Y size
+GRID_X = 20    #grids
+GRID_Y = 20   #grids
 
 WORLD_WIDTH = GRID_X * TILE_SIZE * 2 + 2 * MARGIN_HORIZONTAL          # World width is calulated so the world will be centered
 WORLD_HEIGHT = GRID_Y * TILE_SIZE + 2 * MARGIN_VERTICAL               # World height is calulated so the world will be centered
 
 CAMERA_SPEED = 300
 
-# Colors of the grid in rgb
-
-TAIL_COLOR = [204, 169, 149]
 TAIL_EDGE_COLOR = [156, 128, 112]
 WALL_COLOR = [245, 160, 95]
 WALL_EDGE_COLOR = [0, 0, 0]

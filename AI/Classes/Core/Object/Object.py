@@ -1,0 +1,60 @@
+import pygame
+import numpy as np
+
+from Classes.Core.Grid.Grid import Grid, Grid_Tile
+from Classes.Core.Renderer.Renderer import Renderer, Camera
+from Classes.Core.Renderer.Texture import Texture
+from Classes.Core.Renderer.Light import Light
+
+from conf import TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
+
+# Main superior class for all objects in the world
+
+class Object:
+  def __init__(self, render_order: int, texture: Texture, position: np.ndarray[int] = [0, 0], 
+               offset: np.ndarray[int] = np.array([0, 0], dtype=int), size: np.ndarray[int] = np.array([1, 1], dtype=int)):
+    self._position: np.ndarray[int] = position
+    self._size: np.ndarray[int] = size
+
+    self._offset: np.ndarray[int] = offset
+    self._render_order: int = render_order
+    
+    self._texture: Texture = texture
+
+  def precomputeLight(self, grid: Grid, lights: np.ndarray[Light]):
+    grid_tile: Grid_Tile = grid._grid_tiles[self._position[0]][self._position[1]]
+    render_pos: np.ndarray[int] = grid_tile.getRenderPos()
+    self._texture.precomputeLight(render_pos, lights)
+
+  
+  def _isVisible(self, grid_tile: Grid_Tile, renderer: Renderer) -> bool:
+    render_pos: np.ndarray[int] = grid_tile.getRenderPos()
+    camera: Camera = renderer.getCamera()
+    viewport = [render_pos[0] - camera.getRect().x, render_pos[1] - camera.getRect().y]
+
+    if(viewport[0] + self._size[0] * TILE_SIZE + self._offset[0] < 0): return False
+    if(viewport[1] + self._size[1] * TILE_SIZE + self._offset[1] < 0): return False
+    if(viewport[0] > WINDOW_WIDTH): return False
+    if(viewport[1] > WINDOW_HEIGHT): return False
+
+    return True
+
+
+  def render(self, surface: pygame.Surface, grid: Grid, renderer: Renderer, lights: np.ndarray[Light]) -> None:
+    grid_tile: Grid_Tile = grid._grid_tiles[self._position[0]][self._position[1]]
+    render_pos: np.ndarray[int] = grid_tile.getRenderPos()
+
+    if(self._isVisible(grid_tile, renderer)):
+      surface.blit(self._texture.getTexture(render_pos, lights), render_pos + self._offset)
+
+
+  def setPosition(self, position: np.ndarray[int]) -> None:
+    self._position: np.ndarray[int] = position
+
+  
+  def getPosition(self) -> np.ndarray[int]:
+    return self._position
+  
+
+  def getRenderOrder(self) -> int:
+    return self._render_order
