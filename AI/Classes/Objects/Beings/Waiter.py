@@ -35,7 +35,7 @@ class Waiter(Being):
 			self._order_list.append((client, client.getFoodName()))
 			client.waitForFood()
 			self._order_list_sent = False
-			print(f"Waiter received order from client at {client.getPosition()}: {client.getFoodName()}")
+			if(DEBUG): print(f"Waiter received order from client at {client.getPosition()}: {client.getFoodName()}")
 			return
 
 
@@ -45,7 +45,7 @@ class Waiter(Being):
 				food = cook.getAvailableFood()
 				if food:
 					self._carrying.append(food)
-					print(f"Waiter took {food.getName()} from cook")
+					if(DEBUG): print(f"Waiter took {food.getName()} from cook")
 
 
 	def giveOrderList(self, cook: Cook, order_list: OrderList) -> None:
@@ -55,14 +55,14 @@ class Waiter(Being):
 		if self._position[0] == order_list.getPosition()[0] and self._position[1] == order_list.getPosition()[1]:
 			cook.takeOrderFromWaiter(self)
 			self._order_list_sent = True
-			print("Waiter gave order list to cook")
+			if(DEBUG): print("Waiter gave order list to cook")
 
 
 	def completeOrder(self, client: Client) -> bool:
 		if abs(self._position[0] - client.getPosition()[0]) + abs(self._position[1] - client.getPosition()[1]) == 1:
 			self._order_list.pop(self._order_list.index((client, client.getFoodName())))
 			client.receiveFood()
-			print(f"Client at {client.getPosition()} received their food: {client.getFoodName()}")
+			if(DEBUG): print(f"Client at {client.getPosition()} received their food: {client.getFoodName()}")
 			return True
 		return False
 

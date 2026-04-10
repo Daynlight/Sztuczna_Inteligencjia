@@ -42,7 +42,7 @@ class Being(Object):
     }
     
     self._rotation = (self._rotation + direction_mapping[direction]) % 4
-    print(f"Being rotated {direction}")
+    if(DEBUG): print(f"Being rotated {direction}")
 
     
   def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
@@ -111,9 +111,9 @@ class Being(Object):
       d = BEING_MOVEMENT_DIRECTIONS[current_r]
       neighbor_pos = np.array(current_pos, dtype=int) + d
 
-      print(list_of_possible_movement)
-      print(tuple(neighbor_pos))
-      print(tuple(neighbor_pos) in list_of_possible_movement)
+      if(DEBUG): print(list_of_possible_movement)
+      if(DEBUG): print(tuple(neighbor_pos))
+      if(DEBUG): print(tuple(neighbor_pos) in list_of_possible_movement)
       # add element to check if needed
       if tuple(neighbor_pos) in list_of_possible_movement:
         neighbor_key = (tuple(neighbor_pos), current_r)
@@ -146,7 +146,7 @@ class Being(Object):
 
 
     if goal_node is None:
-      print("No path found!")
+      if(DEBUG): print("No path found!")
       self._path = []
       return
     
@@ -173,7 +173,7 @@ class Being(Object):
 
     if np.array_equal(next_pos_arr, current_pos_arr):
       # rotate
-      print(f"New rotation: {"north" if next_r == 0 else "east" if next_r == 1 else "south" if next_r == 2 else "west"}")
+      if(DEBUG): print(f"New rotation: {"north" if next_r == 0 else "east" if next_r == 1 else "south" if next_r == 2 else "west"}")
       self._rotation = next_r
       self._path.pop(0)
     else:
