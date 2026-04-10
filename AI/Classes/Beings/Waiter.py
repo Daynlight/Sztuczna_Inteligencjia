@@ -1,10 +1,10 @@
 from Classes.Being import Being
 from conf import movementSpeed
+import numpy as np
 
 class Waiter(Being):
-
-    def __init__(self, name, position):
-        super().__init__(name, 3, "Assets/Other/jenkins.png", position, movementSpeed)
+    def __init__(self, name, position, offset: np.array = [0, 0]):
+        super().__init__(name, 3, "Assets/Other/jenkins.png", position, offset, movementSpeed)
 
         self.carrying_food = False
         self.carrying_name = None

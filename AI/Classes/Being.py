@@ -2,14 +2,15 @@ from Classes.Object import Object, objectMap
 from Classes.Grid import Tile
 import numpy as np
 import heapq
+from conf import GRID_X, GRID_Y
 
 
 
 
 class Being(Object):
-  def __init__(self, name, render_order, texture_path, position, velocity, size):
-      super().__init__(name, render_order, texture_path, position, size)
-      self.velocity = velocity
+  def __init__(self, name, render_order, texture_path, position, offset: np.array, velocity = 0, size = [1, 1]):
+    super().__init__(name, render_order, texture_path, position, offset, size)
+    self.velocity = velocity
 
   def goTo(self, hovered_tile : Tile): #position array[x, y]
     target = np.array([hovered_tile.isometric_x, hovered_tile.isometric_y])
@@ -67,6 +68,10 @@ class Being(Object):
           self.name != el.name and np.array_equal(el.position, np.array(neighbor))
           for el in objectMap.values()
         )
+
+        if neighbor[0] < 0 or neighbor[1] < 0 or neighbor[0] > GRID_X or neighbor[1] > GRID_Y:
+          collision = True
+
         if collision:
           continue
 

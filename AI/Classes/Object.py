@@ -7,10 +7,11 @@ from .Grid import Grid, Tile
 objectMap = {}
 
 class Object:
-  def __init__(self, name, render_order, texture_path, position: np.array, size: np.array):
+  def __init__(self, name, render_order, texture_path, position: np.array, offset: np.array = [0, 0], size: np.array = [1, 1]):
     self.path = []
     self.render_order = render_order
     self.name = name
+    self.offset = offset
     self.setTexture(texture_path, size)
     self.setPosition(position)
     objectMap[name] = self
@@ -35,7 +36,7 @@ class Object:
   def render(self, window: pygame.Surface, grid : Grid):
     tile = grid.tiles[self.position[0]][self.position[1]]
 
-    x = tile.left_corner.get()[0] - tile.a
-    y = tile.left_corner.get()[1] - tile.a
+    x = tile.bottom_corner.get()[0] - tile.a + self.offset[0]
+    y = tile.bottom_corner.get()[1] - 2 * tile.a + self.offset[1]
 
     window.blit(self.texture, (x, y))

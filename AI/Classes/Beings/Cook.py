@@ -1,10 +1,11 @@
 from Classes.Being import Being
 from Classes.Food import Food
+import numpy as np
 
 class Cook(Being):
 
-    def __init__(self, name, position):
-        super().__init__(name, 2, "Assets/Other/kucharz.png", position)
+    def __init__(self, name, position, offset: np.array = [0, 0]):
+        super().__init__(name, 2, "Assets/Other/kucharz.png", position, offset)
 
         self.current_order = None
         self.available_food = []

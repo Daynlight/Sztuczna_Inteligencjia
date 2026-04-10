@@ -1,9 +1,10 @@
 from Classes.Being import Being
+import numpy as np
+
 
 class Client(Being):
-
-    def __init__(self, name, position):
-        super().__init__(name, 2, "Assets/Other/client.png", position, velocity=2)
+    def __init__(self, name, position, offset: np.array = [0, 0]):
+        super().__init__(name, 2, "Assets/Other/client.png", position, offset, velocity=2)
 
         self.table = None
         self.chair = None

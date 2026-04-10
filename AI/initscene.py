@@ -4,12 +4,13 @@ from Classes.Beings.Client import Client
 from Classes.Beings.Waiter import Waiter
 from Classes.Beings.Cook import Cook
 from Classes.Object import Object
-from conf import movementSpeed
+from Classes.Grid import Wall, Node
+from conf import movementSpeed, gridSize
 
 
 
-kelner = Waiter("kelner", [1, 1])
-kucharz = Cook("kucharz", [0, 0])
+kelner = Waiter("kelner", [1, 1], [gridSize/2, gridSize/2])
+kucharz = Cook("kucharz", [0, 5], [gridSize/2, gridSize/2])
 
 stoliki = [
     Table("stolik0", [2,2], False),
@@ -35,7 +36,23 @@ stoliki[1].add_chair(krzesla[4])
 stoliki[1].remove_chair(krzesla[2])
 stoliki[2].add_chair(krzesla[2])
 
-klient = Client("klient", [1, 1])
-klient.assign_table(stoliki[1])
-klient2 = Client("klient2", [1, 1])
-klient2.assign_table(stoliki[1])
+klient = Client("klient", [1, 1], [gridSize/2, gridSize/2])
+klient.assignTable(stoliki[0])
+klient.makeOrder("taco")
+
+klient2 = Client("klient2", [1, 1], [gridSize/2, gridSize/2])
+klient2.assignTable(stoliki[1])
+klient2.makeOrder("fried_egg")
+
+klient3 = Client("klient3", [1, 1], [gridSize/2, gridSize/2])
+klient3.assignTable(stoliki[2])
+klient3.makeOrder("pancake")
+
+kelner.recieveOrder(klient)
+kelner.recieveOrder(klient2)
+
+kucharz.takeOrderFromWaiter(kelner)
+kucharz.makeFood(kelner)
+
+kelner.takeFood(kucharz)
+kelner.completeOrder()
