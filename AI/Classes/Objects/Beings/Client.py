@@ -62,5 +62,5 @@ class Client(Being):
 
 	def decide_order(self, food_list: list[str]) -> None:
 		if not self._wants_to_order and not self._waiting_for_food and not self._eating:
-			if random.random() < 0.01:
-				self.makeOrder(random.choice(food_list))
+			# if random.random() < 0.01:
+			self.makeOrder(random.choice(food_list))

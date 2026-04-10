@@ -4,7 +4,6 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 
-
 from Classes.Core.Renderer.Renderer import Camera, Renderer
 
 import Classes.Objects.TextureManager as TextureManager
@@ -107,6 +106,7 @@ class Grid:
     self._margins: np.ndarray[int] = np.array([margin_horizontal, margin_vertical], dtype=int)
     self._grid_nodes: np.ndarray[np.ndarray[int]] = None
     self._grid_tiles: np.ndarray[np.ndarray[Grid_Tile]] = None
+    self._graph = {}
 
     self._generateGridNodes()
     self._generateGridTails()
@@ -184,6 +184,75 @@ class Grid:
         if grid_tile.isHovered(mouse_pos, camera):
           return grid_tile
     return None
+  
+
+  def _graphCheckForCollisions(self, collisions, new_node):
+    collision = any(np.array_equal(el.getPosition(), new_node) for el in collisions)
+    return collision
+
+
+  def _graphWalls(self, current_position, new_node, walls):
+    collision = False
+
+    for el in walls:
+      # getting two lists of restricted movement (going through wall)
+      restricted_movement = el.getMovementRestriction()
+      if restricted_movement is None:
+        continue
+      
+      # first check if current pos in first list
+      in_restricted_area = False
+      for el in restricted_movement[0]:
+        if np.array_equal(el, np.array(current_position, dtype=int)):
+          in_restricted_area = True
+          break
+        
+      if in_restricted_area:
+        for el in restricted_movement[1]:
+          if np.array_equal(el, np.array(new_node, dtype=int)):
+            collision = True
+            break
+      
+      # second check (opposite direction)
+      in_restricted_area = False
+      for el in restricted_movement[1]:
+        if np.array_equal(el, np.array(current_position, dtype=int)):
+          in_restricted_area = True
+          break
+        
+      if in_restricted_area:
+        for el in restricted_movement[0]:
+          if np.array_equal(el, np.array(new_node, dtype=int)):
+            collision = True
+            break
+
+    return collision
+
+
+  def generateNeighborsGraph(self, collisions, walls) -> None:
+    directions = [
+      np.array([0, -1]),  # north
+      np.array([1, 0]),   # east
+      np.array([0, 1]),   # south
+      np.array([-1, 0])   # west
+    ]
+
+    for y in range(0, self._size[1]):
+      for x in range(0, self._size[0]):
+        connections = []
+        for d in directions:
+          new_node = np.array([x, y], dtype=int) + d
+          if new_node[0] >= 0 and new_node[1] >= 0 and new_node[0] < self._size[0] and new_node[1] < self._size[1]:
+            collision = self._graphCheckForCollisions(collisions, new_node)
+            if(not collision): collision = self._graphWalls(np.array([x, y], dtype=int), new_node, walls)
+            
+            if(not collision): connections.append((int(new_node[0]), int(new_node[1])))
+        
+        self._graph[(x, y)] = connections
+
+
+  def getNeighbors(self, position) -> list[np.ndarray[int]]:
+    return self._graph[tuple(position)]
 
 
   def draw(self, renderer: Renderer, lights: list) -> None:

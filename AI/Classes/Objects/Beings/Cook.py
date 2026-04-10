@@ -6,6 +6,8 @@ from Classes.Core.Object.Being import Being
 from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.Counter import Counter
 import Classes.Objects.TextureManager as TextureManager
+from Classes.Core.Animation.Animation import Animation
+from Classes.Core.Animation.Frame import Frame
 
 
 
@@ -19,12 +21,14 @@ import Classes.Objects.TextureManager as TextureManager
 class Cook(Being):
 	def __init__(self, position: np.ndarray[int], counters: np.ndarray[Counter], offset: np.array = [0, 0]):
 		super().__init__(render_order=2, 
-									 	 texture=TextureManager.COOK_TEXTURE,
+									 	 texture=TextureManager.COOK1_TEXTURE,
 										 position=position, offset=offset, size=[1, 2])
 		self._current_order: Food = None
 		self._available_counters: list[Counter] = [i.getPosition() for i in counters]
 		self._available_food: list[Food] = []
 		self._food_to_make: list[Food] = []
+		# self.setAnimation("Idle", Animation([Frame(TextureManager.COOK1_TEXTURE, 1), Frame(TextureManager.COOK2_TEXTURE, 2)]))
+		# self.setState("Idle")
     
 	
 	def hasAvailableFood(self) -> bool:
@@ -49,6 +53,7 @@ class Cook(Being):
 			print(f"Cook finished making {i}")
 		self._food_to_make = []
         
+				
 	def getAvailableFood(self) -> Food:
 		if self._available_food:
 			self._available_counters.append(self._available_food[0].getPosition())

@@ -102,8 +102,11 @@ class Model:
       
       # Entrance
       Wall(texture=TextureManager.WALL1_TEXTURE, position=[15, 0], direction=[0, 1], numbers=4),
+      Wall(texture=TextureManager.WALL1_TEXTURE, position=[10, 0], direction=[0, 1], numbers=4),
 
-      Wall(texture=TextureManager.WALL1_TEXTURE, position=[10, 0], direction=[0, 1], numbers=4)
+      Wall(texture=TextureManager.WALL1_TEXTURE, position=[10, 7], direction=[0, 1], numbers=8),
+      Wall(texture=TextureManager.WALL1_ROTATED_TEXTURE, position=[10, 7 + 8], direction=[1, 0], numbers=9),
+      
     ], dtype=Wall)
 
     self.order_list: Object = OrderList(position=[5, 0])
@@ -249,7 +252,6 @@ class Model:
     ], dtype=Flower)
 
 
-
     self._clients: np.ndarray[Client] = np.array([
       Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
       Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
@@ -278,6 +280,8 @@ class Model:
                                                               *(ci for tg in self._tableGroup for ci in tg.getChairInterface()),
                                                               *self._counters, *self._sinks, *self._flowers ], dtype=Object)
 
+    self._grid.generateNeighborsGraph(self._collisions_objects, self._walls)
+    
     self._menu = Menu()
     self.precomputeLight()
       
@@ -297,9 +301,10 @@ class Model:
     if(self._renderer == None): self._initRenderer()
 
     if len(self._clients) > 0:
-      random.choice(self._clients).decide_order(self._menu.getFoodList())
+      for el in self._clients:
+        el.decide_order(self._menu.getFoodList())
 
-    self._waiter.decide(self._clients, self._cook, self.order_list, self._collisions_objects, self._walls)
+    self._waiter.decide(self._grid, self._clients, self._cook, self.order_list, self._collisions_objects, self._walls)
     self._cook.decide()
 
     self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)

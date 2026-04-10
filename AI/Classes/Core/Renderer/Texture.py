@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+from PIL import Image
 
 from Classes.Core.Renderer.Light import Light
 from conf import TILE_SIZE, DYNAMIC_LIGHTS, ERROR_TEXTURE
@@ -33,19 +34,26 @@ class Texture:
       self._normal_map = pygame.transform.scale(self._normal_map, transform_size)
 
 
+  def pil_to_surface(self, pil_img):
+    mode = pil_img.mode
+    size = pil_img.size
+    data = pil_img.tobytes()
+    return pygame.image.fromstring(data, size, mode)
+
+
   def setTexture(self, texture_path: str, normal_texture_path: str = None) -> None:
     self._texture_path = texture_path
     self._normal_texture_path = normal_texture_path
 
     try:
-      self._texture = pygame.image.load(self._texture_path)
+      self._texture = self.pil_to_surface(Image.open(self._texture_path).convert("RGBA"))
     except (pygame.error, FileNotFoundError) as e:
       print(f"Failed to load {self._texture_path}: {e}.")
       self._texture = ERROR_TEXTURE
 
     if self._normal_texture_path and DYNAMIC_LIGHTS == True:
       try:
-        self._normal_map = pygame.image.load(self._normal_texture_path)
+        self._normal_map = self.pil_to_surface(Image.open(self._normal_texture_path).convert("RGBA"))
       except (pygame.error, FileNotFoundError) as e:
         print(f"Failed to load normal map: {e}.")
         self._normal_map = None

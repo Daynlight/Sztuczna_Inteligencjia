@@ -10,8 +10,8 @@ którego należy go dostarczyć.
 
 
 <div align=center>
-  <!-- <img src="docs/ss/cook.png"/> -->
   <img src="docs/gifs/movement.gif" />
+  <a href="docs/gifs/movement.mp4">Movie</a>
 </div>
 
 

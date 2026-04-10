@@ -2,7 +2,6 @@ import numpy as np
 import heapq
 
 from Classes.Core.Object.Object import Object
-from Classes.Core.Grid.Grid import Grid_Tile
 from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
@@ -28,7 +27,7 @@ class Being(Object):
     self._rotation: int = 0
     
 
-  def goTo(self, goal, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
+  def goTo(self, grid, goal, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
     target = self._resolve_goal_target(goal, collisions)
     if target is None:
       return
@@ -37,7 +36,7 @@ class Being(Object):
     if self._is_collision(target, collisions_filtered):
       return
 
-    self.generatePath(self.getPosition(), target, collisions_filtered, walls)
+    self.generatePath(grid, self.getPosition(), target, collisions_filtered, walls)
 
 
   def _resolve_goal_target(self, goal, collisions: np.ndarray[Object]) -> np.ndarray[int] | None:
@@ -104,7 +103,7 @@ class Being(Object):
     return np.linalg.norm(np.array(current_position) - np.array(position))
   
 
-  def generatePath(self, current_position: np.ndarray[int], position, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
+  def generatePath(self, grid, current_position: np.ndarray[int], position, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
     start = np.array(current_position)
     start_r = self._rotation
 
@@ -116,8 +115,6 @@ class Being(Object):
       target = np.array(position.getPosition())
     else:
       target = np.array(position)
-
-    # possible movements from current position
 
     # possible movements from current position
     directions = [
@@ -152,53 +149,22 @@ class Being(Object):
       # adding current to visited list
       visited.add(current)
 
+      # get nodes from graph
+      list_of_possible_movement = grid.getNeighbors(current_pos)
+
       # move forward
       d = directions[current_r]
-      neighbor_pos = np.array(current_pos) + d
-      if neighbor_pos[0] >= 0 and neighbor_pos[1] >= 0 and neighbor_pos[0] < GRID_X and neighbor_pos[1] < GRID_Y:
-        collision = any(np.array_equal(el.getPosition(), neighbor_pos) for el in collisions)
-        
-        if not collision:
-          for el in walls:
-            # getting two lists of restricted movement (going through wall)
-            restricted_movement = el.getMovementRestriction()
-            if restricted_movement is None:
-              continue
-            
-            # first check
-            in_restricted_area = False
-            for el in restricted_movement[0]:
-              if np.array_equal(el, current_pos):
-                in_restricted_area = True
-                break
-              
-            if in_restricted_area:
-              for el in restricted_movement[1]:
-                if np.array_equal(el, neighbor_pos):
-                  collision = True
-                  break
-            
-            # second check (opposite direction)
-            in_restricted_area = False
-            for el in restricted_movement[1]:
-              if np.array_equal(el, current_pos):
-                in_restricted_area = True
-                break
-              
-            if in_restricted_area:
-              for el in restricted_movement[0]:
-                if np.array_equal(el, neighbor_pos):
-                  collision = True
-                  break
+      neighbor_pos = np.array(current_pos, dtype=int) + d
 
-        if not collision:
-          neighbor_key = (tuple(neighbor_pos), current_r)
-          tentative_g = g_score[current] + move_cost
-          if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
-            g_score[neighbor_key] = tentative_g
-            f_score = tentative_g + self.calculateDistance(neighbor_pos, target)
-            heapq.heappush(open_set, (f_score, neighbor_key))
-            came_from[neighbor_key] = current
+      # add element to check if needed
+      if tuple(neighbor_pos) in list_of_possible_movement:
+        neighbor_key = (tuple(neighbor_pos), current_r)
+        tentative_g = g_score[current] + move_cost
+        if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
+          g_score[neighbor_key] = tentative_g
+          f_score = tentative_g + self.calculateDistance(neighbor_pos, target)
+          heapq.heappush(open_set, (f_score, neighbor_key))
+          came_from[neighbor_key] = current
 
       # rotate left
       new_r = (current_r - 1) % 4
