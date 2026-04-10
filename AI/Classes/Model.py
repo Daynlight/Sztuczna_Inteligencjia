@@ -1,4 +1,6 @@
 import numpy as np
+import random
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from Classes.Core.Renderer.Renderer import Renderer
@@ -26,7 +28,7 @@ from Classes.Objects.Static.Couch import CouchOrientation
 
 from Classes.Core.Object.TableGroup import TableGroup
 
-from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
+from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FOOD_ENUM
 
 
 
@@ -44,7 +46,6 @@ class Model:
     self._render_objects: np.ndarray[Object] = np.array([], dtype=Object)
     self._renderer: Renderer = None
     self._grid: Grid = None
-
 
   def __del__(self):
     if(self._renderer):
@@ -108,8 +109,6 @@ class Model:
     self.order_list: Object = OrderList(position=[5, 0])
 
     ## Init Objects
-    self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
-    self._cook: Cook = Cook([2, 1], offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
 
     self._tableGroup: np.ndarray[TableGroup] = np.array([
 
@@ -260,6 +259,9 @@ class Model:
       Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
     ], dtype=Client)
 
+    self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
+    self._cook: Cook = Cook([2, 1], self._counters, offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
+
     ## Add chairs
     '''self._tables[2].addChair(self._chairs[4])
     self._tables[1].addChair(self._chairs[1])
@@ -287,21 +289,19 @@ class Model:
     self._clients[2].assignTable(self._tables[2])'''
 
     ## Client Orders
-    self._clients[0].makeOrder("taco")
-    self._clients[1].makeOrder("fried_egg")
-    self._clients[2].makeOrder("pancake")
+    # self._clients[0].makeOrder("taco")
+    # self._clients[1].makeOrder("fried_egg")
 
-    ## Receive Orders from clients by waiter
-    self._waiter.receiveOrder(self._clients[0])
-    self._waiter.receiveOrder(self._clients[1])
+    # ## Receive Orders from clients by waiter
+    # self._waiter.receiveOrder(self._clients[0])
+    # self._waiter.receiveOrder(self._clients[1])
 
-    ## Receive Orders from waiter to cook
-    self._cook.takeOrderFromWaiter(self._waiter)
-    self._cook.makeFood()
+    # ## Receive Orders from waiter to cook
+    # self._cook.takeOrderFromWaiter(self._waiter)
+    # self._cook.makeFood()
 
-    ## Take food from cook by waiter
-    self._waiter.takeFood(self._cook)
-    self._waiter.completeOrder()
+    # ## Take food from cook by waiter
+    # self._waiter.takeFood(self._cook)
 
     # Create List of Objects to Render
     self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list,
@@ -337,13 +337,52 @@ class Model:
     if(self._initialized == False): self._initModel()
     if(self._renderer == None): self._initRenderer()
 
-    mouse_pos: np.ndarray[int] = self._renderer.getMouse()
-    if(mouse_pos != None): 
-      hovered_tile: np.ndarray[int] = self._grid.get_hovered_tile(mouse_pos, self._renderer.getCamera())
+    rnd_client = random.choice(self._clients)
+    if(not rnd_client._wants_to_order and not rnd_client._waiting_for_food and not rnd_client._eating):
+      if(random.random() < 0.01):
+        rnd_client.makeOrder(random.choice(FOOD_ENUM))
 
-      if hovered_tile:
-        self._waiter.goTo(hovered_tile, self._collisions_objects, self._walls)
+    # mouse_pos: np.ndarray[int] = self._renderer.getMouse()
+    # if(mouse_pos != None): 
+    #   hovered_tile: np.ndarray[int] = self._grid.get_hovered_tile(mouse_pos, self._renderer.getCamera())
+
+    #   if hovered_tile:
+    #     self._waiter.goTo(hovered_tile, self._collisions_objects, self._walls)
     
+    all_waiting = len(self._clients) > 0 and all(i._waiting_for_food for i in self._clients)
+    
+    if all_waiting and len(self._waiter.getOrderList()) > 0 and not self._waiter._order_list_sent:
+      self._waiter.goTo(self._cook, self._collisions_objects, self._walls)
+      self._waiter.giveOrderListToCook(self._cook)
+      self._cook.makeFood()
+    elif self._cook.hasAvailableFood():
+      self._waiter.goTo(self._cook, self._collisions_objects, self._walls)
+      self._waiter.takeFood(self._cook)
+    elif self._waiter._carrying:
+      delivery_food = None
+      delivery_client = None
+      for food in self._waiter._carrying:
+        for client in self._clients:
+          if client.getFoodName() == food.getName() and client._waiting_for_food:
+            delivery_food = food
+            delivery_client = client
+            break
+        if delivery_food is not None:
+          break
+
+      if delivery_client is not None:
+        self._waiter.goTo(delivery_client, self._collisions_objects, self._walls)
+        if self._waiter.completeOrder(delivery_client):
+          self._waiter._carrying.remove(delivery_food)
+          delivery_client.finishEating()
+      else:
+        self._waiter._path = []
+    else:
+      for i in self._clients:
+        if i._wants_to_order:
+          self._waiter.goTo(i._chair, self._collisions_objects, self._walls)
+          self._waiter.receiveOrder(i)
+
     self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
 
 

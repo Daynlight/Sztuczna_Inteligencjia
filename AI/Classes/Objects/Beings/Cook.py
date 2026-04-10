@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import time
 
 from Classes.Core.Object.Being import Being
 
@@ -17,29 +18,38 @@ import Classes.Objects.TextureManager as TextureManager
 
 
 class Cook(Being):
-	def __init__(self, position: np.ndarray[int], offset: np.array = [0, 0]):
+	def __init__(self, position: np.ndarray[int], counters: np.ndarray[Counter], offset: np.array = [0, 0]):
 		super().__init__(render_order=2, 
 									 	 texture=TextureManager.COOK_TEXTURE,
 										 position=position, offset=offset, size=[1, 2])
 		self._current_order: Food = None
-		# self._available_counters: list[Counter] = counters
+		self._available_counters: list[Counter] = [i.getPosition() for i in counters]
 		self._available_food: list[Food] = []
 		self._food_to_make: list[Food] = []
     
 	
+	def hasAvailableFood(self) -> bool:
+		return len(self._available_food) > 0
+		
 	def takeOrderFromWaiter(self, waiter) -> None:
 		for i in waiter.getOrderList():
-			self._food_to_make.append(i.getFoodName())
+			self._food_to_make.append(i[1])
+		print(f"Cook received order list: {[i[1] for i in waiter.getOrderList()]}")
 
 
 	def makeFood(self) -> None:
-		# for i in self._food_to_make:
-			# food = Food(i, self._available_counters[0])
-			# self._available_counters.pop(0)
-			# self._available_food.append(food)
-		pass
+		for i in self._food_to_make:
+			print(f"Cook is making {i}")
+			time.sleep(1)
+			food = Food(i, self._available_counters[0])
+			self._available_counters.pop(0)
+			self._available_food.append(food)
+			print(f"Cook finished making {i}")
+		self._food_to_make = []
         
-
 	def getAvailableFood(self) -> Food:
-		# return self._available_food.pop(0)
-		pass
+		if self._available_food:
+			self._available_counters.append(0)
+			return self._available_food.pop(0)
+		return None
+			
