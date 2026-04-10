@@ -24,6 +24,7 @@ from Classes.Objects.Static.OrderList import OrderList
 from Classes.Objects.Static.Flower import Flower
 from Classes.Objects.Static.Chair import ChairOrientation
 from Classes.Objects.Static.Couch import CouchOrientation
+from Classes.Objects.Static.Painting import Painting
 
 from Classes.Core.Object.TableGroup import TableGroup
 
@@ -120,7 +121,8 @@ class Model:
         chairinterfaces=[
             Chair([17,6], ChairOrientation.NORTHEAST),
             Chair([16,7], ChairOrientation.NORTHWEST),
-            Chair([17,8], ChairOrientation.SOUTHWEST)
+            Chair([17,8], ChairOrientation.SOUTHWEST),
+            Chair([18,7], ChairOrientation.SOUTHEAST)
         ]),
 
       TableGroup(
@@ -251,6 +253,10 @@ class Model:
       Flower([19,0])
     ], dtype=Flower)
 
+    self._painting: np.ndarray[Flower] = np.array([
+      Painting([10,9])
+    ], dtype=Painting)
+
 
     self._clients: np.ndarray[Client] = np.array([
       Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
@@ -267,7 +273,7 @@ class Model:
     self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list,
                                           *(table for tg in self._tableGroup for table in tg.getTables()),
                                           *(ci for tg in self._tableGroup for ci in tg.getChairInterface()), 
-                                          *self._counters, *self._sinks, *self._fridges,*self._dishwashers ,*self._flowers, *self._stoves ]
+                                          *self._counters, *self._sinks, *self._fridges,*self._dishwashers ,*self._flowers, *self._stoves, *self._painting ]
     for el in self._walls:
       objects = el.getObjects()
       for ela in objects:

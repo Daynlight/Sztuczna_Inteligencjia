@@ -140,3 +140,8 @@ DISHWASHER_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade
 									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Dishwasher", "Dishwasher_Normals.png"),
 																		 size=[2, 2])
  
+# Painting
+
+PAINTING_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Paintings", "Painting.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Paintings", "Painting_Normals.png"),
+																		 size=[2, 4])
