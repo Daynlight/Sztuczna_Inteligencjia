@@ -6,7 +6,7 @@ from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS
+from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG
 
 
 
@@ -111,9 +111,6 @@ class Being(Object):
       d = BEING_MOVEMENT_DIRECTIONS[current_r]
       neighbor_pos = np.array(current_pos, dtype=int) + d
 
-      if(DEBUG): print(list_of_possible_movement)
-      if(DEBUG): print(tuple(neighbor_pos))
-      if(DEBUG): print(tuple(neighbor_pos) in list_of_possible_movement)
       # add element to check if needed
       if tuple(neighbor_pos) in list_of_possible_movement:
         neighbor_key = (tuple(neighbor_pos), current_r)

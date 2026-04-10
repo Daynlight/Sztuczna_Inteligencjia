@@ -9,6 +9,8 @@ import Classes.Objects.TextureManager as TextureManager
 from Classes.Core.Animation.Animation import Animation
 from Classes.Core.Animation.Frame import Frame
 
+from conf import DEBUG
+
 
 
 

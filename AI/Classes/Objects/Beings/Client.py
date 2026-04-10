@@ -9,6 +9,8 @@ from Classes.Menu import Menu
 from Classes.Objects.Static.Food import Food
 import Classes.Objects.TextureManager as TextureManager
 
+from conf import DEBUG
+
 
 
 

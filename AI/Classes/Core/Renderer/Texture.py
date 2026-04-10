@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 
 from Classes.Core.Renderer.Light import Light
-from conf import TILE_SIZE, DYNAMIC_LIGHTS, ERROR_TEXTURE
+from conf import TILE_SIZE, DYNAMIC_LIGHTS, ERROR_TEXTURE, DEBUG
 
 
 

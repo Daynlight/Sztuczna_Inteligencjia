@@ -10,7 +10,7 @@ from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.OrderList import OrderList
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import WAITER_VELOCITY
+from conf import WAITER_VELOCITY, DEBUG
 
 
 
@@ -70,7 +70,7 @@ class Waiter(Being):
 	def getOrderList(self) -> list[Client, Food]:
 		return self._order_list
 
-	def _deliver_food(self, grid, clients) -> None:
+	def _deliver_food(self, grid, clients: list[Client]) -> None:
 		delivery_food = None
 		delivery_client = None
 		for food in self._carrying:

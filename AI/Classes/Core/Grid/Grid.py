@@ -8,7 +8,7 @@ from Classes.Core.Renderer.Renderer import Camera, Renderer
 
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, BEING_MOVEMENT_DIRECTIONS
+from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, BEING_MOVEMENT_DIRECTIONS, DEBUG
 
 
 texture_lock = threading.Lock()
@@ -235,7 +235,7 @@ class Grid:
           if(not collision): collision = self._graphCheckForWalls(np.array([x, y], dtype=int), new_node, walls)
           
           if(not collision): connections.append((int(new_node[0]), int(new_node[1])))
-          
+
         self._graph[(x, y)] = connections
 
 
