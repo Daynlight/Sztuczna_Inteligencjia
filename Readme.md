@@ -15,6 +15,7 @@ którego należy go dostarczyć.
   - [Classes](#classes)
     - [Window](#window)
     - [Object](#object)
+    - [Beign](#beign)
     - [Grid](#grid)
     - [Tile](#tile)
     - [World](#world)
@@ -90,11 +91,14 @@ Used for object on scene
   * **def setPosition(self, position: np.array)**: setting position on grid.
   * **def setSize(self, size: np.array)**: settings size on grid.
   * **def setTexture(self, texture_path, size: np.array)**: setting texture on grid.
+  * **def render(self, window: pygame.Surface)**: render object.
+* Additional ```objectMap = {}``` used for iteration and fast update of object.
+
+### Beign
+  * **def __init__(self, name, render_order, texture_path, position, velocity, size)**: default class constructor.
   * **def goTo(self, position: np.array)**: giving command to go somewhere.
   * **def generatePath(self, current_position: np.array, position: np.array, depth = 20)**: creating path to destination.
   * **def makeStep(self, deltaTime: float)**: making single step.
-  * **def render(self, window: pygame.Surface)**: render object.
-* Additional ```objectMap = {}``` used for iteration and fast update of object.
 
 ### Grid
 Creates isometric grid made from objects of class Tile
@@ -119,6 +123,7 @@ Creates game's world based pn pygame.Surface
 Creates camera for viewing only a part of the world's surface
   * **def __init__(self, width: int, height: int, center_x_pos, center_y_pos)**: default class constructor
   * **def update(self)**: updates camera's position
+
 ### Table
 Inherits from Object
   * **def __init__(self, name, position, active=False)**: default class constructor
@@ -144,19 +149,23 @@ configuration stuff like widnow size, world_size etc.
 
 
 ## TODO:
+- [x] [env](docs/lab2%20environment-task.pdf) 11.03.2026
+- [ ] Fix path finding
 
 <details open>
-<summary>Task 1</summary>
+<summary>Iteration 1</summary>
 
 [env](docs/lab2%20environment-task.pdf) 11.03.2026
 - [x] Init pygame and Create Window (Daniel)
 - [x] Basic Object class and render (Daniel)
+- [x] Add path finding A* with delta time movement. (Daniel)
 - [x] Move to isometric space. (Martyna)
 - [x] Grid base world. (Martyna)
 - [x] Camera Movement. (Martyna)
 - [x] Inherit Classes from Object, separation and storage in variable base on type. (Adam)
-- [ ] Add path finding sth simple for now BFS or A* with delta time.
 - [ ] Add own custom assets and level design.
 - [ ] Animations.
+- [ ] Order system + types of food.
+- [ ] Architecture + Diagram.
 
 </details>
