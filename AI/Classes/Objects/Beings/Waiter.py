@@ -70,7 +70,7 @@ class Waiter(Being):
 	def getOrderList(self) -> list[Client, Food]:
 		return self._order_list
 
-	def _deliver_food(self, grid, clients, collisions_objects, walls) -> None:
+	def _deliver_food(self, grid, clients) -> None:
 		delivery_food = None
 		delivery_client = None
 		for food in self._carrying:
@@ -83,33 +83,34 @@ class Waiter(Being):
 				break
 
 		if delivery_client is not None:
-			self.goTo(grid, delivery_client, collisions_objects, walls)
+			self.goTo(grid, delivery_client.getPosition())
 			if self.completeOrder(delivery_client):
 				self._carrying.remove(delivery_food)
 				delivery_client.finishEating()
 		else:
 			self._path = []
 
-	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList, collisions_objects, walls) -> None:
+
+	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
 		all_waiting = len(clients) > 0 and all(client._waiting_for_food for client in clients)
 
 		if all_waiting and len(self.getOrderList()) > 0 and not self._order_list_sent:
-			self.goTo(grid, order_list, collisions_objects, walls)
+			self.goTo(grid, order_list.getPosition())
 			self.giveOrderList(cook, order_list)
 			return
 
 		if cook.hasAvailableFood():
-			self.goTo(grid, cook, collisions_objects, walls)
+			self.goTo(grid, cook.getPosition())
 			self.takeFood(cook)
 			return
 
 		if self._carrying:
-			self._deliver_food(grid, clients, collisions_objects, walls)
+			self._deliver_food(grid, clients)
 			return
 
 		for client in clients:
 			if client._wants_to_order:
-				self.goTo(grid, client, collisions_objects, walls)
+				self.goTo(grid, client.getPosition())
 				self.receiveOrder(client)
 				return
 	
