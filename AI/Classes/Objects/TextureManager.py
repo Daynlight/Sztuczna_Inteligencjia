@@ -100,10 +100,6 @@ COOK1_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "B
 									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Idle", "Cook_1_Normals.png"),
 																		 size=[1, 2]) 
 
-COOK2_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Idle", "Cook_2.png"), 
-									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Idle", "Cook_2_Normals.png"),
-																		 size=[1, 2]) 
-
 # Waiter
 WAITER_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus.png"), 
 														         normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus_Normals.png"),

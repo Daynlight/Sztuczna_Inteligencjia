@@ -29,8 +29,9 @@ class Cook(Being):
 		self._available_counters: list[Counter] = [i.getPosition() for i in counters]
 		self._available_food: list[Food] = []
 		self._food_to_make: list[Food] = []
-		# self.setAnimation("Idle", Animation([Frame(TextureManager.COOK1_TEXTURE, 1), Frame(TextureManager.COOK2_TEXTURE, 2)]))
-		# self.setState("Idle")
+		self.setAnimation("Idle", Animation([Frame(TextureManager.COOK1_TEXTURE, 1), 
+																			   Frame(TextureManager.COUNTER_TEXTURE, 2)]))
+		self.setState("Idle")
     
 	
 	def hasAvailableFood(self) -> bool:

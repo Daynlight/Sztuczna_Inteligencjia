@@ -63,7 +63,7 @@ class Texture:
     if self._texture is None:
       self.setTexture(self._texture_path)
       self.setSize(self._size)
-      
+
     if(DYNAMIC_LIGHTS == False): return self._texture
 
     width, height = self._texture.get_size()
