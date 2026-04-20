@@ -9,6 +9,8 @@ from Classes.Menu import Menu
 from Classes.Objects.Static.Food import Food
 import Classes.Objects.TextureManager as TextureManager
 
+from conf import DEBUG
+
 
 
 
@@ -42,7 +44,7 @@ class Client(Being):
 	def makeOrder(self, food_name: str) -> None:
 		self._wants_to_order = True
 		self._food_name = food_name
-		print(f"Client at {self.getPosition()} wants to order {food_name}")
+		if(DEBUG): print(f"Client at {self.getPosition()} wants to order {food_name}")
 
 	def waitForFood(self) -> None:
 		self._wants_to_order = False
@@ -54,7 +56,7 @@ class Client(Being):
 
 	def finishEating(self) -> None:
 		self._eating = False
-		print(f"Client at {self.getPosition()} finished eating {self._food_name}")
+		if(DEBUG): print(f"Client at {self.getPosition()} finished eating {self._food_name}")
 		self._food_name = None
 	
 	def getFoodName(self) -> str:

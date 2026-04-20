@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 
 from Classes.Core.Renderer.Light import Light
-from conf import TILE_SIZE, DYNAMIC_LIGHTS, ERROR_TEXTURE
+from conf import TILE_SIZE, DYNAMIC_LIGHTS, ERROR_TEXTURE, DEBUG
 
 
 
@@ -48,14 +48,14 @@ class Texture:
     try:
       self._texture = self.pil_to_surface(Image.open(self._texture_path).convert("RGBA"))
     except (pygame.error, FileNotFoundError) as e:
-      print(f"Failed to load {self._texture_path}: {e}.")
+      if(DEBUG): print(f"Failed to load {self._texture_path}: {e}.")
       self._texture = ERROR_TEXTURE
 
     if self._normal_texture_path and DYNAMIC_LIGHTS == True:
       try:
         self._normal_map = self.pil_to_surface(Image.open(self._normal_texture_path).convert("RGBA"))
       except (pygame.error, FileNotFoundError) as e:
-        print(f"Failed to load normal map: {e}.")
+        if(DEBUG): print(f"Failed to load normal map: {e}.")
         self._normal_map = None
 
 

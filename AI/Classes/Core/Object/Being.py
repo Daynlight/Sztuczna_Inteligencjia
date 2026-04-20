@@ -6,7 +6,7 @@ from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import GRID_X, GRID_Y
+from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG
 
 
 
@@ -27,55 +27,40 @@ class Being(Object):
     self._rotation: int = 0
     
 
-  def goTo(self, grid, goal, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
-    target = self._resolve_goal_target(goal, collisions)
-    if target is None:
+  def goTo(self, grid, goal) -> None:
+    if goal is None: 
       return
-
-    collisions_filtered = np.array([c for c in collisions if c is not self], dtype=object)
-    if self._is_collision(target, collisions_filtered):
-      return
-
-    self.generatePath(grid, self.getPosition(), target, collisions_filtered, walls)
+    
+    target = self._find_adjacent_target(grid, goal)
+    self.generatePath(grid, self.getPosition(), target)
 
 
-  def _resolve_goal_target(self, goal, collisions: np.ndarray[Object]) -> np.ndarray[int] | None:
-    if hasattr(goal, "isometric_x") and hasattr(goal, "isometric_y"):
-      return np.array([goal.isometric_x, goal.isometric_y])
+  def rotate(self, direction: str) -> None:
+    direction_mapping = {
+      "left": -1,
+      "right": 1
+    }
+    
+    self._rotation = (self._rotation + direction_mapping[direction]) % 4
+    if(DEBUG): print(f"Being rotated {direction}")
 
-    if hasattr(goal, "getPosition"):
-      goal_pos = np.array(goal.getPosition())
-      if hasattr(goal, "getClient") and goal.getClient():
-        adjacent = self._find_adjacent_target(goal_pos, collisions)
-        return adjacent if adjacent is not None else goal_pos
+    
+  def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
+    return np.linalg.norm(np.array(current_position) - np.array(position))
+  
 
-      if self._is_collision(goal_pos, collisions):
-        adjacent = self._find_adjacent_target(goal_pos, collisions)
-        return adjacent if adjacent is not None else goal_pos
-
-      return goal_pos
-
-    return None
-
-
-  def _find_adjacent_target(self, position: np.ndarray[int], collisions: np.ndarray[Object]) -> np.ndarray[int] | None:
-    directions = [
-      np.array([0, -1]),
-      np.array([1, 0]),
-      np.array([0, 1]),
-      np.array([-1, 0])
-    ]
-
+  def _find_adjacent_target(self, grid, position: np.ndarray[int]) -> np.ndarray[int] | None:
     best_target = None
     best_distance = float("inf")
     current_position = self.getPosition()
+    list_of_possible_movement = grid.getNeighbors(position)
 
-    for direction in directions:
+    for direction in BEING_MOVEMENT_DIRECTIONS:
       candidate = position + direction
       if candidate[0] < 0 or candidate[1] < 0 or candidate[0] >= GRID_X or candidate[1] >= GRID_Y:
         continue
-
-      if self._is_collision(candidate, collisions):
+      
+      if(tuple(candidate) not in list_of_possible_movement):
         continue
 
       distance = self.calculateDistance(current_position, candidate)
@@ -86,46 +71,15 @@ class Being(Object):
     return best_target
 
 
-  def _is_collision(self, target: np.ndarray[int], collisions: np.ndarray[Object]) -> bool:
-    return any(np.array_equal(el.getPosition(), target) for el in collisions)
+  def generatePath(self, grid, current_position: np.ndarray[int], target) -> None:
+    if(target is None): return
 
-
-  def rotate(self, direction: str) -> None:
-    direction_mapping = {
-      "left": -1,
-      "right": 1
-    }
-    self._rotation = (self._rotation + direction_mapping[direction]) % 4
-    print(f"Being rotated {direction}")
-
-    
-  def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
-    return np.linalg.norm(np.array(current_position) - np.array(position))
-  
-
-  def generatePath(self, grid, current_position: np.ndarray[int], position, collisions: np.ndarray[Object], walls: np.ndarray[Wall]) -> None:
     start = np.array(current_position)
     start_r = self._rotation
 
-    if hasattr(position, "isometric_x") and hasattr(position, "isometric_y"):
-      target = np.array([position.isometric_x, position.isometric_y])
-    elif isinstance(position, np.ndarray):
-      target = np.array(position)
-    elif hasattr(position, "getPosition"):
-      target = np.array(position.getPosition())
-    else:
-      target = np.array(position)
-
-    # possible movements from current position
-    directions = [
-      np.array([0, -1]),  # north
-      np.array([1, 0]),   # east
-      np.array([0, 1]),   # south
-      np.array([-1, 0])   # west
-    ]
-
     start_key = (tuple(start), start_r)
     target_pos = tuple(target)
+    goal_node = None
 
     open_set = []
     heapq.heappush(open_set, (0, start_key))
@@ -142,6 +96,7 @@ class Being(Object):
       current_pos, current_r = current
 
       if tuple(current_pos) == target_pos:
+        goal_node = current
         break
 
       if current in visited:
@@ -154,7 +109,7 @@ class Being(Object):
       list_of_possible_movement = grid.getNeighbors(current_pos)
 
       # move forward
-      d = directions[current_r]
+      d = BEING_MOVEMENT_DIRECTIONS[current_r]
       neighbor_pos = np.array(current_pos, dtype=int) + d
 
       # add element to check if needed
@@ -194,16 +149,14 @@ class Being(Object):
         heapq.heappush(open_set, (f_score, neighbor_key))
         came_from[neighbor_key] = current
 
-    final_path = []
-    temp = None
-    for key in came_from.keys():
-      if tuple(key[0]) == target_pos:
-        temp = key
-        break
-    if temp is None:
-      print("No path found!")
+
+    if goal_node is None:
+      if(DEBUG): print("No path found!")
       self._path = []
       return
+    
+    final_path = []
+    temp = goal_node
 
     # move through came_from to start
     while temp != start_key:
@@ -225,7 +178,7 @@ class Being(Object):
 
     if np.array_equal(next_pos_arr, current_pos_arr):
       # rotate
-      print(f"New rotation: {"north" if next_r == 0 else "east" if next_r == 1 else "south" if next_r == 2 else "west"}")
+      if(DEBUG): print(f"New rotation: {"north" if next_r == 0 else "east" if next_r == 1 else "south" if next_r == 2 else "west"}")
       self._rotation = next_r
       self._path.pop(0)
     else:

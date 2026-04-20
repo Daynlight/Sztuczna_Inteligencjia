@@ -9,6 +9,8 @@ import Classes.Objects.TextureManager as TextureManager
 from Classes.Core.Animation.Animation import Animation
 from Classes.Core.Animation.Frame import Frame
 
+from conf import DEBUG
+
 
 
 
@@ -41,16 +43,16 @@ class Cook(Being):
 	def takeOrderFromWaiter(self, waiter) -> None:
 		for i in waiter.getOrderList():
 			self._food_to_make.append(i[1])
-		print(f"Cook received order list: {[i[1] for i in waiter.getOrderList()]}")
+		if(DEBUG): print(f"Cook received order list: {[i[1] for i in waiter.getOrderList()]}")
 
 
 	def makeFood(self) -> None:
 		for i in self._food_to_make:
-			print(f"Cook is making {i}")
+			if(DEBUG): print(f"Cook is making {i}")
 			food = Food(i, self._available_counters[0])
 			self._available_counters.pop(0)
 			self._available_food.append(food)
-			print(f"Cook finished making {i}")
+			if(DEBUG): print(f"Cook finished making {i}")
 		self._food_to_make = []
         
 				
