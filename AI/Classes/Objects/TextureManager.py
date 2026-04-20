@@ -148,6 +148,5 @@ PAINTING_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade",
 
 # Carpet
 
-CARPET_TEXTURE= Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Carpet", "Carpet.png"), 
-									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Carpet", "Carpet.png"),
+CARPET_TEXTURE= Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Carpet", "Carpet.png"),
 																		 size=[2, 1])
