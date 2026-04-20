@@ -134,6 +134,7 @@ class Being(Object):
     visited = set()
     rotate_cost = 0.1
     move_cost = 1
+    carpet_modyfication = 0.001
     
     while open_set:
       # getting tile to check
@@ -159,7 +160,14 @@ class Being(Object):
       # add element to check if needed
       if tuple(neighbor_pos) in list_of_possible_movement:
         neighbor_key = (tuple(neighbor_pos), current_r)
-        tentative_g = g_score[current] + move_cost
+
+        #tentative_g = g_score[current] + move_cost
+
+        cost = move_cost
+        if grid.isCarpet(neighbor_pos):
+            cost*= carpet_modyfication
+        tentative_g = g_score[current] + cost
+
         if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
           g_score[neighbor_key] = tentative_g
           f_score = tentative_g + self.calculateDistance(neighbor_pos, target)

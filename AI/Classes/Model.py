@@ -258,10 +258,12 @@ class Model:
       Painting([10,9])
     ], dtype=Painting)
     
-    self._carpet: np.array[Carpet] = np.array([
-      Carpet([1,1])
-    ],dtype=Carpet)
-
+    self._carpet: np.array[Carpet] = np.array(
+      [Carpet([x, y]) for x in range(5, 11) for y in range(4, 7)]
+      +[Carpet([x,y]) for x in range(5,7) for y in range(7,17)],
+    dtype=Carpet)
+    
+    self._grid.setCarpets(self._carpet)
 
     self._clients: np.ndarray[Client] = np.array([
       Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),

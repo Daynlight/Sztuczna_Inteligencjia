@@ -107,6 +107,7 @@ class Grid:
     self._grid_nodes: np.ndarray[np.ndarray[int]] = None
     self._grid_tiles: np.ndarray[np.ndarray[Grid_Tile]] = None
     self._graph = {}
+    self._carpet_positions = set()
 
     self._generateGridNodes()
     self._generateGridTails()
@@ -115,6 +116,13 @@ class Grid:
   def __del__(self):
     if(self._grid_tiles): self._grid_tiles.clear()
 
+  def setCarpets(self, carpets):
+    self._carpet_positions = {
+        tuple(carpet.getPosition()) for carpet in carpets
+    }
+    
+  def isCarpet(self, pos) -> bool:
+    return tuple(pos) in self._carpet_positions
 
   def _generateGridNodes(self) -> None:
     # nodes that are used as the corners of the tiles
