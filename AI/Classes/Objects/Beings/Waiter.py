@@ -52,7 +52,7 @@ class Waiter(Being):
 		if not self._order_list or self._order_list_sent:
 			return
 
-		if self._position[0] == order_list.getPosition()[0] and self._position[1] == order_list.getPosition()[1]:
+		if abs(self._position[0] - order_list.getPosition()[0]) + abs(self._position[1] - order_list.getPosition()[1]) == 1:
 			cook.takeOrderFromWaiter(self)
 			self._order_list_sent = True
 			if(DEBUG): print("Waiter gave order list to cook")
