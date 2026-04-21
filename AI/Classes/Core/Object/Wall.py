@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pygame
 from concurrent.futures import ThreadPoolExecutor, as_completed

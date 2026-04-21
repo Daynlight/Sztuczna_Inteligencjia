@@ -1,5 +1,4 @@
 import os
-import pygame
 
 from Classes.Core.Renderer.Texture import Texture
 
