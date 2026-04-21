@@ -259,8 +259,8 @@ class Model:
     ], dtype=Painting)
     
     self._carpet: np.array[Carpet] = np.array(
-      [Carpet([x, y]) for x in range(5, 11) for y in range(4, 7)]
-      +[Carpet([x,y]) for x in range(5,7) for y in range(7,17)],
+      [Carpet([x, y]) for x in range(6, 11) for y in range(4, 7)]
+      +[Carpet([x,y]) for x in range(6,8) for y in range(7,19)],
     dtype=Carpet)
     
     self._grid.setCarpets(self._carpet)
