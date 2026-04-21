@@ -201,6 +201,12 @@ Main function used for initialization, training and visualization. Provides one 
   * **__del__():** Default destructor.
   * **_initModel() -> None**: Function for model initialization. Guarantee the same training model every time.
   * **_initRenderer() -> None**: Create ```_renderer```. Uses lazy initialization.
+  * **initLights() -> None** Creates lights for the field ```_light```.
+  * **initWalls() -> None** Creates walls for the field ```_walls```.
+  * **initObjects() -> None** Creates lists of diffrent static objects.
+  * **initBeings() -> None** Creates lists of moveable beings like waiter or client.
+  * **renderObjectsList() -> None** Creates list of objects for later render in field ```_render_objects```.
+  * **rcollisionObjectList() -> None** Creates list of objects for later collisions in field ```_collision_objects```.
   * **isRunning() -> bool**: Check if model is running if window is initialized than return window status.
   * **modelIteration(acceleration: float = 1.0) -> None**: Model Iteration. Is used for training and visualization. Acceleration is used for faster learning process skipping waiting time for waiter walking etc also in learning state we don't initialize window.
   * **_renderOrder() -> None**: sorts ```_render_objects``` base on distance to edge and render order if distances are equal.
