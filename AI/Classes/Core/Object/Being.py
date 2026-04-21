@@ -46,7 +46,7 @@ class Being(Object):
 
     
   def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
-    return np.linalg.norm(np.array(current_position) - np.array(position))
+    return np.linalg.norm(np.array(current_position) - np.array(position), ord=1)
   
 
   def _find_adjacent_target(self, grid, position: np.ndarray[int]) -> np.ndarray[int] | None:
@@ -71,11 +71,11 @@ class Being(Object):
     return best_target
 
 
-  def updateKey(self, grid, current, target, neighbor_key, cost, g_score, open_set, came_from):
+  def updateKey(self, current, target, neighbor_key, cost, g_score, open_set, came_from):
     # calculate new g_score previous + cost cost of tile
     new_g_score = g_score[current] + cost
 
-    # checking if state is already in g_score register and if new one is better then previous
+    # checking if state ain't in g_score register and if new one is better then previous
     if neighbor_key not in g_score or new_g_score < g_score[neighbor_key]:
       g_score[neighbor_key] = new_g_score                                      # adding/updating to lowest g_score for state
       f_score = new_g_score + self.calculateDistance(neighbor_key[0], target)  # calculating f_score = g_score + heuristic
@@ -135,19 +135,19 @@ class Being(Object):
         
         # update key
         cost = grid.getCost(neighbor_key[0])
-        self.updateKey(grid, current, target, neighbor_key, cost, g_score, open_set, came_from)
+        self.updateKey(current, target, neighbor_key, cost, g_score, open_set, came_from)
 
       # generate new key for left rotation
       new_r = (current_r - 1) % 4
       neighbor_key = (current_pos, new_r)
       # update key
-      self.updateKey(grid, current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+      self.updateKey(current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
       # generate new key for right rotation
       new_r = (current_r + 1) % 4
       neighbor_key = (current_pos, new_r)
       # update key
-      self.updateKey(grid, current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+      self.updateKey(current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
 
     if goal_node is None:
