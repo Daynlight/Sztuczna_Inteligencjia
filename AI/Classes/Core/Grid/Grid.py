@@ -8,7 +8,7 @@ from Classes.Core.Renderer.Renderer import Camera, Renderer
 
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, BEING_MOVEMENT_DIRECTIONS, DEBUG
+from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, BEING_MOVEMENT_DIRECTIONS, BEING_DEFAULT_MOVE_COST
 
 
 texture_lock = threading.Lock()
@@ -107,11 +107,14 @@ class Grid:
 
   def setCarpets(self, carpets):
     self._carpet_positions = {
-        tuple(carpet.getPosition()) for carpet in carpets
+      tuple(carpet.getPosition()): carpet.getCost()
+      for carpet in carpets
     }
     
-  def isCarpet(self, pos) -> bool:
-    return tuple(pos) in self._carpet_positions
+
+  def getCost(self, pos) -> float:
+    return self._carpet_positions.get(tuple(pos), BEING_DEFAULT_MOVE_COST)
+
 
   def _generateGridNodes(self) -> None:
     # nodes that are used as the corners of the tiles

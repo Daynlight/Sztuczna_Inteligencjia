@@ -6,7 +6,7 @@ from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG
+from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG, BEING_DEFAULT_ROTATE_COST
 
 
 
@@ -73,22 +73,22 @@ class Being(Object):
 
   def generatePath(self, grid, current_position: np.ndarray[int], target) -> None:
     if(target is None): return
-
+    
+    # start
     start = np.array(current_position)
     start_r = self._rotation
-
     start_key = (tuple(start), start_r)
+
+    # target
     target_pos = tuple(target)
     goal_node = None
+
 
     open_set = []
     heapq.heappush(open_set, (0, start_key))
     came_from = {}
     g_score = {start_key: 0}
     visited = set()
-    rotate_cost = 0.1
-    move_cost = 1
-    carpet_modyfication = 0.001
     
     while open_set:
       # getting tile to check
@@ -116,12 +116,7 @@ class Being(Object):
       if tuple(neighbor_pos) in list_of_possible_movement:
         neighbor_key = (tuple(neighbor_pos), current_r)
 
-        #tentative_g = g_score[current] + move_cost
-
-        cost = move_cost
-        if grid.isCarpet(neighbor_pos):
-            cost*= carpet_modyfication
-        tentative_g = g_score[current] + cost
+        tentative_g = g_score[current] + grid.getCost(neighbor_pos)
 
         if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
           g_score[neighbor_key] = tentative_g
@@ -132,7 +127,7 @@ class Being(Object):
       # rotate left
       new_r = (current_r - 1) % 4
       neighbor_key = (current_pos, new_r)
-      tentative_g = g_score[current] + rotate_cost
+      tentative_g = g_score[current] + BEING_DEFAULT_ROTATE_COST
       if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
         g_score[neighbor_key] = tentative_g
         f_score = tentative_g + self.calculateDistance(current_pos, target)
@@ -142,7 +137,7 @@ class Being(Object):
       # rotate right
       new_r = (current_r + 1) % 4
       neighbor_key = (current_pos, new_r)
-      tentative_g = g_score[current] + rotate_cost
+      tentative_g = g_score[current] + BEING_DEFAULT_ROTATE_COST
       if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
         g_score[neighbor_key] = tentative_g
         f_score = tentative_g + self.calculateDistance(current_pos, target)

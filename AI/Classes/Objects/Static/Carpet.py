@@ -11,4 +11,8 @@ class Carpet(Object):
         super().__init__(render_order=render_order, 
 									 	 texture=TextureManager.CARPET_TEXTURE,
 											position=position,  offset=[0, 41] ,size=[2,1])
-        
+        self._cost = 0.001
+
+
+    def getCost(self):
+        return self._cost
