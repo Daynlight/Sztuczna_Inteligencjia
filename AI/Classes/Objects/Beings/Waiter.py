@@ -10,7 +10,7 @@ from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.OrderList import OrderList
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import WAITER_VELOCITY
+from conf import WAITER_VELOCITY, DEBUG
 
 
 
@@ -35,7 +35,7 @@ class Waiter(Being):
 			self._order_list.append((client, client.getFoodName()))
 			client.waitForFood()
 			self._order_list_sent = False
-			print(f"Waiter received order from client at {client.getPosition()}: {client.getFoodName()}")
+			if(DEBUG): print(f"Waiter received order from client at {client.getPosition()}: {client.getFoodName()}")
 			return
 
 
@@ -45,24 +45,24 @@ class Waiter(Being):
 				food = cook.getAvailableFood()
 				if food:
 					self._carrying.append(food)
-					print(f"Waiter took {food.getName()} from cook")
+					if(DEBUG): print(f"Waiter took {food.getName()} from cook")
 
 
 	def giveOrderList(self, cook: Cook, order_list: OrderList) -> None:
 		if not self._order_list or self._order_list_sent:
 			return
 
-		if self._position[0] == order_list.getPosition()[0] and self._position[1] == order_list.getPosition()[1]:
+		if abs(self._position[0] - order_list.getPosition()[0]) + abs(self._position[1] - order_list.getPosition()[1]) == 1:
 			cook.takeOrderFromWaiter(self)
 			self._order_list_sent = True
-			print("Waiter gave order list to cook")
+			if(DEBUG): print("Waiter gave order list to cook")
 
 
 	def completeOrder(self, client: Client) -> bool:
 		if abs(self._position[0] - client.getPosition()[0]) + abs(self._position[1] - client.getPosition()[1]) == 1:
 			self._order_list.pop(self._order_list.index((client, client.getFoodName())))
 			client.receiveFood()
-			print(f"Client at {client.getPosition()} received their food: {client.getFoodName()}")
+			if(DEBUG): print(f"Client at {client.getPosition()} received their food: {client.getFoodName()}")
 			return True
 		return False
 
@@ -70,7 +70,7 @@ class Waiter(Being):
 	def getOrderList(self) -> list[Client, Food]:
 		return self._order_list
 
-	def _deliver_food(self, grid, clients, collisions_objects, walls) -> None:
+	def _deliver_food(self, grid, clients: list[Client]) -> None:
 		delivery_food = None
 		delivery_client = None
 		for food in self._carrying:
@@ -83,33 +83,34 @@ class Waiter(Being):
 				break
 
 		if delivery_client is not None:
-			self.goTo(grid, delivery_client, collisions_objects, walls)
+			self.goTo(grid, delivery_client.getPosition())
 			if self.completeOrder(delivery_client):
 				self._carrying.remove(delivery_food)
 				delivery_client.finishEating()
 		else:
 			self._path = []
 
-	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList, collisions_objects, walls) -> None:
+
+	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
 		all_waiting = len(clients) > 0 and all(client._waiting_for_food for client in clients)
 
 		if all_waiting and len(self.getOrderList()) > 0 and not self._order_list_sent:
-			self.goTo(grid, order_list, collisions_objects, walls)
+			self.goTo(grid, order_list.getPosition())
 			self.giveOrderList(cook, order_list)
 			return
 
 		if cook.hasAvailableFood():
-			self.goTo(grid, cook, collisions_objects, walls)
+			self.goTo(grid, cook.getPosition())
 			self.takeFood(cook)
 			return
 
 		if self._carrying:
-			self._deliver_food(grid, clients, collisions_objects, walls)
+			self._deliver_food(grid, clients)
 			return
 
 		for client in clients:
 			if client._wants_to_order:
-				self.goTo(grid, client, collisions_objects, walls)
+				self.goTo(grid, client.getPosition())
 				self.receiveOrder(client)
 				return
 	

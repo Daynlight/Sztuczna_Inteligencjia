@@ -1,5 +1,5 @@
-import os
 import pygame
+import numpy as np
 
 
 
@@ -9,11 +9,21 @@ import pygame
 
 
 
-DEBUG = False
+DEBUG = True
 DYNAMIC_LIGHTS = True
 
 TILE_SIZE: int = 40
 WAITER_VELOCITY: int = 6
+
+BEING_MOVEMENT_DIRECTIONS = [
+  np.array([0, -1]),  # north
+  np.array([1, 0]),   # east
+  np.array([0, 1]),   # south
+  np.array([-1, 0])   # west
+]
+
+BEING_DEFAULT_MOVE_COST = 1
+BEING_DEFAULT_ROTATE_COST = 0.1
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600

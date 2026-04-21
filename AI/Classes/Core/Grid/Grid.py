@@ -8,7 +8,7 @@ from Classes.Core.Renderer.Renderer import Camera, Renderer
 
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
+from conf import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, BEING_MOVEMENT_DIRECTIONS, BEING_DEFAULT_MOVE_COST
 
 
 texture_lock = threading.Lock()
@@ -56,7 +56,6 @@ class Grid_Tile:
     return np.array([x, y], dtype=int)
   
 
-  
   def precomputeLight(self, lights: list):
       render_pos = self.getRenderPos()
       with texture_lock:  
@@ -91,14 +90,7 @@ class Grid_Tile:
 
 
 
-## [TODO] change to matrix aka map with cords, 
-# Use Matrices, 
-# Two Grids, 
-# Less Iterations, 
-# Iterate though tails for rendering,
-# Get neighbors for path finding,
-# Get render point,
-# Walls gen base on empty space behind with height,
+
 class Grid:
   def __init__(self, size_x: int, size_y: int, grid_tile_size : int, margin_horizontal : int, margin_vertical: int):
     self._size: np.ndarray[int] = np.array([size_x, size_y], dtype=int)
@@ -107,13 +99,21 @@ class Grid:
     self._grid_nodes: np.ndarray[np.ndarray[int]] = None
     self._grid_tiles: np.ndarray[np.ndarray[Grid_Tile]] = None
     self._graph = {}
+    self._carpet_positions = set()
 
     self._generateGridNodes()
     self._generateGridTails()
 
 
-  def __del__(self):
-    if(self._grid_tiles): self._grid_tiles.clear()
+  def setCarpets(self, carpets):
+    self._carpet_positions = {
+      tuple(carpet.getPosition()): carpet.getCost()
+      for carpet in carpets
+    }
+    
+
+  def getCost(self, pos) -> float:
+    return self._carpet_positions.get(tuple(pos), BEING_DEFAULT_MOVE_COST)
 
 
   def _generateGridNodes(self) -> None:
@@ -165,7 +165,7 @@ class Grid:
       self._grid_tiles.append(row)
 
 
-  def precomputeLight(self, lights: list):
+  def precomputeLight(self, lights: list) -> None:
     tasks = []
     all_tiles = [self._grid_tiles[x][y] for y in range(self._size[1]) for x in range(self._size[0])]
 
@@ -186,14 +186,20 @@ class Grid:
     return None
   
 
-  def _graphCheckForCollisions(self, collisions, new_node):
+  def _graphCheckForCollisions(self, collisions, new_node) -> bool:
     collision = any(np.array_equal(el.getPosition(), new_node) for el in collisions)
     return collision
 
+  
+  def _graphCheckForMapEdges(self, new_node)  -> bool:
+    collision = new_node[0] >= 0 and new_node[1] >= 0 and new_node[0] < self._size[0] and new_node[1] < self._size[1]
+    return collision
 
-  def _graphWalls(self, current_position, new_node, walls):
+
+  def _graphCheckForWalls(self, current_position, new_node, walls) -> bool:
     collision = False
 
+    # check each wall
     for el in walls:
       # getting two lists of restricted movement (going through wall)
       restricted_movement = el.getMovementRestriction()
@@ -230,24 +236,18 @@ class Grid:
 
 
   def generateNeighborsGraph(self, collisions, walls) -> None:
-    directions = [
-      np.array([0, -1]),  # north
-      np.array([1, 0]),   # east
-      np.array([0, 1]),   # south
-      np.array([-1, 0])   # west
-    ]
-
     for y in range(0, self._size[1]):
       for x in range(0, self._size[0]):
         connections = []
-        for d in directions:
+        for d in BEING_MOVEMENT_DIRECTIONS:
           new_node = np.array([x, y], dtype=int) + d
-          if new_node[0] >= 0 and new_node[1] >= 0 and new_node[0] < self._size[0] and new_node[1] < self._size[1]:
-            collision = self._graphCheckForCollisions(collisions, new_node)
-            if(not collision): collision = self._graphWalls(np.array([x, y], dtype=int), new_node, walls)
-            
-            if(not collision): connections.append((int(new_node[0]), int(new_node[1])))
-        
+
+          collision = not self._graphCheckForMapEdges(new_node)
+          if(not collision): collision = self._graphCheckForCollisions(collisions, new_node)
+          if(not collision): collision = self._graphCheckForWalls(np.array([x, y], dtype=int), new_node, walls)
+          
+          if(not collision): connections.append((int(new_node[0]), int(new_node[1])))
+
         self._graph[(x, y)] = connections
 
 
