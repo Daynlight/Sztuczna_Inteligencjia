@@ -25,7 +25,11 @@ class Being(Object):
     self._path: list = []
     self._accTime: float = 0.0
     self._rotation: int = 0
-    
+  
+
+  def pathIsEmpty(self):
+    return len(self._path) == 0
+
 
   def goTo(self, grid, goal) -> None:
     if goal is None: 
