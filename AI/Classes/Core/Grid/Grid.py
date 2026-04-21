@@ -65,6 +65,7 @@ class Grid_Tile:
   def draw(self, surface: pygame.Surface, lights: list) -> None:
     render_pos = self.getRenderPos()
     if(self._lit_texture == None):
+      start = time.time()
       self._lit_texture = self._texture.getLitTexture(render_pos, lights)
       
     surface.blit(self._lit_texture, render_pos)

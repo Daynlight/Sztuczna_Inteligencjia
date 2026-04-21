@@ -16,6 +16,7 @@ from conf import TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
 
 
 
+
 # Main superior class for all objects in the world
 
 class Object:
@@ -68,6 +69,7 @@ class Object:
 
 
   def render(self, surface: pygame.Surface, grid: Grid, renderer: Renderer, lights: np.ndarray[Light]) -> None:
+    
     grid_tile: Grid_Tile = grid._grid_tiles[self._position[0]][self._position[1]]           # each object is drawn on top of some tile
     render_pos: np.ndarray[int] = grid_tile.getRenderPos()                                  # changing tile coordinates for example [2,2] -> to world coordinates
     
@@ -79,8 +81,12 @@ class Object:
         self.lit_surface: pygame.Surface = self._texture.getLitTexture(render_pos, lights)
       
       self._last_pos = render_pos
-        
+      
+      # If DYMANIC LIGHTS ARE TURNED OFF WORKS 2 TIMES SLOWER FOR SOME REASON
       surface.blit(self.lit_surface, render_pos + self._offset) # drawing object + offset# changing tile coordinates for example [2,2] -> to world coordinates
+
+  
+     
 
 
   def setPosition(self, position: np.ndarray[int]) -> None:
