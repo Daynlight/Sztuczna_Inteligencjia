@@ -182,7 +182,7 @@ class Being(Object):
 
     if np.array_equal(next_pos_arr, current_pos_arr):
       # rotate
-      if(DEBUG): print(f"New rotation: {"north" if next_r == 0 else "east" if next_r == 1 else "south" if next_r == 2 else "west"}")
+      if DEBUG: print(f"New rotation: {'north' if next_r == 0 else 'east' if next_r == 1 else 'south' if next_r == 2 else 'west'}")
       self._rotation = next_r
       self._path.pop(0)
     else:
