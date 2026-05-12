@@ -2,11 +2,13 @@ import math
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+import random
 
 FeatureVector = Dict[str, str]
 DataSet = List[FeatureVector]
 Labels = List[str]
 
+# Liczene entropii dla danych atrybutów
 
 def _entropy(labels: Labels) -> float:
     total = len(labels)
@@ -20,6 +22,7 @@ def _entropy(labels: Labels) -> float:
         entropy -= probability * math.log2(probability)
     return entropy
 
+#Dzielenie zbiotów danych
 
 def _split_dataset(dataset: DataSet, labels: Labels, attribute: str) -> Dict[str, tuple[DataSet, Labels]]:
     partitions: Dict[str, tuple[DataSet, Labels]] = {}
@@ -30,6 +33,7 @@ def _split_dataset(dataset: DataSet, labels: Labels, attribute: str) -> Dict[str
         subset_labels.append(label)
     return partitions
 
+# Liczenie ile informacji daje dany atrybut
 
 def _information_gain(dataset: DataSet, labels: Labels, attribute: str) -> float:
     base_entropy = _entropy(labels)
@@ -178,17 +182,27 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
     dataset: DataSet = []
     labels: Labels = []
 
-    def rule(state: dict[str, str]) -> str:
-        if state["all_waiting"] == "yes" and state["has_pending_orders"] == "yes" and state["order_list_sent"] == "no":
-            return "give_order_list"
-        if state["cook_has_available_food"] == "yes" and state["has_carrying_food"] == "no":
-            return "take_food"
-        if state["has_carrying_food"] == "yes":
-            return "deliver_food"
-        if state["any_client_wants_order"] == "yes":
-            return "take_order"
-        return "idle"
+# Generowanie lekkiego szumu do danych dla różnorodności
 
+    def noisy_decision(state: dict[str, str]) -> str:
+        actions = ["idle", "take_order", "take_food", "deliver_food", "give_order_list"]
+
+        if state["has_carrying_food"] == "yes":
+            base = "deliver_food"
+        elif state["cook_has_available_food"] == "yes":
+            base = "take_food"
+        elif state["any_client_wants_order"] == "yes":
+            base = "take_order"
+        elif state["has_pending_orders"] == "yes":
+            base = "give_order_list"
+        else:
+            base = "idle"
+
+        if random.random() < 0.1:
+            return random.choice(actions)
+
+        return base
+    
     for all_waiting in ["no", "yes"]:
         for cook_available in ["no", "yes"]:
             for carrying in ["no", "yes"]:
@@ -197,6 +211,7 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
                         for wants_order in ["no", "yes"]:
                             for waiting_for_food in ["no", "yes"]:
                                 for cook_pending in ["no", "yes"]:
+
                                     state = {
                                         "all_waiting": all_waiting,
                                         "cook_has_available_food": cook_available,
@@ -207,8 +222,9 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
                                         "any_client_waiting_for_food": waiting_for_food,
                                         "cook_has_pending_orders": cook_pending,
                                     }
+
                                     dataset.append(state)
-                                    labels.append(rule(state))
+                                    labels.append(noisy_decision(state))  
 
     classifier = DecisionTreeClassifier()
     classifier.fit(dataset, labels, features)
