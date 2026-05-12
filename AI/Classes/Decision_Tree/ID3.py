@@ -8,7 +8,7 @@ FeatureVector = Dict[str, str]
 DataSet = List[FeatureVector]
 Labels = List[str]
 
-# Liczene entropii dla danych atrybutów
+# Liczenie entropii dla danych atrybutów
 
 def _entropy(labels: Labels) -> float:
     total = len(labels)
@@ -22,7 +22,7 @@ def _entropy(labels: Labels) -> float:
         entropy -= probability * math.log2(probability)
     return entropy
 
-#Dzielenie zbiotów danych
+# Dzielenie zbiorów danych
 
 def _split_dataset(dataset: DataSet, labels: Labels, attribute: str) -> Dict[str, tuple[DataSet, Labels]]:
     partitions: Dict[str, tuple[DataSet, Labels]] = {}
@@ -47,6 +47,7 @@ def _information_gain(dataset: DataSet, labels: Labels, attribute: str) -> float
 
     return base_entropy - partition_entropy
 
+# Znajdowanie najczęściej występującej etykiety
 
 def _majority_label(labels: Labels) -> Optional[str]:
     if not labels:
@@ -145,27 +146,6 @@ def save_tree_to_file(tree: DecisionTreeClassifier, file_path: str) -> None:
         tree_file.write(tree_to_string(tree.root))
 
 
-def save_tree_dot(tree: DecisionTreeClassifier, file_path: str) -> None:
-    with open(file_path, "w", encoding="utf-8") as dot_file:
-        dot_file.write("digraph DecisionTree {\n")
-
-        def write_node(node: DecisionTreeNode, node_id: int, parent_id: Optional[int] = None, edge_label: Optional[str] = None) -> int:
-            if node.label is not None:
-                dot_file.write(f"  node{node_id} [label=\"{node.label}\", shape=box];\n")
-            else:
-                dot_file.write(f"  node{node_id} [label=\"{node.attribute}\"];\n")
-
-            if parent_id is not None and edge_label is not None:
-                dot_file.write(f"  node{parent_id} -> node{node_id} [label=\"{edge_label}\"];\n")
-
-            next_id = node_id + 1
-            for value, child in sorted(node.children.items()):
-                next_id = write_node(child, next_id, node_id, value)
-            return next_id
-
-        write_node(tree.root, 0)
-        dot_file.write("}\n")
-
 
 def build_waiter_decision_tree() -> DecisionTreeClassifier:
     features = [
@@ -228,27 +208,12 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
 
     classifier = DecisionTreeClassifier()
     classifier.fit(dataset, labels, features)
+    output_text_file = "AI/Classes/Decision_Tree/decision_tree.txt"
+    save_tree_to_file(classifier, output_text_file)
+    print(f"Decision tree saved to {output_text_file}")
     return classifier
 
 
 def bool_to_str(value: bool) -> str:
     return "yes" if value else "no"
 
-
-if __name__ == "__main__":
-    tree = build_waiter_decision_tree()
-    output_text_file = "AI/Classes/AI/decision_tree.txt"
-    output_dot_file = "AI/Classes/AI/decision_tree.dot"
-
-    save_tree_to_file(tree, output_text_file)
-    save_tree_dot(tree, output_dot_file)
-
-    print(f"Decision tree saved to {output_text_file}")
-    print(f"Graphviz dot saved to {output_dot_file}")
-
-    tests = [
-        {"all_waiting": "yes", "cook_has_available_food": "yes", "has_carrying_food": "no", "has_pending_orders": "yes", "order_list_sent": "no", "any_client_wants_order": "no", "any_client_waiting_for_food": "no", "cook_has_pending_orders": "no"},
-        {"all_waiting": "no", "cook_has_available_food": "yes", "has_carrying_food": "no", "has_pending_orders": "no", "order_list_sent": "no", "any_client_wants_order": "yes", "any_client_waiting_for_food": "no", "cook_has_pending_orders": "no"},
-    ]
-    for sample in tests:
-        print(sample, "->", tree.predict(sample))
