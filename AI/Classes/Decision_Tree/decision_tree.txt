@@ -1,0 +1,76 @@
+[has_carrying_food]
+  no ->
+    [cook_has_available_food]
+      no ->
+        [any_client_wants_order]
+          no ->
+            [all_waiting]
+              no ->
+                Label: idle
+
+              yes ->
+                [has_pending_orders]
+                  no ->
+                    Label: idle
+
+                  yes ->
+                    [order_list_sent]
+                      no ->
+                        Label: give_order_list
+
+                      yes ->
+                        Label: idle
+
+          yes ->
+            [all_waiting]
+              no ->
+                Label: take_order
+
+              yes ->
+                [has_pending_orders]
+                  no ->
+                    Label: take_order
+
+                  yes ->
+                    [order_list_sent]
+                      no ->
+                        Label: give_order_list
+
+                      yes ->
+                        Label: take_order
+
+      yes ->
+        [all_waiting]
+          no ->
+            Label: take_food
+
+          yes ->
+            [has_pending_orders]
+              no ->
+                Label: take_food
+
+              yes ->
+                [order_list_sent]
+                  no ->
+                    Label: give_order_list
+
+                  yes ->
+                    Label: take_food
+
+  yes ->
+    [all_waiting]
+      no ->
+        Label: deliver_food
+
+      yes ->
+        [has_pending_orders]
+          no ->
+            Label: deliver_food
+
+          yes ->
+            [order_list_sent]
+              no ->
+                Label: give_order_list
+
+              yes ->
+                Label: deliver_food
