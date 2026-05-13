@@ -90,35 +90,31 @@ class DecisionTreeClassifier:
 
     def fit(self, dataset: DataSet, labels: Labels, features: List[str]) -> None:
         self.features = features
-        self.root = self._build_tree(dataset, labels, features)
+        default_label = _majority_label(labels)
+        self.root = self._build_tree(dataset, labels, features, default_label)
 
-    def _build_tree(self, dataset: DataSet, labels: Labels, features: List[str]) -> DecisionTreeNode:
-        node = DecisionTreeNode()
-
+    def _build_tree(self, dataset: DataSet, labels: Labels, attributes: List[str], default_label: Optional[str]) -> DecisionTreeNode:
         if not labels:
-            node.label = None
-            return node
+            return DecisionTreeNode(label=default_label)
 
         if len(set(labels)) == 1:
-            node.label = labels[0]
-            return node
+            return DecisionTreeNode(label=labels[0])
 
-        if not features:
-            node.label = _majority_label(labels)
-            return node
+        if not attributes:
+            return DecisionTreeNode(label=_majority_label(labels))
 
-        gains = [(feature, _information_gain(dataset, labels, feature)) for feature in features]
-        best_feature, best_gain = max(gains, key=lambda item: item[1])
+        gains = [(attribute, _information_gain(dataset, labels, attribute)) for attribute in attributes]
+        best_attribute, best_gain = max(gains, key=lambda item: item[1])
 
         if best_gain <= 0:
-            node.label = _majority_label(labels)
-            return node
+            return DecisionTreeNode(label=_majority_label(labels))
 
-        node.attribute = best_feature
-        remaining_features = [feature for feature in features if feature != best_feature]
+        node = DecisionTreeNode(attribute=best_attribute)
+        new_default_label = _majority_label(labels)
+        remaining_attributes = [attribute for attribute in attributes if attribute != best_attribute]
 
-        for value, (subset, subset_labels) in _split_dataset(dataset, labels, best_feature).items():
-            child = self._build_tree(subset, subset_labels, remaining_features)
+        for value, (subset, subset_labels) in _split_dataset(dataset, labels, best_attribute).items():
+            child = self._build_tree(subset, subset_labels, remaining_attributes, new_default_label)
             node.children[value] = child
 
         return node
@@ -162,7 +158,7 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
     dataset: DataSet = []
     labels: Labels = []
 
-    # Generowanie lekkiego szumu do danych dla różnorodności
+# Generowanie lekkiego szumu do danych dla różnorodności
 
     def noisy_decision(state: dict[str, str]) -> str:
         actions = ["idle", "take_order", "take_food", "deliver_food", "give_order_list"]
@@ -208,8 +204,12 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
 
     classifier = DecisionTreeClassifier()
     classifier.fit(dataset, labels, features)
-    output_text_file = "Classes/Decision_Tree/decision_tree.txt"
-    save_tree_to_file(classifier, output_text_file)
+    output_text_file = "AI/Classes/Decision_Tree/decision_tree.txt"
+    try:
+        save_tree_to_file(classifier, output_text_file)
+    except IOError:
+        output_text_file = "Classes/Decision_Tree/decision_tree.txt"
+        save_tree_to_file(classifier, output_text_file)
     print(f"Decision tree saved to {output_text_file}")
     return classifier
 

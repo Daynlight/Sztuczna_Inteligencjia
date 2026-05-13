@@ -106,7 +106,6 @@ class Waiter(Being):
 	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
 		state = self._build_state_features(clients, cook)
 		action = self._decision_tree.predict(state)
-
 		if action == "give_order_list":
 			self.goTo(grid, order_list.getPosition())
 			self.giveOrderList(cook, order_list)
