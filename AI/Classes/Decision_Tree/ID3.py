@@ -158,7 +158,7 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
     dataset: DataSet = []
     labels: Labels = []
 
-# Generowanie lekkiego szumu do danych dla różnorodności
+    # Generowanie lekkiego szumu do danych dla różnorodności
 
     def noisy_decision(state: dict[str, str]) -> str:
         actions = ["idle", "take_order", "take_food", "deliver_food", "give_order_list"]
@@ -204,13 +204,25 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
 
     classifier = DecisionTreeClassifier()
     classifier.fit(dataset, labels, features)
-    output_text_file = "AI/Classes/Decision_Tree/decision_tree.txt"
+    dataset_file_path = "AI/Classes/Decision_Tree/dataset.txt"
     try:
-        save_tree_to_file(classifier, output_text_file)
+        with open(dataset_file_path, "w", encoding="utf-8") as dataset_file:
+            for row, label in zip(dataset, labels):
+                dataset_file.write(f"{row} -> {label}\n")
     except IOError:
-        output_text_file = "Classes/Decision_Tree/decision_tree.txt"
-        save_tree_to_file(classifier, output_text_file)
-    print(f"Decision tree saved to {output_text_file}")
+        dataset_file_path = "Classes/Decision_Tree/dataset.txt"
+        with open(dataset_file_path, "w", encoding="utf-8") as dataset_file:
+            for row, label in zip(dataset, labels):
+                dataset_file.write(f"{row} -> {label}\n")
+    print(f"Dataset saved to {dataset_file_path}")
+
+    tree_file_path = "AI/Classes/Decision_Tree/decision_tree.txt"
+    try:
+        save_tree_to_file(classifier, tree_file_path)
+    except IOError:
+        tree_file_path = "Classes/Decision_Tree/decision_tree.txt"
+        save_tree_to_file(classifier, tree_file_path)
+    print(f"Decision tree saved to {tree_file_path}")
     return classifier
 
 
