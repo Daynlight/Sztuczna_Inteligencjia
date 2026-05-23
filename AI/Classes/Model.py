@@ -291,7 +291,7 @@ class Model:
     # Create List of Collisions for path finding
     self._collisions_objects: np.ndarray[Object] = np.array([ self._cook, *(table for tg in self._tableGroup for table in tg.getTables()),
                                                               *(ci for tg in self._tableGroup for ci in tg.getChairInterface()),
-                                                              *self._counters, *self._sinks, *self._flowers ], dtype=Object)
+                                                              *self._counters, *self._sinks, *self._flowers, *self._fridges, *self._stoves], dtype=Object)
 
     self._grid.generateNeighborsGraph(self._collisions_objects, self._walls)
     
