@@ -4,7 +4,8 @@ import numpy as np
 from Classes.Core.Object.Being import Being
 from Classes.Core.Grid.Grid import Grid
 
-from Classes.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
+#from Classes.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
+from Classes.Neural_Network.network import bool_to_str, WaiterAI
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Cook import Cook
 from Classes.Objects.Static.Food import Food
@@ -29,7 +30,16 @@ class Waiter(Being):
 		self._carrying: list[Food] = []
 		self._order_list: list[Client, Food] = []
 		self._order_list_sent: bool = False
-		self._decision_tree = build_waiter_decision_tree()
+		#self._decision_tree = build_waiter_decision_tree()
+
+		self._ai = WaiterAI()
+		# jeśli model istnieje → wczytaj
+		#if os.path.exists("waiter_model.pth"):
+		#	self._ai.load()
+		# jeśli model nie istnieje → wytrenuj i zapisz
+		#else:
+		self._ai.train()
+
 
 	def receiveOrder(self, client: Client) -> None:
 		if abs(self._position[0] - client.getPosition()[0]) + abs(self._position[1] - client.getPosition()[1]) == 1:
@@ -38,6 +48,7 @@ class Waiter(Being):
 			self._order_list_sent = False
 			if(DEBUG): print(f"Waiter received order from client at {client.getPosition()}: {client.getFoodName()}")
 			return
+
 
 	def takeFood(self, cook: Cook) -> None:
 		if abs(self._position[0] - cook.getPosition()[0]) + abs(self._position[1] - cook.getPosition()[1]) == 1:
@@ -70,9 +81,10 @@ class Waiter(Being):
 	def getOrderList(self) -> list[Client, Food]:
 		return self._order_list
 
+
 	def _build_state_features(self, clients, cook: Cook) -> dict[str, str]:
 		return {
-			"all_waiting": bool_to_str(len(clients) > 0 and all(client._waiting_for_food for client in clients)),
+			"amount_waiting": str(sum(client._waiting_for_food for client in clients)),
 			"cook_has_available_food": bool_to_str(cook.hasAvailableFood()),
 			"has_carrying_food": bool_to_str(len(self._carrying) > 0),
 			"has_pending_orders": bool_to_str(len(self._order_list) > 0),
@@ -81,6 +93,7 @@ class Waiter(Being):
 			"any_client_waiting_for_food": bool_to_str(any(client._waiting_for_food for client in clients)),
 			"cook_has_pending_orders": bool_to_str(cook.hasPendingOrders()),
 		}
+
 
 	def _deliver_food(self, grid, clients: list[Client]) -> None:
 		delivery_food = None
@@ -105,7 +118,8 @@ class Waiter(Being):
 
 	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
 		state = self._build_state_features(clients, cook)
-		action = self._decision_tree.predict(state)
+		#action = self._decision_tree.predict(state)
+		action = self._ai.predict(state)
 		# print(f"Waiter decision: {action}")
 		if action == "give_order_list":
 			self.goTo(grid, order_list.getPosition())
