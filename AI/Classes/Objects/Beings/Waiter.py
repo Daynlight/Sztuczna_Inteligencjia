@@ -33,12 +33,14 @@ class Waiter(Being):
 		#self._decision_tree = build_waiter_decision_tree()
 
 		self._ai = WaiterAI()
-		# jeśli model istnieje → wczytaj
-		#if os.path.exists("waiter_model.pth"):
-		#	self._ai.load()
-		# jeśli model nie istnieje → wytrenuj i zapisz
-		#else:
-		self._ai.train()
+
+		model_path = os.path.join(os.path.dirname(os.path.abspath(WaiterAI.__module__.replace(".", "/"))),"waiter_model.pth")
+
+		if os.path.exists(model_path):
+			self._ai.load()
+		else:
+			self._ai.train()
+			
 
 
 	def receiveOrder(self, client: Client) -> None:

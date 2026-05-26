@@ -57,10 +57,7 @@ def state_to_tensor(state):
                 else 0.0
             )
 
-    return torch.tensor(
-        values,
-        dtype=torch.float32
-    )
+    return torch.tensor(values,dtype=torch.float32)
 
 # Logika generująca poprawne decyzje
 
@@ -87,16 +84,14 @@ def decision_logic(state: FeatureVector) -> str:
 # Generowanie datasetu
 # >1000 próbek na klasę
 
-def generate_dataset(samples_per_class=1500):
+def generate_dataset(samples_per_class=1000):
 
     X = []
     y = []
 
     saved_rows = []
 
-    class_counts = {
-        action: 0 for action in ACTIONS
-    }
+    class_counts = {action: 0 for action in ACTIONS}
 
     while min(class_counts.values()) < samples_per_class:
 
@@ -142,7 +137,7 @@ def generate_dataset(samples_per_class=1500):
     X = torch.stack(X)
     y = torch.tensor(y)
 
-    # zapis datasetu do folderu z network.py
+    # zapis datasetu do dataset.txt
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -190,24 +185,15 @@ class WaiterAI:
 
     def train(self):
 
-        X, y = generate_dataset(
-            samples_per_class=1500
-        )
+        X, y = generate_dataset(samples_per_class=1000)
 
         dataset = TensorDataset(X, y)
 
-        loader = DataLoader(
-            dataset,
-            batch_size=64,
-            shuffle=True
-        )
+        loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
         criterion = nn.CrossEntropyLoss()
 
-        optimizer = torch.optim.Adam(
-            self.model.parameters(),
-            lr=0.001
-        )
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
 
         epochs = 20
 
@@ -219,10 +205,7 @@ class WaiterAI:
 
                 prediction = self.model(batch_x)
 
-                loss = criterion(
-                    prediction,
-                    batch_y
-                )
+                loss = criterion(prediction, batch_y)
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -230,45 +213,37 @@ class WaiterAI:
 
                 total_loss += loss.item()
 
-            print(
-                f"Epoch {epoch+1}: "
-                f"{total_loss:.4f}"
-            )
+            print(f"Epoch {epoch+1}: "f"{total_loss:.4f}")
 
-        torch.save(
-            self.model.state_dict(),
-            "waiter_model.pth"
-        )
+        current_dir = os.path.dirname(os.path.abspath(__file__))
 
-        print("Model zapisany")
+        model_path = os.path.join(current_dir,"waiter_model.pth")
+
+        torch.save(self.model.state_dict(),model_path)
+
+        print(f"Model zapisany: {model_path}")
 
     def load(self):
 
-        self.model.load_state_dict(
-            torch.load("waiter_model.pth")
-        )
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        model_path = os.path.join(current_dir,"waiter_model.pth")
+
+        self.model.load_state_dict(torch.load(model_path))
 
         self.model.eval()
 
-    def predict(self,
-                state: FeatureVector):
+    def predict(self, state: FeatureVector):
 
-        x = state_to_tensor(
-            state
-        ).unsqueeze(0)
+        x = state_to_tensor(state).unsqueeze(0)
 
         with torch.no_grad():
 
             prediction = self.model(x)
 
-            action_id = torch.argmax(
-                prediction,
-                dim=1
-            ).item()
+            action_id = torch.argmax(prediction, dim=1).item()
 
-        return ID_TO_ACTION[
-            action_id
-        ]
+        return ID_TO_ACTION[action_id]
 
 
 # Test
@@ -281,7 +256,7 @@ if __name__ == "__main__":
 
     test_state = {
 
-        "all_waiting":"yes",
+        "amount_waiting":"3",
         "cook_has_available_food":"no",
         "has_carrying_food":"yes",
         "has_pending_orders":"no",
@@ -291,11 +266,6 @@ if __name__ == "__main__":
         "cook_has_pending_orders":"no"
     }
 
-    decision = ai.predict(
-        test_state
-    )
+    decision = ai.predict(test_state)
 
-    print(
-        "Decyzja:",
-        decision
-    )
+    print("Decyzja:",decision)
