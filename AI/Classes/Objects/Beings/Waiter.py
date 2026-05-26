@@ -33,12 +33,15 @@ class Waiter(Being):
 		#self._decision_tree = build_waiter_decision_tree()
 
 		self._ai = WaiterAI()
+		try:
+			model_path = os.path.join(os.path.dirname(os.path.abspath(WaiterAI.__module__.replace(".", "/"))),"waiter_model.pth")
 
-		model_path = os.path.join(os.path.dirname(os.path.abspath(WaiterAI.__module__.replace(".", "/"))),"waiter_model.pth")
-
-		if os.path.exists(model_path):
-			self._ai.load()
-		else:
+			if os.path.exists(model_path):
+				self._ai.load()
+			else:
+				self._ai.train()
+		except:
+			print("Błąd w ładowaniu waiter_model.pth")
 			self._ai.train()
 			
 
