@@ -33,6 +33,8 @@ class Waiter(Being):
 		#self._decision_tree = build_waiter_decision_tree()
 
 		self._ai = WaiterAI()
+  
+		#loading/generating AI model
 		try:
 			model_path = os.path.join(os.path.dirname(os.path.abspath(WaiterAI.__module__.replace(".", "/"))),"waiter_model.pth")
 
@@ -146,7 +148,7 @@ class Waiter(Being):
 					self.goTo(grid, client.getPosition())
 					self.receiveOrder(client)
 					return
-
+		"""
 		# Fallback to original rule-based behavior when the tree cannot decide.
 		all_waiting = len(clients) > 0 and all(client._waiting_for_food for client in clients)
 
@@ -170,3 +172,4 @@ class Waiter(Being):
 				self.receiveOrder(client)
 				return
 	
+"""

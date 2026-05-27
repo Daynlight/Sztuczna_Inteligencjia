@@ -207,6 +207,7 @@ class WaiterAI:
 
                 loss = criterion(prediction, batch_y)
 
+                #sprawdzanie pwływu na błąd, dodanie poprawionych wag i usunięcie poprzednich
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
