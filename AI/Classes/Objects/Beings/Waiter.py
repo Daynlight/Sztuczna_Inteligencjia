@@ -4,7 +4,7 @@ import numpy as np
 from Classes.Core.Object.Being import Being
 from Classes.Core.Grid.Grid import Grid
 
-#from Classes.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
+from Classes.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
 from Classes.Neural_Network.network import bool_to_str, WaiterAI
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Cook import Cook
@@ -30,7 +30,7 @@ class Waiter(Being):
 		self._carrying: list[Food] = []
 		self._order_list: list[Client, Food] = []
 		self._order_list_sent: bool = False
-		#self._decision_tree = build_waiter_decision_tree()
+		self._decision_tree = build_waiter_decision_tree()
 
 		self._ai = WaiterAI()
   
@@ -125,9 +125,11 @@ class Waiter(Being):
 
 	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
 		state = self._build_state_features(clients, cook)
-		#action = self._decision_tree.predict(state)
-		action = self._ai.predict(state)
-		# print(f"Waiter decision: {action}")
+		action = self._decision_tree.predict(state)
+		if action==None:
+			print("Decision tree failed")
+			action = self._ai.predict(state)
+		#print(f"Waiter decision: {action}")
 		if action == "give_order_list":
 			self.goTo(grid, order_list.getPosition())
 			self.giveOrderList(cook, order_list)
