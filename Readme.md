@@ -23,7 +23,6 @@ Zadaniem automatycznego kelnera jest przyjmowanie zamówień i dostarczanie posi
 - [TOC](#toc)
 - [Installation](#installation)
 - [Profiling](#profiling)
-- [Compiling](#compiling)
 - [Prerequisites](#prerequisites)
 - [Tasks](#tasks)
 
@@ -63,14 +62,6 @@ Zadaniem automatycznego kelnera jest przyjmowanie zamówień i dostarczanie posi
 python -m cProfile -o Profiler/profile.prof AI/main.py && gprof2dot -f pstats Profiler/profile.prof | dot -Tsvg -o Profiler/profile.svg
 ```
 
-
----
-
-
-## Compiling
-```bash
-PYTHONPATH=AI python3 -m nuitka --standalone --onefile --enable-plugin=numpy --include-data-dir=AI/Assets=Assets --include-data-dir=Models=Models AI/main.py
-```
 
 ---
 
@@ -122,5 +113,6 @@ PYTHONPATH=AI python3 -m nuitka --standalone --onefile --enable-plugin=numpy --i
 - [x] Own assets (Daniel, Martyna)
 - [x] Texture system (Daniel)
 - [x] Cleanups, Merging, Project structure (Daniel, Martyna) 
+- [x] Visualization in Readme (Daniel)
 - [x] Docs (Daniel)
 </details>
