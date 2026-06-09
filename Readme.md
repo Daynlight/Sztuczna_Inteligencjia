@@ -76,7 +76,6 @@ python -m cProfile -o Profiler/profile.prof AI/main.py && gprof2dot -f pstats Pr
 - **torch**: for neural network.
 - **pillow**: loading assets.
 - **gprof2dot**: profiling tool.
-- **nuitka**: compiling to exec.
 
 
 ---
