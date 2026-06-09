@@ -29,11 +29,11 @@ from Classes.Objects.Static.Carpet import Carpet
 from Classes.Core.Object.TableGroup import TableGroup
 
 from Classes.Menu import Menu
-from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
+from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FIXED_UPDATE_HZ
 from conf import GENETIC_SEATING_ARRANGEMENT, TABLE_ARRANGEMENT, CHAIR_ARRANGEMENT, OBSTACLE_ARRAY
 
 
-from Classes.Genetic_Algorithm.genetic import *
+from Classes.Core.Genetic_Algorithm.genetic import *
 
 
 
@@ -48,6 +48,8 @@ class Model:
     self._render_objects: np.ndarray[Object] = np.array([], dtype=Object)
     self._renderer: Renderer = None
     self._grid: Grid = None
+    self._fixed_acc_time = 0
+
 
   def __del__(self):
     if(self._renderer):
@@ -304,6 +306,7 @@ class Model:
     self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
     self._cook: Cook = Cook([2, 1], self._counters, offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
 
+
   def renderObjectsList(self) -> None:
     self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list,
                                           *(table for tg in self._tableGroup for table in tg.getTables()),
@@ -314,6 +317,7 @@ class Model:
       for ela in objects:
         self._render_objects.append(ela)
     self._render_objects = np.array(self._render_objects, dtype=Object)
+
 
   def collisionObjectList(self) -> None:
     self._collisions_objects: np.ndarray[Object] = np.array([ self._cook, *(table for tg in self._tableGroup for table in tg.getTables()),
@@ -343,14 +347,13 @@ class Model:
     
     # Create List of Collisions for path finding
     self.collisionObjectList()
-    
-
     self._grid.generateNeighborsGraph(self._collisions_objects, self._walls)
     
     self._menu = Menu()
     self.precomputeLight()
       
     self._initialized: bool = True
+
 
   def _initRenderer(self) -> None:
     if(self._renderer == None): self._renderer: Renderer = Renderer(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -365,14 +368,19 @@ class Model:
     if(self._initialized == False): self._initModel()
     if(self._renderer == None): self._initRenderer()
 
-    if len(self._clients) > 0:
-      for el in self._clients:
-        el.decide_order(self._menu.getFoodList())
+    if(self._fixed_acc_time >= 1 / FIXED_UPDATE_HZ):
+      self._fixed_acc_time -= 1 / FIXED_UPDATE_HZ
+      
+      if len(self._clients) > 0:
+        for el in self._clients:
+          el.decide_order(self._menu.getFoodList())
 
-    self._waiter.decide(self._grid, self._clients, self._cook, self.order_list)
-    self._cook.decide()
+      self._waiter.decide(self._grid, self._clients, self._cook, self.order_list, self._renderer, self._light)
+      self._cook.decide()
 
-    self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
+      self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
+    
+    self._fixed_acc_time += self._renderer._deltaTime
 
 
   def _renderOrder(self) -> None:
@@ -385,7 +393,6 @@ class Model:
 
 
   def renderFrame(self) -> None:
-
     if(self._initialized == False): self._initModel()
     if(self._renderer == None): self._initRenderer()
 
@@ -399,4 +406,3 @@ class Model:
 
 
     self._renderer.renderFrame()
-    

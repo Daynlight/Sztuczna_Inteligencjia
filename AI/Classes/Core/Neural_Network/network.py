@@ -2,12 +2,14 @@ import random
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
-import os
+
+from conf import PATH_TO_NN_DATASET, PATH_TO_NN_WAITER_MODEL
+
+
 
 FeatureVector = dict[str, str]
 
 # Konwersje
-
 FEATURES = [
     "amount_waiting",
     "cook_has_available_food",
@@ -137,11 +139,8 @@ def generate_dataset(samples_per_class=1000):
     X = torch.stack(X)
     y = torch.tensor(y)
 
-    # zapis datasetu do dataset.txt
-
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    dataset_path = os.path.join(current_dir,"dataset.txt")
+    # zapis datasetu do NN_dataset.txt
+    dataset_path = PATH_TO_NN_DATASET
 
     with open(dataset_path,"w",encoding="utf-8") as file:
         file.write("\n".join(saved_rows))
@@ -216,19 +215,14 @@ class WaiterAI:
 
             print(f"Epoch {epoch+1}: "f"{total_loss:.4f}")
 
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-
-        model_path = os.path.join(current_dir,"waiter_model.pth")
+        model_path = PATH_TO_NN_WAITER_MODEL
 
         torch.save(self.model.state_dict(),model_path)
 
         print(f"Model zapisany: {model_path}")
 
     def load(self):
-
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-
-        model_path = os.path.join(current_dir,"waiter_model.pth")
+        model_path = PATH_TO_NN_WAITER_MODEL
 
         self.model.load_state_dict(torch.load(model_path))
 
