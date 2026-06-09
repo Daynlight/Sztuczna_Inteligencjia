@@ -259,8 +259,8 @@ class Model:
     ], dtype=Painting)
     
     self._carpet: np.array[Carpet] = np.array(
-      [Carpet([x, y]) for x in range(5, 11) for y in range(4, 7)]
-      +[Carpet([x,y]) for x in range(5,7) for y in range(7,17)],
+      [Carpet([x, y]) for x in range(6, 11) for y in range(4, 7)]
+      +[Carpet([x,y]) for x in range(6,8) for y in range(7,19)],
     dtype=Carpet)
     
     self._grid.setCarpets(self._carpet)
@@ -291,7 +291,7 @@ class Model:
     # Create List of Collisions for path finding
     self._collisions_objects: np.ndarray[Object] = np.array([ self._cook, *(table for tg in self._tableGroup for table in tg.getTables()),
                                                               *(ci for tg in self._tableGroup for ci in tg.getChairInterface()),
-                                                              *self._counters, *self._sinks, *self._flowers ], dtype=Object)
+                                                              *self._counters, *self._sinks, *self._flowers, *self._fridges, *self._stoves], dtype=Object)
 
     self._grid.generateNeighborsGraph(self._collisions_objects, self._walls)
     

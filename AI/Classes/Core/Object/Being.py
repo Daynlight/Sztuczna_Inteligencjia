@@ -6,7 +6,7 @@ from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG
+from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG, BEING_DEFAULT_ROTATE_COST
 
 
 
@@ -46,7 +46,7 @@ class Being(Object):
 
     
   def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
-    return np.linalg.norm(np.array(current_position) - np.array(position))
+    return np.linalg.norm(np.array(current_position) - np.array(position), ord=1)
   
 
   def _find_adjacent_target(self, grid, position: np.ndarray[int]) -> np.ndarray[int] | None:
@@ -71,83 +71,83 @@ class Being(Object):
     return best_target
 
 
+  def updateKey(self, current, target, neighbor_key, cost, g_score, open_set, came_from):
+    # calculate new g_score previous + cost cost of tile
+    new_g_score = g_score[current] + cost
+
+    # checking if state ain't in g_score register and if new one is better then previous
+    if neighbor_key not in g_score or new_g_score < g_score[neighbor_key]:
+      g_score[neighbor_key] = new_g_score                                      # adding/updating to lowest g_score for state
+      f_score = new_g_score + self.calculateDistance(neighbor_key[0], target)  # calculating f_score = g_score + heuristic
+      heapq.heappush(open_set, (f_score, neighbor_key))                        # adding to priority queue base on f_score = g_score + heuristic 
+      came_from[neighbor_key] = current                                        # adding to graph
+
+
   def generatePath(self, grid, current_position: np.ndarray[int], target) -> None:
     if(target is None): return
-
+    
+    # start
     start = np.array(current_position)
     start_r = self._rotation
-
     start_key = (tuple(start), start_r)
+
+    # target
     target_pos = tuple(target)
     goal_node = None
 
+    # priority queue for A*
     open_set = []
     heapq.heappush(open_set, (0, start_key))
-    came_from = {}
     g_score = {start_key: 0}
     visited = set()
-    rotate_cost = 0.1
-    move_cost = 1
-    carpet_modyfication = 0.001
+
+    # graph
+    came_from = {}
     
     while open_set:
-      # getting tile to check
+      # getting tile from priority queue
       _, current = heapq.heappop(open_set)
       current_pos, current_r = current
 
+      # checking if we reach target
       if tuple(current_pos) == target_pos:
         goal_node = current
         break
 
+      # checking if we already check this state
       if current in visited:
         continue
       
       # adding current to visited list
       visited.add(current)
 
-      # get nodes from graph
+      # get neighbors from precomputed grid
       list_of_possible_movement = grid.getNeighbors(current_pos)
 
-      # move forward
+      # getting neighbor position when we go forward
       d = BEING_MOVEMENT_DIRECTIONS[current_r]
       neighbor_pos = np.array(current_pos, dtype=int) + d
 
-      # add element to check if needed
+      # check if forward neighbor is in possible movements precomputed in grid
       if tuple(neighbor_pos) in list_of_possible_movement:
+        # generate new key
         neighbor_key = (tuple(neighbor_pos), current_r)
+        
+        # update key
+        cost = grid.getCost(neighbor_key[0])
+        self.updateKey(current, target, neighbor_key, cost, g_score, open_set, came_from)
 
-        #tentative_g = g_score[current] + move_cost
-
-        cost = move_cost
-        if grid.isCarpet(neighbor_pos):
-            cost*= carpet_modyfication
-        tentative_g = g_score[current] + cost
-
-        if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
-          g_score[neighbor_key] = tentative_g
-          f_score = tentative_g + self.calculateDistance(neighbor_pos, target)
-          heapq.heappush(open_set, (f_score, neighbor_key))
-          came_from[neighbor_key] = current
-
-      # rotate left
+      # generate new key for left rotation
       new_r = (current_r - 1) % 4
       neighbor_key = (current_pos, new_r)
-      tentative_g = g_score[current] + rotate_cost
-      if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
-        g_score[neighbor_key] = tentative_g
-        f_score = tentative_g + self.calculateDistance(current_pos, target)
-        heapq.heappush(open_set, (f_score, neighbor_key))
-        came_from[neighbor_key] = current
+      # update key
+      self.updateKey(current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
-      # rotate right
+      # generate new key for right rotation
       new_r = (current_r + 1) % 4
       neighbor_key = (current_pos, new_r)
-      tentative_g = g_score[current] + rotate_cost
-      if neighbor_key not in g_score or tentative_g < g_score[neighbor_key]:
-        g_score[neighbor_key] = tentative_g
-        f_score = tentative_g + self.calculateDistance(current_pos, target)
-        heapq.heappush(open_set, (f_score, neighbor_key))
-        came_from[neighbor_key] = current
+      # update key
+      self.updateKey(current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
 
     if goal_node is None:
