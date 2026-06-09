@@ -111,6 +111,8 @@ PYTHONPATH=AI python3 -m nuitka --standalone --onefile --enable-plugin=numpy --i
 - [x] Delta time based movement (Daniel)
 - [x] Main Entry and Model Class (Daniel)
 - [x] Dynamic Lights (Daniel)
+- [x] Wall system and pre-computation of gird neighbors (Daniel, Martyna)
+- [x] Carpets system (Adam, Dawid)
 - [x] Isometric world (Martyna)
 - [x] Grid base world (Martyna)
 - [x] Camera Movement (Martyna)
