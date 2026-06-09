@@ -30,9 +30,10 @@ from Classes.Core.Object.TableGroup import TableGroup
 
 from Classes.Menu import Menu
 from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FIXED_UPDATE_HZ
+from conf import GENETIC_SEATING_ARRANGEMENT, TABLE_ARRANGEMENT, CHAIR_ARRANGEMENT, OBSTACLE_ARRAY
 
 
-
+from Classes.Core.Genetic_Algorithm.genetic import *
 
 
 
@@ -117,73 +118,6 @@ class Model:
     self._tableGroup: np.ndarray[TableGroup] = np.array([
 
       TableGroup(
-        tables=[Table([17,7], render_order=2)],
-        chairinterfaces=[
-            Chair([17,6], ChairOrientation.NORTHEAST),
-            Chair([16,7], ChairOrientation.NORTHWEST),
-            Chair([17,8], ChairOrientation.SOUTHWEST),
-            Chair([18,7], ChairOrientation.SOUTHEAST)
-        ]),
-
-      TableGroup(
-        tables=[
-          Table([12,6]),
-          Table([12,7]),
-          Table([13,6]),
-          Table([13,7])
-          ],
-        chairinterfaces=[
-          Chair([11,6], ChairOrientation.NORTHWEST),
-          Chair([11,7], ChairOrientation.NORTHWEST),
-          Chair([14,6], ChairOrientation.SOUTHEAST),
-          Chair([14,7], ChairOrientation.SOUTHEAST)]
-          ),
-
-      TableGroup(
-        tables=[
-          Table([12,11]),
-          Table([13,11])
-          ],
-        chairinterfaces=[
-          Chair([12,12], ChairOrientation.SOUTHWEST),
-          Chair([13,12], ChairOrientation.SOUTHWEST),
-          Chair([14,11], ChairOrientation.SOUTHEAST),
-          Chair([12,10], ChairOrientation.NORTHEAST),
-          Chair([13,10], ChairOrientation.NORTHEAST),
-          Chair([11,11], ChairOrientation.NORTHWEST)]
-          ),
-
-      TableGroup(
-        tables=[
-          Table([0, 8]),
-          Table([0, 9]),
-          Table([1, 8]),
-          Table([1, 9])
-          ],
-        chairinterfaces=[
-          Chair([0,7], ChairOrientation.NORTHEAST),
-          Chair([1,7], ChairOrientation.NORTHEAST),
-          Chair([2,8], ChairOrientation.SOUTHEAST),
-          Chair([2,9], ChairOrientation.SOUTHEAST),
-          Chair([0,10], ChairOrientation.SOUTHWEST),
-          Chair([1,10], ChairOrientation.SOUTHWEST)]
-          ),
-
-      TableGroup(
-        tables=[
-          Table([0, 15]),
-          Table([0, 16]),
-          Table([1, 15]),
-          Table([1, 16])
-          ],
-        chairinterfaces=[
-          Chair([0,14], ChairOrientation.NORTHEAST),
-          Chair([1,14], ChairOrientation.NORTHEAST),
-          Chair([0,17], ChairOrientation.SOUTHWEST),
-          Chair([1,17], ChairOrientation.SOUTHWEST)]
-          ),
-
-      TableGroup(
         tables=[
           Table([17, 2]),
           Table([17, 3]),
@@ -217,6 +151,92 @@ class Model:
           Couch([13,0], CouchOrientation.NORTHEAST)]
           ),
     ], dtype=TableGroup)
+
+
+    if GENETIC_SEATING_ARRANGEMENT == False:
+
+       self._tableGroup = np.concatenate(
+         (
+            self._tableGroup, 
+            np.array([
+
+              TableGroup(
+              tables=[Table([17,7], render_order=2)],
+              chairinterfaces=[
+                  Chair([17,6], ChairOrientation.NORTHEAST),
+                  Chair([16,7], ChairOrientation.NORTHWEST),
+                  Chair([17,8], ChairOrientation.SOUTHWEST),
+                  Chair([18,7], ChairOrientation.SOUTHEAST)
+              ]),
+
+            TableGroup(
+              tables=[
+                Table([12,6]),
+                Table([12,7]),
+                Table([13,6]),
+                Table([13,7])
+                ],
+              chairinterfaces=[
+                Chair([11,6], ChairOrientation.NORTHWEST),
+                Chair([11,7], ChairOrientation.NORTHWEST),
+                Chair([14,6], ChairOrientation.SOUTHEAST),
+                Chair([14,7], ChairOrientation.SOUTHEAST)]
+                ),
+
+            TableGroup(
+              tables=[
+                Table([12,11]),
+                Table([13,11])
+                ],
+              chairinterfaces=[
+                Chair([12,12], ChairOrientation.SOUTHWEST),
+                Chair([13,12], ChairOrientation.SOUTHWEST),
+                Chair([14,11], ChairOrientation.SOUTHEAST),
+                Chair([12,10], ChairOrientation.NORTHEAST),
+                Chair([13,10], ChairOrientation.NORTHEAST),
+                Chair([11,11], ChairOrientation.NORTHWEST)]
+                ),
+
+            TableGroup(
+              tables=[
+                Table([0, 8]),
+                Table([0, 9]),
+                Table([1, 8]),
+                Table([1, 9])
+                ],
+              chairinterfaces=[
+                Chair([0,7], ChairOrientation.NORTHEAST),
+                Chair([1,7], ChairOrientation.NORTHEAST),
+                Chair([2,8], ChairOrientation.SOUTHEAST),
+                Chair([2,9], ChairOrientation.SOUTHEAST),
+                Chair([0,10], ChairOrientation.SOUTHWEST),
+                Chair([1,10], ChairOrientation.SOUTHWEST)]
+                ),
+
+            TableGroup(
+              tables=[
+                Table([0, 15]),
+                Table([0, 16]),
+                Table([1, 15]),
+                Table([1, 16])
+                ],
+              chairinterfaces=[
+                Chair([0,14], ChairOrientation.NORTHEAST),
+                Chair([1,14], ChairOrientation.NORTHEAST),
+                Chair([0,17], ChairOrientation.SOUTHWEST),
+                Chair([1,17], ChairOrientation.SOUTHWEST)
+                ]
+            ),
+       ], dtype=TableGroup)
+      )
+    )
+       
+    else:
+      ga_result = np.array(
+          genetic_algorithm(TABLE_ARRANGEMENT, CHAIR_ARRANGEMENT, OBSTACLE_ARRAY), 
+          dtype=object
+      )
+      self._tableGroup = np.concatenate((self._tableGroup, ga_result))
 
 
     self._counters: np.ndarray[Counter] = np.array([
@@ -263,11 +283,25 @@ class Model:
     dtype=Carpet)
 
   def initBeings(self)-> None:
-    self._clients: np.ndarray[Client] = np.array([
-      Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
-      Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
-      Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
-    ], dtype=Client)
+
+    if GENETIC_SEATING_ARRANGEMENT == False:
+      self._clients: np.ndarray[Client] = np.array([
+        Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
+        Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
+        Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
+      ], dtype=Client)
+
+    else:
+        all_chairs = []
+        for group in self._tableGroup:
+            all_chairs.extend(group._chairinterface)
+            
+        chosen_chairs = random.sample(all_chairs, min(6, len(all_chairs)))
+        
+        self._clients = np.array([
+            Client(chair.getPosition().copy(), [TILE_SIZE/2, TILE_SIZE/2])
+            for chair in chosen_chairs
+        ], dtype=Client)
 
     self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
     self._cook: Cook = Cook([2, 1], self._counters, offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])

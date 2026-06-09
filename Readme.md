@@ -92,7 +92,7 @@ python -m cProfile -o Profiler/profile.prof AI/main.py && gprof2dot -f pstats Pr
 - [x] [A Star](docs/lab2%20environment-task.pdf) (Daniel)
 - [x] [Decision Tree](docs/lab2%20environment-task.pdf) (Dawid)
 - [x] [Neural Network](docs/lab2%20environment-task.pdf) (Adam)
-- [ ] [Genetic Algorithm](docs/lab2%20environment-task.pdf) (Martyna)
+- [x] [Genetic Algorithm](docs/lab2%20environment-task.pdf) (Martyna)
 </details>
   
 <details>
