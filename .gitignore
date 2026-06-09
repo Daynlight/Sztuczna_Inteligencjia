@@ -4,3 +4,4 @@
 __pycache__/
 decision_tree.txt
 dataset.txt
+*.pth
