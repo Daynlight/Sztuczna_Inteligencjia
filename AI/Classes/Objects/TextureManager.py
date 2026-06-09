@@ -1,5 +1,4 @@
 import os
-import pygame
 
 from Classes.Core.Renderer.Texture import Texture
 
@@ -144,5 +143,15 @@ PAINTING_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade",
 
 # Carpet
 
-CARPET_TEXTURE= Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Carpet", "Carpet.png"),
+CARPET_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Carpet", "Carpet.png"),
+																		 size=[2, 1])
+
+# Search Textures
+CORRECT_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Search", "Correct.png"),
+																		 size=[2, 1])
+
+EXPLORED_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Search", "Explored.png"),
+																		 size=[2, 1])
+
+TO_CHECK_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Search", "ToCheck.png"),
 																		 size=[2, 1])

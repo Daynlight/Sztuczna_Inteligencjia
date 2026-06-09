@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 
 from Classes.Core.Renderer.Light import Light
-from Classes.Core.Animation.Frame import Frame
+from Classes.Core.Renderer.Animation.Frame import Frame
 
 
 

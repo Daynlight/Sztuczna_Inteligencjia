@@ -1,4 +1,3 @@
-import os
 import numpy as np
 
 from Classes.Core.Object.Being import Being
@@ -6,8 +5,8 @@ from Classes.Core.Object.Being import Being
 from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.Counter import Counter
 import Classes.Objects.TextureManager as TextureManager
-from Classes.Core.Animation.Animation import Animation
-from Classes.Core.Animation.Frame import Frame
+from Classes.Core.Renderer.Animation.Animation import Animation
+from Classes.Core.Renderer.Animation.Frame import Frame
 
 from conf import DEBUG
 

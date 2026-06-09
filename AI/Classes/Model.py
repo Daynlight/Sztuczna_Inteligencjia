@@ -1,5 +1,4 @@
 import numpy as np
-import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from Classes.Core.Renderer.Renderer import Renderer
@@ -30,10 +29,11 @@ from Classes.Objects.Static.Carpet import Carpet
 from Classes.Core.Object.TableGroup import TableGroup
 
 from Classes.Menu import Menu
-from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR
+from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FIXED_UPDATE_HZ
+from conf import GENETIC_SEATING_ARRANGEMENT, TABLE_ARRANGEMENT, CHAIR_ARRANGEMENT, OBSTACLE_ARRAY
 
 
-
+from Classes.Core.Genetic_Algorithm.genetic import *
 
 
 
@@ -48,6 +48,8 @@ class Model:
     self._render_objects: np.ndarray[Object] = np.array([], dtype=Object)
     self._renderer: Renderer = None
     self._grid: Grid = None
+    self._fixed_acc_time = 0
+
 
   def __del__(self):
     if(self._renderer):
@@ -69,12 +71,7 @@ class Model:
         future.result()
 
 
-  def _initModel(self) -> None:
-    if(self._initialized == True): return
-
-    ## Init Grid
-    self._grid: Grid = Grid(GRID_X, GRID_Y , TILE_SIZE, MARGIN_HORIZONTAL, MARGIN_VERTICAL)
-
+  def initLights(self) -> None:
     ## Init Lights
     self._light: np.ndarray[Light] = np.array([
       Light([self._grid._grid_tiles[0][0].getRenderPos()[0],                   self._grid._grid_tiles[0][0].getRenderPos()[1],                   90], [255/255, 200/255, 160/255], 0.35),
@@ -90,8 +87,10 @@ class Model:
       Light([self._grid._grid_tiles[17][3].getRenderPos()[0],  self._grid._grid_tiles[19][1].getRenderPos()[1],  90], [255/255, 200/255, 160/255], 0.4)
     ], dtype=Light)
 
-    ## Init Walls
+
+  def initWalls(self) -> None:
     self._walls = np.array([
+
       # Kitchen
       Wall(texture=TextureManager.WALL2_TEXTURE, position=[0, 0], direction=[0, 1], numbers=4),
       Wall(texture=TextureManager.WALL2_ROTATED_TEXTURE, position=[0, 0], direction=[1, 0], numbers=4),
@@ -111,78 +110,12 @@ class Model:
       
     ], dtype=Wall)
 
+
+  def initObjects(self) -> None:
+
     self.order_list: Object = OrderList(position=[5, 0])
 
-    ## Init Objects
-
     self._tableGroup: np.ndarray[TableGroup] = np.array([
-
-      TableGroup(
-        tables=[Table([17,7], render_order=2)],
-        chairinterfaces=[
-            Chair([17,6], ChairOrientation.NORTHEAST),
-            Chair([16,7], ChairOrientation.NORTHWEST),
-            Chair([17,8], ChairOrientation.SOUTHWEST),
-            Chair([18,7], ChairOrientation.SOUTHEAST)
-        ]),
-
-      TableGroup(
-        tables=[
-          Table([12,6]),
-          Table([12,7]),
-          Table([13,6]),
-          Table([13,7])
-          ],
-        chairinterfaces=[
-          Chair([11,6], ChairOrientation.NORTHWEST),
-          Chair([11,7], ChairOrientation.NORTHWEST),
-          Chair([14,6], ChairOrientation.SOUTHEAST),
-          Chair([14,7], ChairOrientation.SOUTHEAST)]
-          ),
-
-      TableGroup(
-        tables=[
-          Table([12,11]),
-          Table([13,11])
-          ],
-        chairinterfaces=[
-          Chair([12,12], ChairOrientation.SOUTHWEST),
-          Chair([13,12], ChairOrientation.SOUTHWEST),
-          Chair([14,11], ChairOrientation.SOUTHEAST),
-          Chair([12,10], ChairOrientation.NORTHEAST),
-          Chair([13,10], ChairOrientation.NORTHEAST),
-          Chair([11,11], ChairOrientation.NORTHWEST)]
-          ),
-
-      TableGroup(
-        tables=[
-          Table([0, 8]),
-          Table([0, 9]),
-          Table([1, 8]),
-          Table([1, 9])
-          ],
-        chairinterfaces=[
-          Chair([0,7], ChairOrientation.NORTHEAST),
-          Chair([1,7], ChairOrientation.NORTHEAST),
-          Chair([2,8], ChairOrientation.SOUTHEAST),
-          Chair([2,9], ChairOrientation.SOUTHEAST),
-          Chair([0,10], ChairOrientation.SOUTHWEST),
-          Chair([1,10], ChairOrientation.SOUTHWEST)]
-          ),
-
-      TableGroup(
-        tables=[
-          Table([0, 15]),
-          Table([0, 16]),
-          Table([1, 15]),
-          Table([1, 16])
-          ],
-        chairinterfaces=[
-          Chair([0,14], ChairOrientation.NORTHEAST),
-          Chair([1,14], ChairOrientation.NORTHEAST),
-          Chair([0,17], ChairOrientation.SOUTHWEST),
-          Chair([1,17], ChairOrientation.SOUTHWEST)]
-          ),
 
       TableGroup(
         tables=[
@@ -218,6 +151,92 @@ class Model:
           Couch([13,0], CouchOrientation.NORTHEAST)]
           ),
     ], dtype=TableGroup)
+
+
+    if GENETIC_SEATING_ARRANGEMENT == False:
+
+       self._tableGroup = np.concatenate(
+         (
+            self._tableGroup, 
+            np.array([
+
+              TableGroup(
+              tables=[Table([17,7], render_order=2)],
+              chairinterfaces=[
+                  Chair([17,6], ChairOrientation.NORTHEAST),
+                  Chair([16,7], ChairOrientation.NORTHWEST),
+                  Chair([17,8], ChairOrientation.SOUTHWEST),
+                  Chair([18,7], ChairOrientation.SOUTHEAST)
+              ]),
+
+            TableGroup(
+              tables=[
+                Table([12,6]),
+                Table([12,7]),
+                Table([13,6]),
+                Table([13,7])
+                ],
+              chairinterfaces=[
+                Chair([11,6], ChairOrientation.NORTHWEST),
+                Chair([11,7], ChairOrientation.NORTHWEST),
+                Chair([14,6], ChairOrientation.SOUTHEAST),
+                Chair([14,7], ChairOrientation.SOUTHEAST)]
+                ),
+
+            TableGroup(
+              tables=[
+                Table([12,11]),
+                Table([13,11])
+                ],
+              chairinterfaces=[
+                Chair([12,12], ChairOrientation.SOUTHWEST),
+                Chair([13,12], ChairOrientation.SOUTHWEST),
+                Chair([14,11], ChairOrientation.SOUTHEAST),
+                Chair([12,10], ChairOrientation.NORTHEAST),
+                Chair([13,10], ChairOrientation.NORTHEAST),
+                Chair([11,11], ChairOrientation.NORTHWEST)]
+                ),
+
+            TableGroup(
+              tables=[
+                Table([0, 8]),
+                Table([0, 9]),
+                Table([1, 8]),
+                Table([1, 9])
+                ],
+              chairinterfaces=[
+                Chair([0,7], ChairOrientation.NORTHEAST),
+                Chair([1,7], ChairOrientation.NORTHEAST),
+                Chair([2,8], ChairOrientation.SOUTHEAST),
+                Chair([2,9], ChairOrientation.SOUTHEAST),
+                Chair([0,10], ChairOrientation.SOUTHWEST),
+                Chair([1,10], ChairOrientation.SOUTHWEST)]
+                ),
+
+            TableGroup(
+              tables=[
+                Table([0, 15]),
+                Table([0, 16]),
+                Table([1, 15]),
+                Table([1, 16])
+                ],
+              chairinterfaces=[
+                Chair([0,14], ChairOrientation.NORTHEAST),
+                Chair([1,14], ChairOrientation.NORTHEAST),
+                Chair([0,17], ChairOrientation.SOUTHWEST),
+                Chair([1,17], ChairOrientation.SOUTHWEST)
+                ]
+            ),
+       ], dtype=TableGroup)
+      )
+    )
+       
+    else:
+      ga_result = np.array(
+          genetic_algorithm(TABLE_ARRANGEMENT, CHAIR_ARRANGEMENT, OBSTACLE_ARRAY), 
+          dtype=object
+      )
+      self._tableGroup = np.concatenate((self._tableGroup, ga_result))
 
 
     self._counters: np.ndarray[Counter] = np.array([
@@ -262,21 +281,33 @@ class Model:
       [Carpet([x, y]) for x in range(6, 11) for y in range(4, 7)]
       +[Carpet([x,y]) for x in range(6,8) for y in range(7,19)],
     dtype=Carpet)
-    
-    self._grid.setCarpets(self._carpet)
 
-    self._clients: np.ndarray[Client] = np.array([
-      Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
-      Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
-      Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
-    ], dtype=Client)
+  def initBeings(self)-> None:
+
+    if GENETIC_SEATING_ARRANGEMENT == False:
+      self._clients: np.ndarray[Client] = np.array([
+        Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
+        Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
+        Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
+      ], dtype=Client)
+
+    else:
+        all_chairs = []
+        for group in self._tableGroup:
+            all_chairs.extend(group._chairinterface)
+            
+        chosen_chairs = random.sample(all_chairs, min(6, len(all_chairs)))
+        
+        self._clients = np.array([
+            Client(chair.getPosition().copy(), [TILE_SIZE/2, TILE_SIZE/2])
+            for chair in chosen_chairs
+        ], dtype=Client)
 
     self._waiter: Waiter = Waiter([6, 6], [TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
     self._cook: Cook = Cook([2, 1], self._counters, offset=[TILE_SIZE/2, TILE_SIZE/2 - TILE_SIZE])
 
-    
 
-    # Create List of Objects to Render
+  def renderObjectsList(self) -> None:
     self._render_objects: list[Object] = [ self._waiter, self._cook, *self._clients, self.order_list,
                                           *(table for tg in self._tableGroup for table in tg.getTables()),
                                           *(ci for tg in self._tableGroup for ci in tg.getChairInterface()), 
@@ -286,19 +317,43 @@ class Model:
       for ela in objects:
         self._render_objects.append(ela)
     self._render_objects = np.array(self._render_objects, dtype=Object)
-    
-    
-    # Create List of Collisions for path finding
+
+
+  def collisionObjectList(self) -> None:
     self._collisions_objects: np.ndarray[Object] = np.array([ self._cook, *(table for tg in self._tableGroup for table in tg.getTables()),
                                                               *(ci for tg in self._tableGroup for ci in tg.getChairInterface()),
                                                               *self._counters, *self._sinks, *self._flowers, *self._fridges, *self._stoves], dtype=Object)
 
+
+  def _initModel(self) -> None:
+    if(self._initialized == True): return
+
+    ## Init Grid
+    self._grid: Grid = Grid(GRID_X, GRID_Y , TILE_SIZE, MARGIN_HORIZONTAL, MARGIN_VERTICAL)
+    self.initLights() #must be called after the creation of grid
+
+    ## Init Walls
+    self.initWalls()
+
+    ## Init Objects
+    self.initObjects()
+    self._grid.setCarpets(self._carpet)
+
+    ## Init Beings
+    self.initBeings()
+
+    # Create List of Objects to Render
+    self.renderObjectsList()
+    
+    # Create List of Collisions for path finding
+    self.collisionObjectList()
     self._grid.generateNeighborsGraph(self._collisions_objects, self._walls)
     
     self._menu = Menu()
     self.precomputeLight()
       
     self._initialized: bool = True
+
 
   def _initRenderer(self) -> None:
     if(self._renderer == None): self._renderer: Renderer = Renderer(TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -313,14 +368,19 @@ class Model:
     if(self._initialized == False): self._initModel()
     if(self._renderer == None): self._initRenderer()
 
-    if len(self._clients) > 0:
-      for el in self._clients:
-        el.decide_order(self._menu.getFoodList())
+    if(self._fixed_acc_time >= 1 / FIXED_UPDATE_HZ):
+      self._fixed_acc_time -= 1 / FIXED_UPDATE_HZ
+      
+      if len(self._clients) > 0:
+        for el in self._clients:
+          el.decide_order(self._menu.getFoodList())
 
-    self._waiter.decide(self._grid, self._clients, self._cook, self.order_list)
-    self._cook.decide()
+      self._waiter.decide(self._grid, self._clients, self._cook, self.order_list, self._renderer, self._light)
+      self._cook.decide()
 
-    self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
+      self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
+    
+    self._fixed_acc_time += self._renderer._deltaTime
 
 
   def _renderOrder(self) -> None:
@@ -331,6 +391,7 @@ class Model:
     self._render_objects: np.ndarray[Object] = self._render_objects[indices]
     
 
+
   def renderFrame(self) -> None:
     if(self._initialized == False): self._initModel()
     if(self._renderer == None): self._initRenderer()
@@ -339,9 +400,6 @@ class Model:
 
     self._renderer.backgroundColor(BACKGROUND_COLOR)
     self._grid.draw(self._renderer, self._light)
-
-    # for el in self._walls:
-    #   el.render(self._renderer.getSurface(), self._grid, self._renderer, self._light)
 
     for el in self._render_objects:
       el.render(self._renderer.getSurface(), self._grid, self._renderer, self._light)

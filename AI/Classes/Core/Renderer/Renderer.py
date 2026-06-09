@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import time
 
 from conf import WORLD_HEIGHT, WORLD_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, CAMERA_SPEED
 
@@ -65,7 +66,7 @@ class Renderer:
 
     self._events: np.ndarray[pygame.event.Event] = None
     self._event_keys: np.ndarray[np.int_] = None
-    self._clock: pygame.time.Clock = None
+    self._clock: time.time = None
     self._deltaTime: float = 0.0
 
     self._mousePosition: np.ndarray[int] = None
@@ -79,7 +80,7 @@ class Renderer:
 
 
   def _createSurface(self) -> None:
-    self._surface: pygame.Surface = pygame.display.set_mode((self._size[0], self._size[1]))
+    self._surface: pygame.Surface = pygame.display.set_mode((self._size[0], self._size[1]), vsync=0)
     pygame.display.set_caption(self._title)
 
 
@@ -156,13 +157,14 @@ class Renderer:
     if(self._surface == None): self._createSurface()
     if(self._world_surface == None): self.createWorldSurface()
     if(self._camera == None): self._createCamera()
-    if(self._clock == None): self._clock = pygame.time.Clock()
+    if(self._clock == None): self._clock = time.time()
 
     self._surface.blit(self._world_surface, (0, 0), self._camera.getRect())
     
     pygame.display.flip()
 
-    self._deltaTime: float = self._clock.tick(60) / 1000.0 
+    self._deltaTime: float =  (time.time() - self._clock)
+    self._clock = time.time()
 
     self._pollEvents()
 
