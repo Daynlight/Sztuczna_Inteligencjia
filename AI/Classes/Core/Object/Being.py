@@ -1,12 +1,15 @@
 import numpy as np
 import heapq
+from collections import deque
+import pygame
 
 from Classes.Core.Object.Object import Object
 from Classes.Core.Object.Wall import Wall
 
 from Classes.Core.Renderer.Texture import Texture
 
-from conf import GRID_X, GRID_Y, BEING_MOVEMENT_DIRECTIONS, DEBUG, BEING_DEFAULT_ROTATE_COST
+from conf import GRID_X, GRID_Y, TILE_SIZE, BEING_MOVEMENT_DIRECTIONS, DEBUG, BEING_DEFAULT_ROTATE_COST, PATH_SEARCH_VARIANTS, PATH_SEARCH_VARIANT, SEARCH_VISUALIZATION
+from Classes.Objects.TextureManager import TO_CHECK_TEXTURE, EXPLORED_TEXTURE, CORRECT_TEXTURE
 
 
 
@@ -25,18 +28,27 @@ class Being(Object):
     self._path: list = []
     self._accTime: float = 0.0
     self._rotation: int = 0
+    self._visualize: dict[tuple, Object] = {}
   
 
   def pathIsEmpty(self):
     return len(self._path) == 0
 
 
-  def goTo(self, grid, goal) -> None:
+  def goTo(self, grid, goal, renderer, lights) -> None:
     if goal is None: 
       return
     
+    self._visualize = {}
+    
     target = self._find_adjacent_target(grid, goal)
-    self.generatePath(grid, self.getPosition(), target)
+    match PATH_SEARCH_VARIANT:
+      case PATH_SEARCH_VARIANTS.A_STAR:
+        self.generatePathAStar(grid, self.getPosition(), target, renderer, lights)
+      case PATH_SEARCH_VARIANTS.BFS:
+        self.generatePathBFS(grid, self.getPosition(), target, renderer, lights)
+      case _:
+        self.generatePathAStar(grid, self.getPosition(), target, renderer, lights)
 
 
   def rotate(self, direction: str) -> None:
@@ -78,7 +90,7 @@ class Being(Object):
     return best_target
 
 
-  def updateKey(self, current, target, neighbor_key, cost, g_score, open_set, came_from):
+  def updateAStarKey(self, current, target, neighbor_key, cost, g_score, open_set, came_from):
     # calculate new g_score previous + cost cost of tile
     new_g_score = g_score[current] + cost
 
@@ -90,7 +102,13 @@ class Being(Object):
       came_from[neighbor_key] = current                                        # adding to graph
 
 
-  def generatePath(self, grid, current_position: np.ndarray[int], target) -> None:
+  def updateBFSKey(self, current, neighbor_key, queue, came_from):
+    if neighbor_key not in came_from:
+      queue.append(neighbor_key)           # add to queue 
+      came_from[neighbor_key] = current    # adding to graph
+
+
+  def generatePathAStar(self, grid, current_position: np.ndarray[int], target, renderer, lights) -> None:
     if(target is None): return
     
     # start
@@ -115,6 +133,12 @@ class Being(Object):
       # getting tile from priority queue
       _, current = heapq.heappop(open_set)
       current_pos, current_r = current
+      
+      if(SEARCH_VISUALIZATION):
+        self._visualize[current] = Object(10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+        self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+        pygame.display.flip()
 
       # checking if we reach target
       if current_pos == target_pos:
@@ -142,20 +166,39 @@ class Being(Object):
         
         # update key
         cost = grid.getCost(neighbor_pos)
-        self.updateKey(current, target_pos, neighbor_key, cost, g_score, open_set, came_from)
+        self.updateAStarKey(current, target_pos, neighbor_key, cost, g_score, open_set, came_from)
+        if neighbor_key not in visited:
+          if(SEARCH_VISUALIZATION):
+            self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+            self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+            renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+            pygame.display.flip()
 
       # generate new key for left rotation
       new_r = (current_r - 1) % 4
       neighbor_key = (current_pos, new_r)
       # update key
-      self.updateKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+      self.updateAStarKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+
+      if neighbor_key not in visited:
+        if(SEARCH_VISUALIZATION):
+          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+          pygame.display.flip()
 
       # generate new key for right rotation
       new_r = (current_r + 1) % 4
       neighbor_key = (current_pos, new_r)
       # update key
-      self.updateKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+      self.updateAStarKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
+      if neighbor_key not in visited:
+        if(SEARCH_VISUALIZATION):
+          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+          pygame.display.flip()
 
     if goal_node is None:
       if(DEBUG): print("No path found!")
@@ -170,8 +213,141 @@ class Being(Object):
       final_path.append(temp)
       temp = came_from[temp]
 
+      if(SEARCH_VISUALIZATION):
+        temp_pos, temp_r = temp
+        self._visualize[temp] = Object(10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
+        self._visualize[temp].render(renderer.getSurface(), grid, renderer, lights)
+        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+        pygame.display.flip()
+
     # reverse path
     self._path = final_path[::-1]
+
+    if(SEARCH_VISUALIZATION):
+      pygame.time.wait(1000)
+    
+    self._visualize.clear()
+
+
+  def generatePathBFS(self, grid, current_position: np.ndarray[int], target, renderer, lights) -> None:
+    if(target is None): return
+    
+    # start
+    start_pos = tuple(current_position)
+    target_pos = tuple(target)
+    
+    start_r = self._rotation
+    start_key = (start_pos, start_r)
+
+    goal_node = None
+
+    # queue for BFS
+    queue = deque()
+    queue.append(start_key)
+    visited = set()
+
+    # graph
+    came_from = {}
+    
+    while len(queue) > 0:
+      # getting tile from priority queue
+      current = queue.popleft()
+      current_pos, current_r = current
+
+      if(SEARCH_VISUALIZATION):
+        self._visualize[current] = Object(10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+        self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+        pygame.display.flip()
+
+      # checking if we reach target
+      if current_pos == target_pos:
+        goal_node = current
+        break
+
+      # checking if we already check this state
+      if current in visited:
+        continue
+      
+      # adding current to visited list
+      visited.add(current)
+
+      # get neighbors from precomputed grid
+      list_of_possible_movement = grid.getNeighbors(current_pos)
+
+      # getting neighbor position when we go forward
+      d = BEING_MOVEMENT_DIRECTIONS[current_r]
+      neighbor_pos = (current_pos[0] + int(d[0]), current_pos[1] + int(d[1]))
+      
+      # check if forward neighbor is in possible movements precomputed in grid
+      if neighbor_pos in list_of_possible_movement:
+        # generate new key
+        neighbor_key = (neighbor_pos, current_r)
+        
+        # update key
+        self.updateBFSKey(current, neighbor_key, queue, came_from)
+
+        if neighbor_key not in visited:
+          if(SEARCH_VISUALIZATION):
+            self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+            self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+            renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+            pygame.display.flip()
+
+      # generate new key for left rotation
+      new_r = (current_r - 1) % 4
+      neighbor_key = (current_pos, new_r)
+      # update key
+      self.updateBFSKey(current, neighbor_key, queue, came_from)
+
+      if neighbor_key not in visited:
+        if(SEARCH_VISUALIZATION):
+          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+          pygame.display.flip()
+
+      # generate new key for right rotation
+      new_r = (current_r + 1) % 4
+      neighbor_key = (current_pos, new_r)
+      # update key
+      self.updateBFSKey(current, neighbor_key, queue, came_from)
+
+      if neighbor_key not in visited:
+        if(SEARCH_VISUALIZATION):
+          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
+          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+          pygame.display.flip()
+
+    if goal_node is None:
+      if(DEBUG): print("No path found!")
+      self._path = []
+      return
+    
+    final_path = []
+    temp = goal_node
+
+    # move through came_from to start
+    while temp != start_key:
+      final_path.append(temp)
+      temp = came_from[temp]
+
+      if(SEARCH_VISUALIZATION):
+        temp_pos, temp_r = temp
+        self._visualize[temp] = Object(10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
+        self._visualize[temp].render(renderer.getSurface(), grid, renderer, lights)
+        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
+        pygame.display.flip()
+
+
+    # reverse path
+    self._path = final_path[::-1]
+
+    if(SEARCH_VISUALIZATION):
+      pygame.time.wait(1000)
+    
+    self._visualize.clear()
 
 
   def makeStep(self, deltaTime: float, acceleration: float) -> None:

@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 import os
+from enum import Enum, auto
 
 
 
@@ -32,11 +33,25 @@ BEING_MOVEMENT_DIRECTIONS = [
   np.array([-1, 0])   # west
 ]
 
+class PATH_SEARCH_VARIANTS(Enum):
+  BFS = auto()
+  A_STAR = auto()
+
+PATH_SEARCH_VARIANT = PATH_SEARCH_VARIANTS.A_STAR
+SEARCH_VISUALIZATION = False
+
+class LEARN_VARIANTS(Enum):
+  NEURAL_NETWORK = auto()
+  DECISION_TREE = auto()
+
+LEARN_SEARCH_VARIANT = LEARN_VARIANTS.NEURAL_NETWORK
+
 BEING_DEFAULT_MOVE_COST = 1
 BEING_DEFAULT_ROTATE_COST = 0.1
 
 FIXED_UPDATE_HZ = 60
 FPS_SAMPLES = 10
+
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600

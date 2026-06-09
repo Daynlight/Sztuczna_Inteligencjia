@@ -341,7 +341,7 @@ class Model:
         for el in self._clients:
           el.decide_order(self._menu.getFoodList())
 
-      self._waiter.decide(self._grid, self._clients, self._cook, self.order_list)
+      self._waiter.decide(self._grid, self._clients, self._cook, self.order_list, self._renderer, self._light)
       self._cook.decide()
 
       self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
