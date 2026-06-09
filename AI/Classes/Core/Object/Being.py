@@ -25,7 +25,11 @@ class Being(Object):
     self._path: list = []
     self._accTime: float = 0.0
     self._rotation: int = 0
-    
+  
+
+  def pathIsEmpty(self):
+    return len(self._path) == 0
+
 
   def goTo(self, grid, goal) -> None:
     if goal is None: 
@@ -178,7 +182,7 @@ class Being(Object):
 
     if np.array_equal(next_pos_arr, current_pos_arr):
       # rotate
-      if(DEBUG): print(f"New rotation: {"north" if next_r == 0 else "east" if next_r == 1 else "south" if next_r == 2 else "west"}")
+      if DEBUG: print(f"New rotation: {'north' if next_r == 0 else 'east' if next_r == 1 else 'south' if next_r == 2 else 'west'}")
       self._rotation = next_r
       self._path.pop(0)
     else:

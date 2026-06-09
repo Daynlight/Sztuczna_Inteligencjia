@@ -1,4 +1,3 @@
-import os
 import numpy as np
 
 from Classes.Core.Object.Being import Being
@@ -35,6 +34,9 @@ class Cook(Being):
 	
 	def hasAvailableFood(self) -> bool:
 		return len(self._available_food) > 0
+
+	def hasPendingOrders(self) -> bool:
+		return len(self._food_to_make) > 0
 
 	def decide(self) -> None:
 		if self._food_to_make:

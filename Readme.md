@@ -33,66 +33,22 @@ którego należy go dostarczyć.
   - [Reinforcement learning vs loss function in each iteration.](#reinforcement-learning-vs-loss-function-in-each-iteration)
 - [Classes](#classes)
   - [Model](#model)
-    - [About](#about)
-    - [Variables](#variables)
-    - [Methods and Functions](#methods-and-functions)
   - [Camera](#camera)
-    - [About](#about-1)
-    - [Variables](#variables-1)
-    - [Methods and Functions](#methods-and-functions-1)
   - [Renderer](#renderer)
-    - [About](#about-2)
-    - [Variables](#variables-2)
-    - [Methods and Functions](#methods-and-functions-2)
   - [Grid\_Tile](#grid_tile)
-    - [About](#about-3)
-    - [Variables](#variables-3)
-    - [Methods and Functions](#methods-and-functions-3)
   - [Grid](#grid)
-    - [About](#about-4)
-    - [Variables](#variables-4)
-    - [Methods and Functions](#methods-and-functions-4)
   - [Wall](#wall)
-    - [About](#about-5)
-    - [Variables](#variables-5)
-    - [Methods and Functions](#methods-and-functions-5)
   - [Object](#object)
-    - [About](#about-6)
-    - [Variables](#variables-6)
-    - [Methods and Functions](#methods-and-functions-6)
   - [Orientation Enum](#orientation-enum)
   - [Chair inherit Object](#chair-inherit-object)
-    - [About](#about-7)
-    - [Variables](#variables-7)
-    - [Methods and Functions](#methods-and-functions-7)
   - [Counter inherit Object](#counter-inherit-object)
-    - [About](#about-8)
-    - [Methods and Functions](#methods-and-functions-8)
   - [Food inherit Object](#food-inherit-object)
-    - [About](#about-9)
-    - [Methods and Functions](#methods-and-functions-9)
   - [Table inherit Object](#table-inherit-object)
-    - [About](#about-10)
-    - [Variables](#variables-8)
-    - [Methods and Functions](#methods-and-functions-10)
   - [Beings inherit Object](#beings-inherit-object)
-    - [About](#about-11)
-    - [Variables](#variables-9)
-    - [Methods and Functions](#methods-and-functions-11)
   - [Waiter inherit Beings](#waiter-inherit-beings)
-    - [About](#about-12)
-    - [Variables](#variables-10)
-    - [Methods and Functions](#methods-and-functions-12)
   - [Client inherit Beings](#client-inherit-beings)
-    - [About](#about-13)
-    - [Variables](#variables-11)
-    - [Methods and Functions](#methods-and-functions-13)
   - [Cook inherit Beings](#cook-inherit-beings)
-    - [About](#about-14)
-    - [Variables](#variables-12)
-    - [Methods and Functions](#methods-and-functions-14)
   - [Conf.py file](#confpy-file)
-    - [About](#about-15)
 - [Prerequisites](#prerequisites)
 - [Tasks:](#tasks)
 
@@ -201,6 +157,12 @@ Main function used for initialization, training and visualization. Provides one 
   * **__del__():** Default destructor.
   * **_initModel() -> None**: Function for model initialization. Guarantee the same training model every time.
   * **_initRenderer() -> None**: Create ```_renderer```. Uses lazy initialization.
+  * **initLights() -> None** Creates lights for the field ```_light```.
+  * **initWalls() -> None** Creates walls for the field ```_walls```.
+  * **initObjects() -> None** Creates lists of diffrent static objects.
+  * **initBeings() -> None** Creates lists of moveable beings like waiter or client.
+  * **renderObjectsList() -> None** Creates list of objects for later render in field ```_render_objects```.
+  * **rcollisionObjectList() -> None** Creates list of objects for later collisions in field ```_collision_objects```.
   * **isRunning() -> bool**: Check if model is running if window is initialized than return window status.
   * **modelIteration(acceleration: float = 1.0) -> None**: Model Iteration. Is used for training and visualization. Acceleration is used for faster learning process skipping waiting time for waiter walking etc also in learning state we don't initialize window.
   * **_renderOrder() -> None**: sorts ```_render_objects``` base on distance to edge and render order if distances are equal.
@@ -498,6 +460,7 @@ Conf file contains global constants like:
 ## Prerequisites
 - **pygame**: for rendering.
 - **numpy**: for mathematical operations.
+- **torch**: for neural network.
 
 ---
 
