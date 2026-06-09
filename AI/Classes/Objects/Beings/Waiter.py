@@ -1,17 +1,18 @@
 import numpy as np
+import os
 
 from Classes.Core.Object.Being import Being
 from Classes.Core.Grid.Grid import Grid
 
-from Classes.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
-from Classes.Neural_Network.network import bool_to_str, WaiterAI
+from Classes.Core.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
+from Classes.Core.Neural_Network.network import bool_to_str, WaiterAI
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Cook import Cook
 from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.OrderList import OrderList
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import WAITER_VELOCITY, DEBUG
+from conf import WAITER_VELOCITY, DEBUG, PATH_TO_ROOT_DIR
 
 
 
@@ -35,7 +36,7 @@ class Waiter(Being):
   
 		#loading/generating AI model
 		try:
-			model_path = os.path.join(os.path.dirname(os.path.abspath(WaiterAI.__module__.replace(".", "/"))),"waiter_model.pth")
+			model_path = os.path.join(PATH_TO_ROOT_DIR, "waiter_model.pth")
 
 			if os.path.exists(model_path):
 				self._ai.load()

@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import os
 
 
 
@@ -14,6 +15,15 @@ DYNAMIC_LIGHTS = True
 
 TILE_SIZE: int = 40
 WAITER_VELOCITY: int = 6
+
+PATH_TO_ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+PATH_TO_MODEL_DIR = os.path.join(PATH_TO_ROOT_DIR, "Models")
+PATH_TO_DATASET_DIR = os.path.join(PATH_TO_ROOT_DIR, "Dataset")
+
+PATH_TO_NN_DATASET = os.path.join(PATH_TO_DATASET_DIR, "NN_dataset.txt")
+PATH_TO_DT_DATASET = os.path.join(PATH_TO_DATASET_DIR, "DT_dataset.txt")
+PATH_TO_NN_WAITER_MODEL = os.path.join(PATH_TO_MODEL_DIR, "waiter_model.pth")
+PATH_TO_DECISION_TREE = os.path.join(PATH_TO_MODEL_DIR, "decision_tree.txt")
 
 BEING_MOVEMENT_DIRECTIONS = [
   np.array([0, -1]),  # north
