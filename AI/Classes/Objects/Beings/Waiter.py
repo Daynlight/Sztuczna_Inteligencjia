@@ -12,7 +12,7 @@ from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.OrderList import OrderList
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import WAITER_VELOCITY, DEBUG, PATH_TO_ROOT_DIR
+from conf import WAITER_VELOCITY, DEBUG, PATH_TO_ROOT_DIR, LEARN_VARIANTS, LEARN_VARIANT, PATH_TO_NN_WAITER_MODEL
 
 
 
@@ -30,13 +30,13 @@ class Waiter(Being):
 		self._carrying: list[Food] = []
 		self._order_list: list[Client, Food] = []
 		self._order_list_sent: bool = False
-		self._decision_tree = build_waiter_decision_tree()
 
+		self._decision_tree = build_waiter_decision_tree()
 		self._ai = WaiterAI()
-  
+	
 		#loading/generating AI model
 		try:
-			model_path = os.path.join(PATH_TO_ROOT_DIR, "waiter_model.pth")
+			model_path = PATH_TO_NN_WAITER_MODEL
 
 			if os.path.exists(model_path):
 				self._ai.load()
@@ -46,7 +46,6 @@ class Waiter(Being):
 			print("Błąd w ładowaniu waiter_model.pth")
 			self._ai.train()
 			
-
 
 	def receiveOrder(self, client: Client) -> None:
 		if abs(self._position[0] - client.getPosition()[0]) + abs(self._position[1] - client.getPosition()[1]) == 1:
@@ -129,11 +128,21 @@ class Waiter(Being):
 			return
 
 		state = self._build_state_features(clients, cook)
-		action = self._decision_tree.predict(state)
-		if action==None:
-			# print("Decision tree failed")
-			action = self._ai.predict(state)
-		#print(f"Waiter decision: {action}")
+		action = ""
+		match LEARN_VARIANT:
+			case LEARN_VARIANTS.DECISION_TREE:
+				action = self._decision_tree.predict(state)
+				print(f"[DT] Waiter decision: {action}")
+				if(action is None):
+					action = self._ai.predict(state)
+					print(f"[NN] Waiter decision: {action}")
+			case LEARN_VARIANTS.NEURAL_NETWORK:
+				action = self._ai.predict(state)
+				print(f"[NN] Waiter decision: {action}")
+			case _:
+				action = self._ai.predict(state)
+				print(f"[NN] Waiter decision: {action}")
+		
 		if action == "give_order_list":
 			self.goTo(grid, order_list.getPosition(), renderer, lights)
 			self.giveOrderList(cook, order_list)
