@@ -1,17 +1,18 @@
 import numpy as np
+import os
 
 from Classes.Core.Object.Being import Being
 from Classes.Core.Grid.Grid import Grid
 
-from Classes.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
-from Classes.Neural_Network.network import bool_to_str, WaiterAI
+from Classes.Core.Decision_Tree.ID3 import bool_to_str, build_waiter_decision_tree
+from Classes.Core.Neural_Network.network import bool_to_str, WaiterAI
 from Classes.Objects.Beings.Client import Client
 from Classes.Objects.Beings.Cook import Cook
 from Classes.Objects.Static.Food import Food
 from Classes.Objects.Static.OrderList import OrderList
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import WAITER_VELOCITY, DEBUG
+from conf import WAITER_VELOCITY, DEBUG, PATH_TO_ROOT_DIR, LEARN_VARIANTS, LEARN_VARIANT, PATH_TO_NN_WAITER_MODEL
 
 
 
@@ -29,13 +30,13 @@ class Waiter(Being):
 		self._carrying: list[Food] = []
 		self._order_list: list[Client, Food] = []
 		self._order_list_sent: bool = False
-		self._decision_tree = build_waiter_decision_tree()
 
+		self._decision_tree = build_waiter_decision_tree()
 		self._ai = WaiterAI()
-  
+	
 		#loading/generating AI model
 		try:
-			model_path = os.path.join(os.path.dirname(os.path.abspath(WaiterAI.__module__.replace(".", "/"))),"waiter_model.pth")
+			model_path = PATH_TO_NN_WAITER_MODEL
 
 			if os.path.exists(model_path):
 				self._ai.load()
@@ -45,7 +46,6 @@ class Waiter(Being):
 			print("Błąd w ładowaniu waiter_model.pth")
 			self._ai.train()
 			
-
 
 	def receiveOrder(self, client: Client) -> None:
 		if abs(self._position[0] - client.getPosition()[0]) + abs(self._position[1] - client.getPosition()[1]) == 1:
@@ -101,7 +101,7 @@ class Waiter(Being):
 		}
 
 
-	def _deliver_food(self, grid, clients: list[Client]) -> None:
+	def _deliver_food(self, grid, clients: list[Client], renderer, lights) -> None:
 		delivery_food = None
 		delivery_client = None
 		for food in self._carrying:
@@ -115,7 +115,7 @@ class Waiter(Being):
 
 		if delivery_client is not None:
 			if(self.pathIsEmpty()):
-				self.goTo(grid, delivery_client.getPosition())
+				self.goTo(grid, delivery_client.getPosition(), renderer, lights)
 			if self.completeOrder(delivery_client):
 				self._carrying.remove(delivery_food)
 				delivery_client.finishEating()
@@ -123,31 +123,44 @@ class Waiter(Being):
 			self._path = []
 
 
-	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
+	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList, renderer, lights) -> None:
+		if not self.pathIsEmpty():
+			return
+
 		state = self._build_state_features(clients, cook)
-		action = self._decision_tree.predict(state)
-		if action==None:
-			print("Decision tree failed")
-			action = self._ai.predict(state)
-		#print(f"Waiter decision: {action}")
+		action = ""
+		match LEARN_VARIANT:
+			case LEARN_VARIANTS.DECISION_TREE:
+				action = self._decision_tree.predict(state)
+				print(f"[DT] Waiter decision: {action}")
+				if(action is None):
+					action = self._ai.predict(state)
+					print(f"[NN] Waiter decision: {action}")
+			case LEARN_VARIANTS.NEURAL_NETWORK:
+				action = self._ai.predict(state)
+				print(f"[NN] Waiter decision: {action}")
+			case _:
+				action = self._ai.predict(state)
+				print(f"[NN] Waiter decision: {action}")
+		
 		if action == "give_order_list":
-			self.goTo(grid, order_list.getPosition())
+			self.goTo(grid, order_list.getPosition(), renderer, lights)
 			self.giveOrderList(cook, order_list)
 			return
 
 		if action == "take_food":
-			self.goTo(grid, cook.getPosition())
+			self.goTo(grid, cook.getPosition(), renderer, lights)
 			self.takeFood(cook)
 			return
 
 		if action == "deliver_food":
-			self._deliver_food(grid, clients)
+			self._deliver_food(grid, clients, renderer, lights)
 			return
 
 		if action == "take_order":
 			for client in clients:
 				if client._wants_to_order:
-					self.goTo(grid, client.getPosition())
+					self.goTo(grid, client.getPosition(), renderer, lights)
 					self.receiveOrder(client)
 					return
 		"""

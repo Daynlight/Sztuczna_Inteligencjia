@@ -1,5 +1,7 @@
 import pygame
 import numpy as np
+import os
+from enum import Enum, auto
 
 
 
@@ -7,13 +9,22 @@ import numpy as np
 
 
 
-
+ 
 
 DEBUG = False
 DYNAMIC_LIGHTS = True
 
 TILE_SIZE: int = 40
 WAITER_VELOCITY: int = 6
+
+PATH_TO_ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+PATH_TO_MODEL_DIR = os.path.join(PATH_TO_ROOT_DIR, "Models")
+PATH_TO_DATASET_DIR = os.path.join(PATH_TO_ROOT_DIR, "Dataset")
+
+PATH_TO_NN_DATASET = os.path.join(PATH_TO_DATASET_DIR, "NN_dataset.txt")
+PATH_TO_DT_DATASET = os.path.join(PATH_TO_DATASET_DIR, "DT_dataset.txt")
+PATH_TO_NN_WAITER_MODEL = os.path.join(PATH_TO_MODEL_DIR, "waiter_model.pth")
+PATH_TO_DECISION_TREE = os.path.join(PATH_TO_MODEL_DIR, "decision_tree.txt")
 
 BEING_MOVEMENT_DIRECTIONS = [
   np.array([0, -1]),  # north
@@ -22,8 +33,24 @@ BEING_MOVEMENT_DIRECTIONS = [
   np.array([-1, 0])   # west
 ]
 
+class PATH_SEARCH_VARIANTS(Enum):
+  BFS = auto()
+  A_STAR = auto()
+
+PATH_SEARCH_VARIANT = PATH_SEARCH_VARIANTS.A_STAR
+SEARCH_VISUALIZATION = False
+
+class LEARN_VARIANTS(Enum):
+  NEURAL_NETWORK = auto()
+  DECISION_TREE = auto()
+
+LEARN_VARIANT = LEARN_VARIANTS.NEURAL_NETWORK
+
 BEING_DEFAULT_MOVE_COST = 1
 BEING_DEFAULT_ROTATE_COST = 0.1
+
+FIXED_UPDATE_HZ = 60
+FPS_SAMPLES = 10
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -57,3 +84,36 @@ for y in range(8):
     rect = pygame.Rect(8 * x, 8 * y, 8, 8)
     color = TEXTURE_ERROR_COLORS[(x + y) % 2]
     ERROR_TEXTURE.fill(color, rect)
+
+
+
+# GENETIC ALGORITHM PARAMS
+GENETIC_SEATING_ARRANGEMENT = True
+
+# tables and chairs must have the same length !11!!!
+TABLE_ARRANGEMENT = np.array([2, 1, 2, 1, 2, 3, 2])
+CHAIR_ARRANGEMENT = np.array([6, 6, 4, 4, 6, 8, 6])
+
+OBSTACLE_ARRAY = np.array([
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+])
+

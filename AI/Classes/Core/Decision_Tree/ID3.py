@@ -1,8 +1,11 @@
 import math
 from collections import Counter
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 import random
+
+from conf import PATH_TO_DT_DATASET, PATH_TO_DECISION_TREE
+
 
 FeatureVector = Dict[str, str]
 DataSet = List[FeatureVector]
@@ -204,23 +207,23 @@ def build_waiter_decision_tree() -> DecisionTreeClassifier:
 
     classifier = DecisionTreeClassifier()
     classifier.fit(dataset, labels, features)
-    dataset_file_path = "AI/Classes/Decision_Tree/dataset.txt"
+    dataset_file_path = PATH_TO_DT_DATASET
     try:
         with open(dataset_file_path, "w", encoding="utf-8") as dataset_file:
             for row, label in zip(dataset, labels):
                 dataset_file.write(f"{row} -> {label}\n")
     except IOError:
-        dataset_file_path = "Classes/Decision_Tree/dataset.txt"
+        dataset_file_path = PATH_TO_DT_DATASET
         with open(dataset_file_path, "w", encoding="utf-8") as dataset_file:
             for row, label in zip(dataset, labels):
                 dataset_file.write(f"{row} -> {label}\n")
     print(f"Dataset saved to {dataset_file_path}")
 
-    tree_file_path = "AI/Classes/Decision_Tree/decision_tree.txt"
+    tree_file_path = PATH_TO_DECISION_TREE
     try:
         save_tree_to_file(classifier, tree_file_path)
     except IOError:
-        tree_file_path = "Classes/Decision_Tree/decision_tree.txt"
+        tree_file_path = PATH_TO_DECISION_TREE
         save_tree_to_file(classifier, tree_file_path)
     print(f"Decision tree saved to {tree_file_path}")
     return classifier
