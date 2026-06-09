@@ -135,7 +135,7 @@ class Being(Object):
       current_pos, current_r = current
       
       if(SEARCH_VISUALIZATION):
-        self._visualize[current] = Object(10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+        self._visualize[current] = Object(-10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
         self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
         renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
         pygame.display.flip()
@@ -169,7 +169,7 @@ class Being(Object):
         self.updateAStarKey(current, target_pos, neighbor_key, cost, g_score, open_set, came_from)
         if neighbor_key not in visited:
           if(SEARCH_VISUALIZATION):
-            self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+            self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
             self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
             renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
             pygame.display.flip()
@@ -182,7 +182,7 @@ class Being(Object):
 
       if neighbor_key not in visited:
         if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
           self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
           renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
           pygame.display.flip()
@@ -195,7 +195,7 @@ class Being(Object):
 
       if neighbor_key not in visited:
         if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
           self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
           renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
           pygame.display.flip()
@@ -215,7 +215,7 @@ class Being(Object):
 
       if(SEARCH_VISUALIZATION):
         temp_pos, temp_r = temp
-        self._visualize[temp] = Object(10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
+        self._visualize[temp] = Object(-10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
         self._visualize[temp].render(renderer.getSurface(), grid, renderer, lights)
         renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
         pygame.display.flip()
@@ -255,7 +255,7 @@ class Being(Object):
       current_pos, current_r = current
 
       if(SEARCH_VISUALIZATION):
-        self._visualize[current] = Object(10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+        self._visualize[current] = Object(-10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
         self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
         renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
         pygame.display.flip()
@@ -289,7 +289,7 @@ class Being(Object):
 
         if neighbor_key not in visited:
           if(SEARCH_VISUALIZATION):
-            self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+            self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
             self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
             renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
             pygame.display.flip()
@@ -302,7 +302,7 @@ class Being(Object):
 
       if neighbor_key not in visited:
         if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
           self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
           renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
           pygame.display.flip()
@@ -315,7 +315,7 @@ class Being(Object):
 
       if neighbor_key not in visited:
         if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
           self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
           renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
           pygame.display.flip()
@@ -335,7 +335,7 @@ class Being(Object):
 
       if(SEARCH_VISUALIZATION):
         temp_pos, temp_r = temp
-        self._visualize[temp] = Object(10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
+        self._visualize[temp] = Object(-10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
         self._visualize[temp].render(renderer.getSurface(), grid, renderer, lights)
         renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
         pygame.display.flip()
