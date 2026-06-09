@@ -1,4 +1,3 @@
-import os
 import numpy as np
 
 from Classes.Core.Object.Being import Being
@@ -115,7 +114,8 @@ class Waiter(Being):
 				break
 
 		if delivery_client is not None:
-			self.goTo(grid, delivery_client.getPosition())
+			if(self.pathIsEmpty()):
+				self.goTo(grid, delivery_client.getPosition())
 			if self.completeOrder(delivery_client):
 				self._carrying.remove(delivery_food)
 				delivery_client.finishEating()
@@ -155,12 +155,14 @@ class Waiter(Being):
 		all_waiting = len(clients) > 0 and all(client._waiting_for_food for client in clients)
 
 		if all_waiting and len(self.getOrderList()) > 0 and not self._order_list_sent:
-			self.goTo(grid, order_list.getPosition())
+			if(self.pathIsEmpty()):
+				self.goTo(grid, order_list.getPosition())
 			self.giveOrderList(cook, order_list)
 			return
 
 		if cook.hasAvailableFood():
-			self.goTo(grid, cook.getPosition())
+			if(self.pathIsEmpty()):
+				self.goTo(grid, cook.getPosition())
 			self.takeFood(cook)
 			return
 
@@ -170,7 +172,8 @@ class Waiter(Being):
 
 		for client in clients:
 			if client._wants_to_order:
-				self.goTo(grid, client.getPosition())
+				if(self.pathIsEmpty()):
+					self.goTo(grid, client.getPosition())
 				self.receiveOrder(client)
 				return
 	

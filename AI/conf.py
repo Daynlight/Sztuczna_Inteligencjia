@@ -9,7 +9,7 @@ import numpy as np
 
 
 
-DEBUG = True
+DEBUG = False
 DYNAMIC_LIGHTS = True
 
 TILE_SIZE: int = 40
