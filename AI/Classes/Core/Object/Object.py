@@ -4,7 +4,7 @@ import numpy as np
 from Classes.Core.Grid.Grid import Grid, Grid_Tile
 from Classes.Core.Renderer.Renderer import Renderer, Camera
 from Classes.Core.Renderer.Texture import Texture
-from Classes.Core.Animation.Animation import Animation
+from Classes.Core.Renderer.Animation.Animation import Animation
 from Classes.Core.Renderer.Light import Light
 
 from conf import TILE_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT

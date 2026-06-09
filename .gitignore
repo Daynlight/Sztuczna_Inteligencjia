@@ -2,6 +2,8 @@
 .venv/
 .idea/
 __pycache__/
-# decision_tree.txt
-# dataset.txt
-# *.pth
+*.spec
+dist/
+build/
+*.build
+*.dist

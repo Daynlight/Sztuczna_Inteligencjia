@@ -125,10 +125,13 @@ class Waiter(Being):
 
 
 	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
+		if not self.pathIsEmpty():
+			return
+
 		state = self._build_state_features(clients, cook)
 		action = self._decision_tree.predict(state)
 		if action==None:
-			print("Decision tree failed")
+			# print("Decision tree failed")
 			action = self._ai.predict(state)
 		#print(f"Waiter decision: {action}")
 		if action == "give_order_list":

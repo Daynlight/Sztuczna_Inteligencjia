@@ -50,27 +50,30 @@ class Being(Object):
 
     
   def calculateDistance(self, current_position: np.ndarray[int], position: np.ndarray[int]) -> float:
-    return np.linalg.norm(np.array(current_position) - np.array(position), ord=1)
+    return abs(current_position[0] - position[0]) + abs(current_position[1] - position[1])
   
 
   def _find_adjacent_target(self, grid, position: np.ndarray[int]) -> np.ndarray[int] | None:
     best_target = None
     best_distance = float("inf")
-    current_position = self.getPosition()
+    current_position = tuple(self.getPosition())
+
+    pos_tuple = tuple(position)
     list_of_possible_movement = grid.getNeighbors(position)
 
     for direction in BEING_MOVEMENT_DIRECTIONS:
-      candidate = position + direction
+      candidate = (pos_tuple[0] + int(direction[0]), pos_tuple[1] + int(direction[1]))
+
       if candidate[0] < 0 or candidate[1] < 0 or candidate[0] >= GRID_X or candidate[1] >= GRID_Y:
         continue
       
-      if(tuple(candidate) not in list_of_possible_movement):
+      if(candidate not in list_of_possible_movement):
         continue
 
       distance = self.calculateDistance(current_position, candidate)
       if distance < best_distance:
         best_distance = distance
-        best_target = candidate
+        best_target = np.array(candidate)
 
     return best_target
 
@@ -91,12 +94,12 @@ class Being(Object):
     if(target is None): return
     
     # start
-    start = np.array(current_position)
-    start_r = self._rotation
-    start_key = (tuple(start), start_r)
-
-    # target
+    start_pos = tuple(current_position)
     target_pos = tuple(target)
+    
+    start_r = self._rotation
+    start_key = (start_pos, start_r)
+
     goal_node = None
 
     # priority queue for A*
@@ -114,7 +117,7 @@ class Being(Object):
       current_pos, current_r = current
 
       # checking if we reach target
-      if tuple(current_pos) == target_pos:
+      if current_pos == target_pos:
         goal_node = current
         break
 
@@ -130,28 +133,28 @@ class Being(Object):
 
       # getting neighbor position when we go forward
       d = BEING_MOVEMENT_DIRECTIONS[current_r]
-      neighbor_pos = np.array(current_pos, dtype=int) + d
-
+      neighbor_pos = (current_pos[0] + int(d[0]), current_pos[1] + int(d[1]))
+      
       # check if forward neighbor is in possible movements precomputed in grid
-      if tuple(neighbor_pos) in list_of_possible_movement:
+      if neighbor_pos in list_of_possible_movement:
         # generate new key
-        neighbor_key = (tuple(neighbor_pos), current_r)
+        neighbor_key = (neighbor_pos, current_r)
         
         # update key
-        cost = grid.getCost(neighbor_key[0])
-        self.updateKey(current, target, neighbor_key, cost, g_score, open_set, came_from)
+        cost = grid.getCost(neighbor_pos)
+        self.updateKey(current, target_pos, neighbor_key, cost, g_score, open_set, came_from)
 
       # generate new key for left rotation
       new_r = (current_r - 1) % 4
       neighbor_key = (current_pos, new_r)
       # update key
-      self.updateKey(current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+      self.updateKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
       # generate new key for right rotation
       new_r = (current_r + 1) % 4
       neighbor_key = (current_pos, new_r)
       # update key
-      self.updateKey(current, target, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
+      self.updateKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
 
 
     if goal_node is None:
@@ -172,25 +175,28 @@ class Being(Object):
 
 
   def makeStep(self, deltaTime: float, acceleration: float) -> None:
-    if len(self._path) <= 0: 
+    if not self._path: 
       self._accTime = 0
       return
 
     next_pos, next_r = self._path[0]
-    next_pos_arr = np.array(next_pos)
-    current_pos_arr = np.array(self.getPosition())
+    
+    current_pos = tuple(self.getPosition())
 
-    if np.array_equal(next_pos_arr, current_pos_arr):
+    if next_pos == current_pos:
       # rotate
-      if DEBUG: print(f"New rotation: {'north' if next_r == 0 else 'east' if next_r == 1 else 'south' if next_r == 2 else 'west'}")
+      if DEBUG: 
+        directions = {0: 'north', 1: 'east', 2: 'south', 3: 'west'}
+        print(f"New rotation: {directions.get(next_r, 'unknown')}")
       self._rotation = next_r
       self._path.pop(0)
     else:
       # move
       self._accTime += deltaTime
-      dist = np.linalg.norm(current_pos_arr - next_pos_arr)
+      dist = 1.0 
+      
       if self._accTime >= dist / (self._velocity * acceleration):
-        self.setPosition(next_pos_arr.tolist())
+        self.setPosition(list(next_pos))
         self._rotation = next_r
         self._path.pop(0)
         self._accTime = 0
