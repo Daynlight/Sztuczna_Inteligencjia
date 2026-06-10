@@ -279,19 +279,23 @@ def genetic_algorithm(tables: np.ndarray, chairs: np.ndarray, obstacle_array: np
         for i in range(elitism_count):
             new_population.append(copy.deepcopy(pop_fit[i][0]))
 
+        fitness_values = [item[1] for item in pop_fit]
+        min_fit = min(fitness_values)
+        if min_fit < 0:
+            weights = [f - min_fit + 1 for f in fitness_values]
+        else:
+            weights = fitness_values
+
         while len(new_population) < population_size:
-            candidates1 = random.sample(pop_fit, 4)
-            parent1 = max(candidates1, key=lambda item: item[1])[0]
-            
-            candidates2 = random.sample(pop_fit, 4)
-            parent2 = max(candidates2, key=lambda item: item[1])[0]
+            parent1 = random.choices(pop_fit, weights=weights, k=1)[0][0]
+            parent2 = random.choices(pop_fit, weights=weights, k=1)[0][0]
 
             child = []
             for i in range(groups_number):
                 p_source = parent1 if random.random() < 0.5 else parent2
                 child.append({
-                    "table_size": parent1[i]["table_size"],
-                    "chair_number": parent1[i]["chair_number"],
+                    "table_size": p_source[i]["table_size"],
+                    "chair_number": p_source[i]["chair_number"],
                     "x": p_source[i]["x"],
                     "y": p_source[i]["y"],
                     "table_rotation": p_source[i]["table_rotation"]
@@ -367,5 +371,3 @@ def genetic_algorithm(tables: np.ndarray, chairs: np.ndarray, obstacle_array: np
         result_groups.append(TableGroup(tables=table_objs, chairinterfaces=chair_objs))
 
     return result_groups
-
-
