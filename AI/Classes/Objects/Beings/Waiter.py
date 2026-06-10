@@ -101,7 +101,7 @@ class Waiter(Being):
 		}
 
 
-	def _deliver_food(self, grid, clients: list[Client], renderer, lights) -> None:
+	def _deliver_food(self, grid, clients: list[Client]) -> None:
 		delivery_food = None
 		delivery_client = None
 		for food in self._carrying:
@@ -115,7 +115,7 @@ class Waiter(Being):
 
 		if delivery_client is not None:
 			if(self.pathIsEmpty()):
-				self.goTo(grid, delivery_client.getPosition(), renderer, lights)
+				self.goTo(grid, delivery_client.getPosition())
 			if self.completeOrder(delivery_client):
 				self._carrying.remove(delivery_food)
 				delivery_client.finishEating()
@@ -123,8 +123,8 @@ class Waiter(Being):
 			self._path = []
 
 
-	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList, renderer, lights) -> None:
-		if not self.pathIsEmpty():
+	def decide(self, grid: Grid, clients, cook: Cook, order_list: OrderList) -> None:
+		if not self.pathIsEmpty() or self.searchingForPath():
 			return
 
 		state = self._build_state_features(clients, cook)
@@ -144,23 +144,23 @@ class Waiter(Being):
 				print(f"[NN] Waiter decision: {action}")
 		
 		if action == "give_order_list":
-			self.goTo(grid, order_list.getPosition(), renderer, lights)
+			self.goTo(grid, order_list.getPosition())
 			self.giveOrderList(cook, order_list)
 			return
 
 		if action == "take_food":
-			self.goTo(grid, cook.getPosition(), renderer, lights)
+			self.goTo(grid, cook.getPosition())
 			self.takeFood(cook)
 			return
 
 		if action == "deliver_food":
-			self._deliver_food(grid, clients, renderer, lights)
+			self._deliver_food(grid, clients)
 			return
 
 		if action == "take_order":
 			for client in clients:
 				if client._wants_to_order:
-					self.goTo(grid, client.getPosition(), renderer, lights)
+					self.goTo(grid, client.getPosition())
 					self.receiveOrder(client)
 					return
 		"""

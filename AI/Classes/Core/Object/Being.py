@@ -29,26 +29,18 @@ class Being(Object):
     self._accTime: float = 0.0
     self._rotation: int = 0
     self._visualize: dict[tuple, Object] = {}
+
+    self._open_set = []
+    self._start_key = tuple()
+    self._searching_for_path = False
   
 
   def pathIsEmpty(self):
     return len(self._path) == 0
+  
 
-
-  def goTo(self, grid, goal, renderer, lights) -> None:
-    if goal is None: 
-      return
-    
-    self._visualize = {}
-    
-    target = self._find_adjacent_target(grid, goal)
-    match PATH_SEARCH_VARIANT:
-      case PATH_SEARCH_VARIANTS.A_STAR:
-        self.generatePathAStar(grid, self.getPosition(), target, renderer, lights)
-      case PATH_SEARCH_VARIANTS.BFS:
-        self.generatePathBFS(grid, self.getPosition(), target, renderer, lights)
-      case _:
-        self.generatePathAStar(grid, self.getPosition(), target, renderer, lights)
+  def searchingForPath(self):
+    return self._searching_for_path
 
 
   def rotate(self, direction: str) -> None:
@@ -90,268 +82,281 @@ class Being(Object):
     return best_target
 
 
-  def updateAStarKey(self, current, target, neighbor_key, cost, g_score, open_set, came_from):
+  def goTo(self, grid, goal) -> None:
+    if goal is None: 
+      return
+    
+    self._visualize = {}
+    
+    self._target = self._find_adjacent_target(grid, goal)
+
+    match PATH_SEARCH_VARIANT:
+      case PATH_SEARCH_VARIANTS.A_STAR:
+        self.prepareAStar(self.getPosition())
+      case PATH_SEARCH_VARIANTS.BFS:
+        self.prepareBFS(self.getPosition())
+      case _:
+        self.prepareAStar(self.getPosition())
+
+
+  def calculatePath(self, iterations, grid, renderer, lights):
+    for _ in range(iterations):
+      if(self._searching_for_path == False): return
+      match PATH_SEARCH_VARIANT:
+        case PATH_SEARCH_VARIANTS.A_STAR:
+          self.stepAStar(grid, renderer, lights)
+        case PATH_SEARCH_VARIANTS.BFS:
+          self.stepBFS(grid, renderer, lights)
+        case _:
+          self.stepAStar(grid, renderer, lights)
+
+
+  def updateAStarKey(self, current, target, neighbor_key, cost):
     # calculate new g_score previous + cost cost of tile
-    new_g_score = g_score[current] + cost
+    new_g_score = self._g_score[current] + cost
 
     # checking if state ain't in g_score register and if new one is better then previous
-    if neighbor_key not in g_score or new_g_score < g_score[neighbor_key]:
-      g_score[neighbor_key] = new_g_score                                      # adding/updating to lowest g_score for state
+    if neighbor_key not in self._g_score or new_g_score < self._g_score[neighbor_key]:
+      self._g_score[neighbor_key] = new_g_score                                      # adding/updating to lowest g_score for state
       f_score = new_g_score + self.calculateDistance(neighbor_key[0], target)  # calculating f_score = g_score + heuristic
-      heapq.heappush(open_set, (f_score, neighbor_key))                        # adding to priority queue base on f_score = g_score + heuristic 
-      came_from[neighbor_key] = current                                        # adding to graph
+      heapq.heappush(self._open_set, (f_score, neighbor_key))                        # adding to priority queue base on f_score = g_score + heuristic 
+      self._came_from[neighbor_key] = current                                        # adding to graph
 
 
-  def updateBFSKey(self, current, neighbor_key, queue, came_from):
-    if neighbor_key not in came_from:
-      queue.append(neighbor_key)           # add to queue 
-      came_from[neighbor_key] = current    # adding to graph
-
-
-  def generatePathAStar(self, grid, current_position: np.ndarray[int], target, renderer, lights) -> None:
-    if(target is None): return
+  def prepareAStar(self, current_position):
+    if(self._target is None): return
     
     # start
-    start_pos = tuple(current_position)
-    target_pos = tuple(target)
+    self._searching_for_path = True
+    self._start_pos = tuple(current_position)
+    self._target_pos = tuple(self._target)
     
     start_r = self._rotation
-    start_key = (start_pos, start_r)
+    self._start_key = (self._start_pos, start_r)
 
-    goal_node = None
+    self._goal_node = None
 
     # priority queue for A*
-    open_set = []
-    heapq.heappush(open_set, (0, start_key))
-    g_score = {start_key: 0}
-    visited = set()
+    self._open_set = []
+    heapq.heappush(self._open_set, (0, self._start_key))
+    self._g_score = {self._start_key: 0}
+    self._visited = set()
 
     # graph
-    came_from = {}
+    self._came_from = {}
+
+
+  def stepAStar(self, grid, renderer, lights):
+    if(len(self._open_set) == 0): return
+    if(self._searching_for_path == False): return
+
+    # getting tile from priority queue
+    _, current = heapq.heappop(self._open_set)
+    current_pos, current_r = current
     
-    while open_set:
-      # getting tile from priority queue
-      _, current = heapq.heappop(open_set)
-      current_pos, current_r = current
+    if(SEARCH_VISUALIZATION):
+      self._visualize[current] = Object(-10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+
+    # checking if we reach target
+    if current_pos == self._target_pos:
+      self._goal_node = current
+      self.recreatePathAStar(grid, renderer, lights)
+      return
+
+    # checking if we already check this state
+    if current in self._visited:
+      return
+    
+    # adding current to visited list
+    self._visited.add(current)
+
+    # get neighbors from precomputed grid
+    list_of_possible_movement = grid.getNeighbors(current_pos)
+
+    # getting neighbor position when we go forward
+    d = BEING_MOVEMENT_DIRECTIONS[current_r]
+    neighbor_pos = (current_pos[0] + int(d[0]), current_pos[1] + int(d[1]))
+    
+    # check if forward neighbor is in possible movements precomputed in grid
+    if neighbor_pos in list_of_possible_movement:
+      # generate new key
+      neighbor_key = (neighbor_pos, current_r)
       
+      # update key
+      cost = grid.getCost(neighbor_pos)
+      self.updateAStarKey(current, self._target_pos, neighbor_key, cost)
+      if neighbor_key not in self._visited:
+        if(SEARCH_VISUALIZATION):
+          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+
+    # generate new key for left rotation
+    new_r = (current_r - 1) % 4
+    neighbor_key = (current_pos, new_r)
+    # update key
+    self.updateAStarKey(current, self._target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST)
+
+    if neighbor_key not in self._visited:
       if(SEARCH_VISUALIZATION):
-        self._visualize[current] = Object(-10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-        self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-        pygame.display.flip()
+        self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
 
-      # checking if we reach target
-      if current_pos == target_pos:
-        goal_node = current
-        break
+    # generate new key for right rotation
+    new_r = (current_r + 1) % 4
+    neighbor_key = (current_pos, new_r)
+    # update key
+    self.updateAStarKey(current, self._target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST)
 
-      # checking if we already check this state
-      if current in visited:
-        continue
-      
-      # adding current to visited list
-      visited.add(current)
+    if neighbor_key not in self._visited:
+      if(SEARCH_VISUALIZATION):
+        self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
 
-      # get neighbors from precomputed grid
-      list_of_possible_movement = grid.getNeighbors(current_pos)
 
-      # getting neighbor position when we go forward
-      d = BEING_MOVEMENT_DIRECTIONS[current_r]
-      neighbor_pos = (current_pos[0] + int(d[0]), current_pos[1] + int(d[1]))
-      
-      # check if forward neighbor is in possible movements precomputed in grid
-      if neighbor_pos in list_of_possible_movement:
-        # generate new key
-        neighbor_key = (neighbor_pos, current_r)
-        
-        # update key
-        cost = grid.getCost(neighbor_pos)
-        self.updateAStarKey(current, target_pos, neighbor_key, cost, g_score, open_set, came_from)
-        if neighbor_key not in visited:
-          if(SEARCH_VISUALIZATION):
-            self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-            self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-            renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-            pygame.display.flip()
-
-      # generate new key for left rotation
-      new_r = (current_r - 1) % 4
-      neighbor_key = (current_pos, new_r)
-      # update key
-      self.updateAStarKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
-
-      if neighbor_key not in visited:
-        if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-          pygame.display.flip()
-
-      # generate new key for right rotation
-      new_r = (current_r + 1) % 4
-      neighbor_key = (current_pos, new_r)
-      # update key
-      self.updateAStarKey(current, target_pos, neighbor_key, BEING_DEFAULT_ROTATE_COST, g_score, open_set, came_from)
-
-      if neighbor_key not in visited:
-        if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-          pygame.display.flip()
-
-    if goal_node is None:
+  def recreatePathAStar(self, grid, renderer, lights) -> None:
+    if self._goal_node is None:
       if(DEBUG): print("No path found!")
       self._path = []
       return
     
     final_path = []
-    temp = goal_node
+    temp = self._goal_node
 
     # move through came_from to start
-    while temp != start_key:
+    while temp != self._start_key:
       final_path.append(temp)
-      temp = came_from[temp]
+      temp = self._came_from[temp]
 
       if(SEARCH_VISUALIZATION):
         temp_pos, temp_r = temp
-        self._visualize[temp] = Object(-10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
-        self._visualize[temp].render(renderer.getSurface(), grid, renderer, lights)
+        self._visualize[temp_pos] = Object(-10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
+        self._visualize[temp_pos].render(renderer.getSurface(), grid, renderer, lights)
         renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
         pygame.display.flip()
 
     # reverse path
     self._path = final_path[::-1]
-
-    if(SEARCH_VISUALIZATION):
-      pygame.time.wait(1000)
-    
+    self._path_found = True
+    self._searching_for_path = False
     self._visualize.clear()
 
 
-  def generatePathBFS(self, grid, current_position: np.ndarray[int], target, renderer, lights) -> None:
-    if(target is None): return
+
+  def updateBFSKey(self, current, neighbor_key):
+    if neighbor_key not in self._came_from:
+      self._queue.append(neighbor_key)           # add to queue 
+      self._came_from[neighbor_key] = current    # adding to graph
+
+
+  def prepareBFS(self, current_position):
+    if(self._target is None): return
     
     # start
+    self._searching_for_path = True
     start_pos = tuple(current_position)
-    target_pos = tuple(target)
+    self._target_pos = tuple(self._target)
     
     start_r = self._rotation
-    start_key = (start_pos, start_r)
+    self._start_key = (start_pos, start_r)
 
-    goal_node = None
+    self._goal_node = None
 
     # queue for BFS
-    queue = deque()
-    queue.append(start_key)
-    visited = set()
+    self._queue = deque()
+    self._queue.append(self._start_key)
+    self._visited = set()
 
     # graph
-    came_from = {}
+    self._came_from = {}
     
-    while len(queue) > 0:
-      # getting tile from priority queue
-      current = queue.popleft()
-      current_pos, current_r = current
 
+  def stepBFS(self, grid, renderer, lights):
+    # getting tile from priority queue
+    current = self._queue.popleft()
+    current_pos, current_r = current
+
+    if(SEARCH_VISUALIZATION):
+      self._visualize[current] = Object(-10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+
+    # checking if we reach target
+    if current_pos == self._target_pos:
+      self._goal_node = current
+      self.recreateBFS(grid, renderer, lights)
+      return
+
+    # checking if we already check this state
+    if current in self._visited:
+      return
+    
+    # adding current to visited list
+    self._visited.add(current)
+
+    # get neighbors from precomputed grid
+    list_of_possible_movement = grid.getNeighbors(current_pos)
+
+    # getting neighbor position when we go forward
+    d = BEING_MOVEMENT_DIRECTIONS[current_r]
+    neighbor_pos = (current_pos[0] + int(d[0]), current_pos[1] + int(d[1]))
+    
+    # check if forward neighbor is in possible movements precomputed in grid
+    if neighbor_pos in list_of_possible_movement:
+      # generate new key
+      neighbor_key = (neighbor_pos, current_r)
+      
+      # update key
+      self.updateBFSKey(current, neighbor_key)
+
+      if neighbor_key not in self._visited:
+        if(SEARCH_VISUALIZATION):
+          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
+
+    # generate new key for left rotation
+    new_r = (current_r - 1) % 4
+    neighbor_key = (current_pos, new_r)
+    # update key
+    self.updateBFSKey(current, neighbor_key)
+
+    if neighbor_key not in self._visited:
       if(SEARCH_VISUALIZATION):
-        self._visualize[current] = Object(-10, EXPLORED_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-        self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-        pygame.display.flip()
+        self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
 
-      # checking if we reach target
-      if current_pos == target_pos:
-        goal_node = current
-        break
+    # generate new key for right rotation
+    new_r = (current_r + 1) % 4
+    neighbor_key = (current_pos, new_r)
+    # update key
+    self.updateBFSKey(current, neighbor_key)
 
-      # checking if we already check this state
-      if current in visited:
-        continue
-      
-      # adding current to visited list
-      visited.add(current)
+    if neighbor_key not in self._visited:
+      if(SEARCH_VISUALIZATION):
+        self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
 
-      # get neighbors from precomputed grid
-      list_of_possible_movement = grid.getNeighbors(current_pos)
 
-      # getting neighbor position when we go forward
-      d = BEING_MOVEMENT_DIRECTIONS[current_r]
-      neighbor_pos = (current_pos[0] + int(d[0]), current_pos[1] + int(d[1]))
-      
-      # check if forward neighbor is in possible movements precomputed in grid
-      if neighbor_pos in list_of_possible_movement:
-        # generate new key
-        neighbor_key = (neighbor_pos, current_r)
-        
-        # update key
-        self.updateBFSKey(current, neighbor_key, queue, came_from)
-
-        if neighbor_key not in visited:
-          if(SEARCH_VISUALIZATION):
-            self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-            self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-            renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-            pygame.display.flip()
-
-      # generate new key for left rotation
-      new_r = (current_r - 1) % 4
-      neighbor_key = (current_pos, new_r)
-      # update key
-      self.updateBFSKey(current, neighbor_key, queue, came_from)
-
-      if neighbor_key not in visited:
-        if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-          pygame.display.flip()
-
-      # generate new key for right rotation
-      new_r = (current_r + 1) % 4
-      neighbor_key = (current_pos, new_r)
-      # update key
-      self.updateBFSKey(current, neighbor_key, queue, came_from)
-
-      if neighbor_key not in visited:
-        if(SEARCH_VISUALIZATION):
-          self._visualize[current] = Object(-10, TO_CHECK_TEXTURE, np.array(current_pos), [0, TILE_SIZE])
-          self._visualize[current].render(renderer.getSurface(), grid, renderer, lights)
-          renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-          pygame.display.flip()
-
-    if goal_node is None:
+  def recreateBFS(self, grid, renderer, lights) -> None:
+    if self._goal_node is None:
       if(DEBUG): print("No path found!")
       self._path = []
       return
     
     final_path = []
-    temp = goal_node
+    temp = self._goal_node
 
     # move through came_from to start
-    while temp != start_key:
+    while temp != self._start_key:
       final_path.append(temp)
-      temp = came_from[temp]
+      temp = self._came_from[temp]
 
       if(SEARCH_VISUALIZATION):
         temp_pos, temp_r = temp
         self._visualize[temp] = Object(-10, CORRECT_TEXTURE, np.array(temp_pos), [0, TILE_SIZE])
-        self._visualize[temp].render(renderer.getSurface(), grid, renderer, lights)
-        renderer._surface.blit(renderer._world_surface, (0, 0), renderer._camera.getRect())
-        pygame.display.flip()
 
 
     # reverse path
     self._path = final_path[::-1]
-
-    if(SEARCH_VISUALIZATION):
-      pygame.time.wait(1000)
-    
+    self._path_found = True
+    self._searching_for_path = False
     self._visualize.clear()
+
 
 
   def makeStep(self, deltaTime: float, acceleration: float) -> None:
-    if not self._path: 
+    if not self._path or self._path_found == False or self._searching_for_path == True: 
       self._accTime = 0
       return
 

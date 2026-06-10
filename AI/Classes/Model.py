@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from Classes.Core.Renderer.Renderer import Renderer
@@ -29,7 +30,7 @@ from Classes.Objects.Static.Carpet import Carpet
 from Classes.Core.Object.TableGroup import TableGroup
 
 from Classes.Menu import Menu
-from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FIXED_UPDATE_HZ
+from conf import TILE_SIZE, GRID_X, GRID_Y, MARGIN_HORIZONTAL, MARGIN_VERTICAL, WINDOW_HEIGHT, WINDOW_WIDTH, TITLE, BACKGROUND_COLOR, FIXED_UPDATE_HZ, SEARCH_HZ
 from conf import GENETIC_SEATING_ARRANGEMENT, TABLE_ARRANGEMENT, CHAIR_ARRANGEMENT, OBSTACLE_ARRAY
 
 
@@ -48,6 +49,7 @@ class Model:
     self._render_objects: np.ndarray[Object] = np.array([], dtype=Object)
     self._renderer: Renderer = None
     self._grid: Grid = None
+    self._path_search_iterations = 20
     self._fixed_acc_time = 0
 
 
@@ -375,33 +377,49 @@ class Model:
         for el in self._clients:
           el.decide_order(self._menu.getFoodList())
 
-      self._waiter.decide(self._grid, self._clients, self._cook, self.order_list, self._renderer, self._light)
+      self._waiter.decide(self._grid, self._clients, self._cook, self.order_list)
       self._cook.decide()
 
       self._waiter.makeStep(self._renderer.getDeltaTime(), acceleration)
     
     self._fixed_acc_time += self._renderer._deltaTime
+    
+    if(self._waiter._searching_for_path):
+      start = time.perf_counter()
+      self._waiter.calculatePath(self._path_search_iterations, self._grid, self._renderer, self._light)
+      duration = (time.perf_counter() - start) * 1000 # ms
+
+      target = 1000 / SEARCH_HZ
+
+      error = target - duration
+      self._path_search_iterations += int(error * 0.1)
+      # print("Search Iter:", self._path_search_iterations)
+      # print("Search duration:", duration)
 
 
   def _renderOrder(self) -> None:
-    distances: np.ndarray[float] = np.array([np.dot(e.getPosition(), e.getPosition()) for e in self._render_objects], dtype=float)
-    orders: np.ndarray[int] = np.array([e.getRenderOrder() for e in self._render_objects], dtype=int)
+    self._final_render_objects = np.array(self._final_render_objects, dtype=object)
+
+    distances = np.array([np.dot(e.getPosition(), e.getPosition()) for e in self._final_render_objects], dtype=float)
+    orders = np.array([e.getRenderOrder() for e in self._final_render_objects], dtype=int)
 
     indices = np.lexsort((orders, distances))
-    self._render_objects: np.ndarray[Object] = self._render_objects[indices]
-    
+
+    self._final_render_objects = self._final_render_objects[indices]
 
 
   def renderFrame(self) -> None:
     if(self._initialized == False): self._initModel()
     if(self._renderer == None): self._initRenderer()
 
+    self._final_render_objects = [ *self._render_objects, *self._waiter._visualize.values() ]
     self._renderOrder()
 
     self._renderer.backgroundColor(BACKGROUND_COLOR)
     self._grid.draw(self._renderer, self._light)
 
-    for el in self._render_objects:
+
+    for el in self._final_render_objects:
       el.render(self._renderer.getSurface(), self._grid, self._renderer, self._light)
 
 

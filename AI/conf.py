@@ -39,6 +39,7 @@ class PATH_SEARCH_VARIANTS(Enum):
 
 PATH_SEARCH_VARIANT = PATH_SEARCH_VARIANTS.A_STAR
 SEARCH_VISUALIZATION = False
+SEARCH_HZ = 480
 
 class LEARN_VARIANTS(Enum):
   NEURAL_NETWORK = auto()
@@ -88,7 +89,7 @@ for y in range(8):
 
 
 # GENETIC ALGORITHM PARAMS
-GENETIC_SEATING_ARRANGEMENT = True
+GENETIC_SEATING_ARRANGEMENT = False
 
 # tables and chairs must have the same length !11!!!
 TABLE_ARRANGEMENT = np.array([2, 1, 2, 1, 2, 3, 2])
