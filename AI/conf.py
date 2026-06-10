@@ -88,7 +88,7 @@ for y in range(8):
 
 
 # GENETIC ALGORITHM PARAMS
-GENETIC_SEATING_ARRANGEMENT = True
+GENETIC_SEATING_ARRANGEMENT = False
 
 # tables and chairs must have the same length !11!!!
 TABLE_ARRANGEMENT = np.array([2, 1, 2, 1, 2, 3, 2])

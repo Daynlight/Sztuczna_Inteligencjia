@@ -99,15 +99,27 @@ COOK1_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "B
 									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Idle", "Cook_1_Normals.png"),
 																		 size=[1, 2]) 
 
+COOK2_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Idle", "Cook_2.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Cook", "Idle", "Cook_2_Normals.png"),
+																		 size=[1, 2]) 
+
 # Waiter
 WAITER_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus.png"), 
 														         normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Waiter", "Kerfus_Normals.png"),
 																		 size=[1, 2]) 
 
 # Flower
-FLOWER_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower.png"), 
-									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower_Normals.png"),
-																		 size=[2, 2]) 
+FLOWER1_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower1.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower1_Normals.png"),
+																		 size=[2, 4]) 
+
+FLOWER2_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower2.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower2_Normals.png"),
+																		 size=[2, 4]) 
+
+FLOWER3_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower3.png"), 
+									   								 normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Flower", "Flower3_Normals.png"),
+																		 size=[2, 4]) 
 
 # Sink
 SINK_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Sink", "Sink.png"), 

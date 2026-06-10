@@ -61,7 +61,7 @@ class Texture:
 
   def _applyLighting(self, render_pos: np.ndarray[int], lights: list[Light]) -> None:
     if self._texture is None:
-      self.setTexture(self._texture_path)
+      self.setTexture(self._texture_path, self._normal_texture_path)
       self.setSize(self._size)
 
     if(DYNAMIC_LIGHTS == False): return self._texture

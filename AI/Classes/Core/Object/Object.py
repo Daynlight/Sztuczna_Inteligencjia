@@ -29,7 +29,7 @@ class Object:
     self._render_order: int = render_order
     
     self._texture: Texture = texture
-    self._animation: map[Animation] = {}
+    self._animation: map[str, Animation] = {}
     self._state = None
     
     self.lit_surface: pygame.Surface = None
@@ -74,11 +74,11 @@ class Object:
     render_pos: np.ndarray[int] = grid_tile.getRenderPos()                                  # changing tile coordinates for example [2,2] -> to world coordinates
     
     if(self._isVisible(grid_tile, renderer)):
-      if(self._animation != None and self._state != None):
-        self.lit_surface = self._animation[self._state].getTexture(render_pos, lights, renderer.getDeltaTime())
-
-      if(self.lit_surface == None or not np.array_equal(self._last_pos, render_pos)):
-        self.lit_surface: pygame.Surface = self._texture.getLitTexture(render_pos, lights)
+      if self._state in self._animation:
+        self.lit_surface = self._animation[self._state].getTexture(render_pos, lights, renderer.getDeltaTime()).copy()
+      else:
+        if(self.lit_surface == None or not np.array_equal(self._last_pos, render_pos)):
+          self.lit_surface: pygame.Surface = self._texture.getLitTexture(render_pos, lights).copy()
       
       self._last_pos = render_pos
       

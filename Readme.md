@@ -11,9 +11,10 @@ Zadaniem automatycznego kelnera jest przyjmowanie zamówień i dostarczanie posi
 
 
 <div align=center>
-  <img width="32%" src="docs/gifs/Show.gif" />
-  <img width="32%" src="docs/gifs/AStar.gif" />
-  <img width="32%" src="docs/gifs/BFS.gif" />
+  <img width="49%" src="docs/gifs/Show.gif" />
+  <img width="49%" src="docs/gifs/Animations.gif" /></br>
+  <img width="49%" src="docs/gifs/AStar.gif" />
+  <img width="49%" src="docs/gifs/BFS.gif" />
 </div>
 
 
