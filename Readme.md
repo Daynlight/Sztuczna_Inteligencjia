@@ -114,6 +114,7 @@ python -m cProfile -o Profiler/profile.prof AI/main.py && gprof2dot -f pstats Pr
 - [x] Order system + types of food. (Dawid)
 - [x] Own assets (Daniel, Martyna)
 - [x] Texture system (Daniel)
+- [x] Animations (Daniel)
 - [x] Cleanups, Merging, Project structure (Daniel, Martyna) 
 - [x] Visualization in Readme (Daniel)
 - [x] Docs (Daniel)

@@ -75,10 +75,10 @@ class Object:
     
     if(self._isVisible(grid_tile, renderer)):
       if self._state in self._animation:
-        self.lit_surface = self._animation[self._state].getTexture(render_pos, lights, renderer.getDeltaTime()).copy()
+        self.lit_surface = self._animation[self._state].getTexture(render_pos, lights, renderer.getDeltaTime())
       else:
         if(self.lit_surface == None or not np.array_equal(self._last_pos, render_pos)):
-          self.lit_surface: pygame.Surface = self._texture.getLitTexture(render_pos, lights).copy()
+          self.lit_surface: pygame.Surface = self._texture.getLitTexture(render_pos, lights)
       
       self._last_pos = render_pos
       

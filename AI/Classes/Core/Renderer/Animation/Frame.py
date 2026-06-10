@@ -22,7 +22,7 @@ class Frame:
 
   def getTexture(self, render_pos: np.ndarray[int], lights: np.ndarray[Light]):
     if(self._lit_texture is None or self._last_pos is None or not np.array_equal(self._last_pos, render_pos)):
-      self._lit_texture: pygame.Surface = self._texture.getLitTexture(render_pos, lights).copy()
+      self._lit_texture: pygame.Surface = self._texture.getLitTexture(render_pos, lights)
     self._last_pos = render_pos.copy()
 
     return self._lit_texture
