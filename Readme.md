@@ -11,9 +11,10 @@ Zadaniem automatycznego kelnera jest przyjmowanie zamówień i dostarczanie posi
 
 
 <div align=center>
-  <img width="32%" src="docs/gifs/Show.gif" />
-  <img width="32%" src="docs/gifs/AStar.gif" />
-  <img width="32%" src="docs/gifs/BFS.gif" />
+  <img width="49%" src="docs/gifs/Show.gif" />
+  <img width="49%" src="docs/gifs/Animations.gif" /></br>
+  <img width="49%" src="docs/gifs/AStar.gif" />
+  <img width="49%" src="docs/gifs/BFS.gif" />
 </div>
 
 
@@ -113,6 +114,7 @@ python -m cProfile -o Profiler/profile.prof AI/main.py && gprof2dot -f pstats Pr
 - [x] Order system + types of food. (Dawid)
 - [x] Own assets (Daniel, Martyna)
 - [x] Texture system (Daniel)
+- [x] Animations (Daniel)
 - [x] Cleanups, Merging, Project structure (Daniel, Martyna) 
 - [x] Visualization in Readme (Daniel)
 - [x] Docs (Daniel)

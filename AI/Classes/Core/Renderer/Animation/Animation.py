@@ -22,8 +22,10 @@ class Animation:
   def getTexture(self, render_pos: np.ndarray[int], lights: np.ndarray[Light], deltaTime: float) -> pygame.Surface:
     self._accTime += deltaTime
 
-    if(self._accTime >= 1):
+    time = self._frames[self._frame].getTime()
+
+    if(self._accTime >= time):
       self._frame = (self._frame + 1) % len(self._frames)
-      self._accTime = 0
+      self._accTime -= time
 
     return self._frames[self._frame].getTexture(render_pos, lights)
