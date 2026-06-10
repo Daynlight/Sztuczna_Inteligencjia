@@ -50,7 +50,9 @@ WALL1_2_ROTATED_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Han
                                       size=[2, 4])
 
 # Client
-CLIENT_TEXTURE = Texture(os.path.join(PATH_TO_ASSETS, "Other", "client.png"))
+CLIENT_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Client", "Client.png"),
+                         normal_texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Being", "Client", "Client_Normals.png"),
+                         size=[2, 2])
 
 # Chairs
 CHAIR1_TEXTURE = Texture(texture_path=os.path.join(PATH_TO_ASSETS, "Handmade", "Static", "Chair", "Chair1.png"),

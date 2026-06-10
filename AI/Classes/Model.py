@@ -286,9 +286,9 @@ class Model:
 
     if GENETIC_SEATING_ARRANGEMENT == False:
       self._clients: np.ndarray[Client] = np.array([
-        Client([0, 14], [TILE_SIZE/2, TILE_SIZE/2]),
-        Client([1, 17], [TILE_SIZE/2, TILE_SIZE/2]),
-        Client([11, 11], [TILE_SIZE/2, TILE_SIZE/2]),
+        Client([0, 14]),
+        Client([1, 17]),
+        Client([11, 11]),
       ], dtype=Client)
 
     else:
@@ -299,7 +299,7 @@ class Model:
         chosen_chairs = random.sample(all_chairs, min(6, len(all_chairs)))
         
         self._clients = np.array([
-            Client(chair.getPosition().copy(), [TILE_SIZE/2, TILE_SIZE/2])
+            Client(chair.getPosition().copy())
             for chair in chosen_chairs
         ], dtype=Client)
 

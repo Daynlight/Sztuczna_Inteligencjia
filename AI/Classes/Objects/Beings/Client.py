@@ -8,7 +8,7 @@ from Classes.Menu import Menu
 from Classes.Objects.Static.Food import Food
 import Classes.Objects.TextureManager as TextureManager
 
-from conf import DEBUG
+from conf import DEBUG, TILE_SIZE
 
 
 
@@ -19,9 +19,9 @@ from conf import DEBUG
 
 
 class Client(Being):
-	def __init__(self, position: np.ndarray[int], offset: np.ndarray[int] = [0, 0]):
+	def __init__(self, position: np.ndarray[int], offset: np.ndarray[int] = [0, -TILE_SIZE/2]):
 		super().__init__(render_order=3, texture=TextureManager.CLIENT_TEXTURE, 
-									   position=position, offset=offset, velocity=2)
+									   position=position, offset=offset, velocity=2, size=[2, 2])
 		self._table = None
 		self._chair = None
 		self._wants_to_order: bool = False
